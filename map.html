@@ -1,0 +1,2294 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fishermen Direct</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+
+  <style>
+    :root {
+      --blue: #0A6EBD;
+      --blue-light: #2E9EE0;
+      --blue-dark: #084C83;
+      --yellow: #F7C948;
+      --teal: #0D9488;
+      --orange: #EA580C;
+      --g900: #0F172A;
+      --g700: #334155;
+      --g600: #475569;
+      --g300: #CBD5E1;
+      --g200: #E2E8F0;
+      --g100: #F1F5F9;
+      --g50: #F8FAFC;
+      --white: #FFFFFF;
+      --rc: 20px;
+      --rs: 10px;
+      --rp: 50px;
+      --shsm: 0 2px 8px rgba(10, 110, 189, 0.08);
+      --shmd: 0 4px 20px rgba(10, 110, 189, 0.13);
+      --shlg: 0 8px 40px rgba(10, 110, 189, 0.2);
+      --sw: 240px;
+      --pw: 380px;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    html,
+    body {
+      height: 100%;
+      overflow: hidden
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--g100);
+      color: var(--g900);
+      font-size: 14px
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-family: inherit
+    }
+
+    input {
+      font-family: inherit
+    }
+
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--g300);
+      border-radius: 4px
+    }
+
+    /* SKELETON */
+    .sk {
+      background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+      background-size: 200% 100%;
+      animation: sh 1.4s infinite;
+      border-radius: 8px
+    }
+
+    @keyframes sh {
+      0% {
+        background-position: 200% 0
+      }
+
+      100% {
+        background-position: -200% 0
+      }
+    }
+
+    #skelView {
+      display: flex;
+      height: 100vh;
+      width: 100%
+    }
+
+    .sk-side {
+      width: var(--sw);
+      background: var(--blue-dark);
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      flex-shrink: 0
+    }
+
+    .sk-logo {
+      height: 52px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.15);
+      animation: none
+    }
+
+    .sk-nav {
+      height: 38px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      animation: none
+    }
+
+    .sk-map {
+      flex: 1;
+      background: #d4e8d4
+    }
+
+    .sk-panel {
+      width: var(--pw);
+      background: #fff;
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex-shrink: 0
+    }
+
+    /* LAYOUT */
+    #mainView {
+      display: none;
+      height: 100vh
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: var(--sw) 1fr var(--pw);
+      height: 100vh;
+      overflow: hidden
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      background: linear-gradient(175deg, var(--blue-dark) 0%, #0a5a9e 60%, var(--blue) 100%);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+      z-index: 20
+    }
+
+    .sb-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 22px 20px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1)
+    }
+
+    .sb-logo-icon {
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0
+    }
+
+    .brand {
+      font-family: 'Playfair Display', serif;
+      font-size: 17px;
+      font-weight: 800;
+      color: #fff;
+      line-height: 1.1;
+      display: block
+    }
+
+    .brand-sub {
+      font-size: 9px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.5);
+      text-transform: uppercase;
+      letter-spacing: 2px
+    }
+
+    .sb-search {
+      padding: 14px 14px 8px;
+      position: relative
+    }
+
+    .sb-search input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--rp);
+      padding: 9px 14px 9px 36px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 500;
+      outline: none;
+      transition: all 0.2s
+    }
+
+    .sb-search input::placeholder {
+      color: rgba(255, 255, 255, 0.45)
+    }
+
+    .sb-search input:focus {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.4)
+    }
+
+    .sb-si {
+      position: absolute;
+      left: 26px;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 0.5;
+      pointer-events: none
+    }
+
+    .sb-sec {
+      font-size: 10px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.4);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      padding: 10px 20px 5px
+    }
+
+    .sb-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 0 12px
+    }
+
+    .ni {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--rs);
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.18s;
+      text-align: left;
+      width: 100%
+    }
+
+    .ni:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff
+    }
+
+    .ni.active {
+      background: rgba(255, 255, 255, 0.18);
+      color: #fff;
+      font-weight: 600
+    }
+
+    .ni svg {
+      width: 17px;
+      height: 17px;
+      flex-shrink: 0
+    }
+
+    .ni .nb {
+      background: var(--yellow);
+      color: var(--g900);
+      font-size: 10px;
+      font-weight: 700;
+      border-radius: var(--rp);
+      padding: 1px 7px;
+      margin-left: auto
+    }
+
+    .sb-filters {
+      padding: 6px 12px 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px
+    }
+
+    .fchip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: var(--rp);
+      padding: 5px 11px;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s
+    }
+
+    .fchip:hover,
+    .fchip.active {
+      background: var(--yellow);
+      border-color: var(--yellow);
+      color: var(--g900)
+    }
+
+    .sb-loc {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 12px 20px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      margin: 6px 0
+    }
+
+    .sb-loc svg {
+      margin-top: 2px;
+      flex-shrink: 0;
+      color: rgba(255, 255, 255, 0.5)
+    }
+
+    .ll {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: rgba(255, 255, 255, 0.4)
+    }
+
+    .lc {
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff
+    }
+
+    .cw {
+      margin: 10px 12px;
+      background: var(--yellow);
+      border-radius: var(--rc);
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s;
+      box-shadow: 0 4px 18px rgba(247, 201, 72, 0.4);
+      cursor: pointer;
+      border: none;
+      width: calc(100% - 24px)
+    }
+
+    .cw:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(247, 201, 72, 0.5)
+    }
+
+    .cw-ic {
+      position: relative;
+      flex-shrink: 0
+    }
+
+    .cw-b {
+      position: absolute;
+      top: -7px;
+      right: -9px;
+      background: var(--blue-dark);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      border-radius: 50%;
+      width: 19px;
+      height: 19px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--yellow)
+    }
+
+    .cwi {
+      flex: 1;
+      min-width: 0
+    }
+
+    .cwl {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--g700);
+      text-transform: uppercase;
+      letter-spacing: 0.5px
+    }
+
+    .cwt {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--g900)
+    }
+
+    /* MAP */
+    .map-area {
+      position: relative;
+      overflow: hidden;
+      background: #e8eecc
+    }
+
+    #mapCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: grab
+    }
+
+    #mapCanvas:active {
+      cursor: grabbing
+    }
+
+    .map-topbar {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      right: 14px;
+      display: flex;
+      gap: 10px;
+      z-index: 15;
+      pointer-events: all
+    }
+
+    .mswrap {
+      flex: 1;
+      position: relative
+    }
+
+    .msbox {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.97);
+      border-radius: var(--rp);
+      padding: 10px 16px 10px 40px;
+      font-size: 13px;
+      font-weight: 500;
+      border: none;
+      outline: none;
+      box-shadow: var(--shmd);
+      color: var(--g900)
+    }
+
+    .msbox::placeholder {
+      color: var(--g600)
+    }
+
+    .ms-icon {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--g600);
+      pointer-events: none
+    }
+
+    .mbtn {
+      background: rgba(255, 255, 255, 0.97);
+      border-radius: var(--rp);
+      padding: 9px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--g700);
+      box-shadow: var(--shsm);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap
+    }
+
+    .mbtn:hover {
+      box-shadow: var(--shmd);
+      color: var(--blue)
+    }
+
+    .mbtn svg {
+      width: 14px;
+      height: 14px
+    }
+
+    .map-strip {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(0deg, rgba(8, 76, 131, 0.92) 0%, rgba(8, 76, 131, 0.55) 65%, transparent 100%);
+      padding: 16px 14px 14px;
+      z-index: 12
+    }
+
+    .mss {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding-bottom: 2px
+    }
+
+    .mss::-webkit-scrollbar {
+      display: none
+    }
+
+    .mpill {
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: var(--rp);
+      padding: 9px 15px;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.18s;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      backdrop-filter: blur(6px)
+    }
+
+    .mpill:hover,
+    .mpill.active {
+      background: rgba(255, 255, 255, 0.96);
+      color: var(--blue-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2)
+    }
+
+    .pstar {
+      background: #22c55e;
+      color: #fff;
+      border-radius: var(--rp);
+      padding: 1px 6px;
+      font-size: 10px;
+      font-weight: 700
+    }
+
+    .pdist {
+      font-size: 11px;
+      opacity: 0.6
+    }
+
+    .mpill.active .pdist {
+      color: var(--g600);
+      opacity: 0.5
+    }
+
+    /* RIGHT PANEL */
+    .rp {
+      background: #fff;
+      border-left: 1px solid var(--g200);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden
+    }
+
+    .ptab {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden
+    }
+
+    .ptab.active {
+      display: flex
+    }
+
+    .phdr {
+      padding: 18px 22px 12px;
+      border-bottom: 1px solid var(--g100);
+      flex-shrink: 0
+    }
+
+    .phdr-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px
+    }
+
+    .ptitle {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--g900);
+      line-height: 1.2
+    }
+
+    .psub {
+      font-size: 12px;
+      color: var(--g600);
+      margin-top: 3px
+    }
+
+    .opill {
+      background: #dcfce7;
+      color: #15803d;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 11px;
+      border-radius: var(--rp);
+      white-space: nowrap;
+      margin-top: 2px;
+      flex-shrink: 0
+    }
+
+    .psearch {
+      padding: 10px 22px 8px;
+      flex-shrink: 0;
+      border-bottom: 1px solid var(--g100)
+    }
+
+    .pswrap {
+      position: relative
+    }
+
+    .pswrap input {
+      width: 100%;
+      border: 1px solid var(--g200);
+      border-radius: var(--rp);
+      padding: 8px 14px 8px 36px;
+      font-size: 13px;
+      outline: none;
+      color: var(--g900);
+      transition: border-color 0.2s;
+      background: var(--g50)
+    }
+
+    .pswrap input:focus {
+      border-color: var(--blue);
+      background: #fff
+    }
+
+    .pswrap svg {
+      position: absolute;
+      left: 11px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--g600);
+      pointer-events: none
+    }
+
+    /* WELCOME */
+    .welcome {
+      flex: 1;
+      overflow-y: auto;
+      padding: 18px 22px
+    }
+
+    .wh {
+      text-align: center;
+      padding: 8px 0 18px
+    }
+
+    .whe {
+      font-size: 44px;
+      margin-bottom: 10px
+    }
+
+    .wh h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      color: var(--g900);
+      margin-bottom: 6px
+    }
+
+    .wh p {
+      font-size: 13px;
+      color: var(--g600);
+      line-height: 1.6
+    }
+
+    .shoplist {
+      display: flex;
+      flex-direction: column;
+      gap: 10px
+    }
+
+    .scard {
+      background: var(--g50);
+      border: 1.5px solid var(--g200);
+      border-radius: var(--rc);
+      padding: 13px 15px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .scard:hover {
+      border-color: var(--blue);
+      box-shadow: var(--shsm);
+      transform: translateY(-1px)
+    }
+
+    .scard.active {
+      border-color: var(--blue);
+      background: #EFF6FF
+    }
+
+    .sc-em {
+      font-size: 24px;
+      flex-shrink: 0;
+      width: 42px;
+      height: 42px;
+      background: #fff;
+      border-radius: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shsm)
+    }
+
+    .sc-body {
+      flex: 1;
+      min-width: 0
+    }
+
+    .sc-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--g900)
+    }
+
+    .sc-meta {
+      font-size: 12px;
+      color: var(--g600);
+      margin-top: 1px
+    }
+
+    .sc-tags {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 5px;
+      flex-wrap: wrap
+    }
+
+    .stag {
+      font-size: 10px;
+      font-weight: 700;
+      background: #DBEAFE;
+      color: var(--blue);
+      border-radius: var(--rp);
+      padding: 2px 8px
+    }
+
+    .srat {
+      background: #15803d;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 6px;
+      padding: 2px 7px
+    }
+
+    .sopen {
+      background: #dcfce7;
+      color: #15803d;
+      font-size: 10px;
+      font-weight: 600;
+      border-radius: var(--rp);
+      padding: 2px 8px
+    }
+
+    .sclosed {
+      background: #FEE2E2;
+      color: #dc2626;
+      font-size: 10px;
+      font-weight: 600;
+      border-radius: var(--rp);
+      padding: 2px 8px
+    }
+
+    /* CATALOG */
+    .catalog {
+      flex: 1;
+      overflow-y: auto
+    }
+
+    .cat-hero {
+      background: linear-gradient(135deg, var(--blue-dark), #1565C0);
+      padding: 16px 22px;
+      color: #fff;
+      flex-shrink: 0
+    }
+
+    .ch-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      font-weight: 800
+    }
+
+    .ch-desc {
+      font-size: 12px;
+      opacity: 0.75;
+      margin-top: 2px
+    }
+
+    .ch-stats {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap
+    }
+
+    .chst {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-size: 11px;
+      font-weight: 600
+    }
+
+    .csec {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--g900);
+      padding: 11px 22px 7px;
+      background: var(--g50);
+      border-bottom: 1px solid var(--g100);
+      border-top: 1px solid var(--g100);
+      position: sticky;
+      top: 0;
+      z-index: 5
+    }
+
+    .citem {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 22px;
+      border-bottom: 1px solid var(--g50);
+      transition: background 0.15s
+    }
+
+    .citem:hover {
+      background: var(--g50)
+    }
+
+    .cimg {
+      width: 50px;
+      height: 50px;
+      border-radius: 11px;
+      background: var(--g100);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0
+    }
+
+    .cbody {
+      flex: 1;
+      min-width: 0
+    }
+
+    .cname {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--g900);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap
+    }
+
+    .ctag {
+      font-size: 10px;
+      background: #FFF7ED;
+      color: var(--orange);
+      border-radius: var(--rp);
+      padding: 2px 7px;
+      font-weight: 600
+    }
+
+    .cdesc {
+      font-size: 12px;
+      color: var(--g600);
+      margin-top: 2px
+    }
+
+    .cprice {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--g900);
+      margin-top: 3px
+    }
+
+    .cprice span {
+      font-size: 11px;
+      color: var(--g600);
+      font-weight: 400
+    }
+
+    .cstatus {
+      font-size: 11px;
+      color: var(--orange);
+      font-weight: 600;
+      margin-top: 1px
+    }
+
+    .add-btn {
+      background: #fff;
+      border: 2px solid var(--blue);
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 10px;
+      padding: 7px 16px;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+      flex-shrink: 0;
+      white-space: nowrap
+    }
+
+    .add-btn:hover {
+      background: var(--blue);
+      color: #fff
+    }
+
+    .add-btn:active {
+      transform: scale(0.95)
+    }
+
+    .qctrl {
+      display: flex;
+      align-items: center;
+      border: 2px solid var(--blue);
+      border-radius: 10px;
+      overflow: hidden;
+      flex-shrink: 0
+    }
+
+    .qbtn {
+      background: none;
+      border: none;
+      color: var(--blue);
+      font-size: 18px;
+      font-weight: 700;
+      padding: 4px 10px;
+      cursor: pointer;
+      line-height: 1;
+      font-family: inherit
+    }
+
+    .qbtn:hover {
+      background: var(--g50)
+    }
+
+    .qnum {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--blue);
+      min-width: 22px;
+      text-align: center
+    }
+
+    /* PRICE TAB */
+    .plist {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px
+    }
+
+    .pcard {
+      background: var(--g50);
+      border: 1.5px solid var(--g200);
+      border-radius: var(--rc);
+      padding: 15px;
+      transition: box-shadow 0.2s
+    }
+
+    .pcard:hover {
+      box-shadow: var(--shsm)
+    }
+
+    .pcard.best {
+      border-color: var(--teal);
+      background: #F0FDFA
+    }
+
+    .pctop {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px
+    }
+
+    .pcshop {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--g900)
+    }
+
+    .vbadge {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--teal);
+      background: #CCFBF1;
+      border-radius: var(--rp);
+      padding: 3px 9px
+    }
+
+    .prow {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      margin-bottom: 8px
+    }
+
+    .pamt {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--g900)
+    }
+
+    .pper {
+      font-size: 12px;
+      color: var(--g600)
+    }
+
+    .plabels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: var(--g600);
+      margin-bottom: 3px
+    }
+
+    .pbar {
+      height: 6px;
+      background: var(--g200);
+      border-radius: 3px;
+      overflow: hidden
+    }
+
+    .pfill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.6s ease
+    }
+
+    .sstrip {
+      margin: 0 22px 12px;
+      background: linear-gradient(135deg, #FFF7ED, #FFEDD5);
+      border: 1.5px solid #FED7AA;
+      border-radius: var(--rc);
+      padding: 13px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0
+    }
+
+    .ssl {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--g900)
+    }
+
+    .ssh {
+      font-size: 11px;
+      color: var(--g600)
+    }
+
+    .ssa {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--orange)
+    }
+
+    .cmpsec {
+      padding: 0 22px 18px;
+      flex-shrink: 0
+    }
+
+    .cmpl {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--g600);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 10px
+    }
+
+    .crow {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap
+    }
+
+    .chip {
+      background: var(--g50);
+      border: 1.5px solid var(--g200);
+      border-radius: var(--rp);
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--g700);
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit
+    }
+
+    .chip:hover,
+    .chip.ach {
+      border-color: var(--blue);
+      color: var(--blue);
+      background: #EFF6FF
+    }
+
+    .chip:active {
+      transform: scale(0.95)
+    }
+
+    /* CHAT */
+    .chdr {
+      padding: 14px 22px;
+      border-bottom: 1px solid var(--g100);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+      background: var(--g50)
+    }
+
+    .bav {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, var(--blue), var(--blue-light));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 21px;
+      flex-shrink: 0
+    }
+
+    .bn {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--g900)
+    }
+
+    .bst {
+      font-size: 11px;
+      color: #16a34a;
+      font-weight: 500
+    }
+
+    .cmsgs {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px
+    }
+
+    .bubble {
+      max-width: 82%;
+      padding: 10px 14px;
+      font-size: 13px;
+      line-height: 1.55;
+      border-radius: 18px
+    }
+
+    .bubble.bot {
+      background: var(--g50);
+      border: 1px solid var(--g100);
+      border-radius: 4px 18px 18px 18px;
+      color: var(--g900);
+      align-self: flex-start
+    }
+
+    .bubble.user {
+      background: linear-gradient(135deg, var(--blue), var(--blue-light));
+      color: #fff;
+      border-radius: 18px 4px 18px 18px;
+      align-self: flex-end;
+      font-weight: 500
+    }
+
+    .typing {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      padding: 8px 22px
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      background: var(--g300);
+      border-radius: 50%;
+      animation: bounce 1s infinite
+    }
+
+    .dot:nth-child(2) {
+      animation-delay: .2s
+    }
+
+    .dot:nth-child(3) {
+      animation-delay: .4s
+    }
+
+    @keyframes bounce {
+
+      0%,
+      60%,
+      100% {
+        transform: translateY(0)
+      }
+
+      30% {
+        transform: translateY(-7px)
+      }
+    }
+
+    .cchips {
+      padding: 8px 22px 10px;
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+      border-top: 1px solid var(--g100);
+      flex-shrink: 0
+    }
+
+    .cinrow {
+      padding: 11px 22px;
+      border-top: 1px solid var(--g100);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-shrink: 0;
+      background: #fff
+    }
+
+    .cin {
+      flex: 1;
+      border: 1.5px solid var(--g200);
+      border-radius: var(--rp);
+      padding: 9px 15px;
+      font-size: 13px;
+      outline: none;
+      color: var(--g900);
+      transition: border-color 0.2s
+    }
+
+    .cin:focus {
+      border-color: var(--blue)
+    }
+
+    .sbtn {
+      background: linear-gradient(135deg, var(--blue), var(--blue-light));
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.15s;
+      box-shadow: 0 4px 12px rgba(10, 110, 189, 0.35)
+    }
+
+    .sbtn:hover {
+      transform: scale(1.07)
+    }
+
+    .sbtn:active {
+      transform: scale(0.95)
+    }
+
+    /* CART */
+    .clist {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px
+    }
+
+    .cempty {
+      flex: 1;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 22px;
+      text-align: center
+    }
+
+    .cempty.vis {
+      display: flex
+    }
+
+    .cei {
+      font-size: 52px;
+      margin-bottom: 14px
+    }
+
+    .cet {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--g900);
+      margin-bottom: 5px
+    }
+
+    .ces {
+      font-size: 13px;
+      color: var(--g600)
+    }
+
+    .cicard {
+      background: var(--g50);
+      border: 1.5px solid var(--g200);
+      border-radius: 16px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .cie {
+      font-size: 28px;
+      flex-shrink: 0
+    }
+
+    .cin2 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--g900)
+    }
+
+    .cish {
+      font-size: 11px;
+      color: var(--g600);
+      margin-top: 1px
+    }
+
+    .cip {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--blue);
+      margin-top: 3px
+    }
+
+    .ciq {
+      background: var(--blue);
+      color: #fff;
+      border-radius: var(--rp);
+      padding: 3px 11px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-left: auto;
+      flex-shrink: 0
+    }
+
+    .cfoot {
+      padding: 14px 22px;
+      border-top: 1px solid var(--g200);
+      flex-shrink: 0;
+      background: var(--g50)
+    }
+
+    .cfr {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--g600);
+      padding: 3px 0
+    }
+
+    .cfr.tot {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--g900);
+      margin-top: 8px;
+      padding-top: 10px;
+      border-top: 1px solid var(--g200)
+    }
+
+    .fdel {
+      color: #15803d;
+      font-weight: 600
+    }
+
+    .chkbtn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--blue-dark), var(--blue));
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: inherit;
+      padding: 13px;
+      border-radius: var(--rc);
+      margin-top: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: var(--shmd)
+    }
+
+    .chkbtn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shlg)
+    }
+
+    /* MOBILE NAV */
+    .mobnav {
+      display: none
+    }
+
+    /* RESPONSIVE */
+    @media(max-width:1100px) {
+      :root {
+        --sw: 200px;
+        --pw: 320px
+      }
+    }
+
+    @media(max-width:900px) {
+      :root {
+        --sw: 60px;
+        --pw: 290px
+      }
+
+      .brand,
+      .brand-sub,
+      .ni span,
+      .ni .nb,
+      .sb-sec,
+      .sb-loc,
+      .sb-search,
+      .sb-filters,
+      .cwi,
+      .cw svg:last-child {
+        display: none
+      }
+
+      .sb-logo {
+        padding: 18px 10px;
+        justify-content: center
+      }
+
+      .sb-nav {
+        padding: 0 8px;
+        gap: 4px
+      }
+
+      .ni {
+        justify-content: center;
+        padding: 11px
+      }
+
+      .cw {
+        padding: 12px;
+        justify-content: center;
+        margin: 8px;
+        width: calc(100% - 16px)
+      }
+
+      .cw-b {
+        top: -5px;
+        right: -5px
+      }
+    }
+
+    @media(max-width:680px) {
+
+      html,
+      body {
+        height: auto;
+        overflow: auto
+      }
+
+      #skelView {
+        flex-direction: column
+      }
+
+      .sk-side,
+      .sk-panel {
+        display: none
+      }
+
+      .sk-map {
+        flex: 1;
+        min-height: 50vh
+      }
+
+      #mainView {
+        height: auto
+      }
+
+      .app {
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh
+      }
+
+      .sidebar {
+        display: none
+      }
+
+      .map-area {
+        height: 52vh;
+        flex-shrink: 0
+      }
+
+      .rp {
+        height: auto;
+        border-left: none;
+        border-top: 2px solid var(--g200);
+        overflow: visible
+      }
+
+      .ptab {
+        height: auto;
+        overflow: visible
+      }
+
+      .catalog,
+      .cmsgs,
+      .plist,
+      .clist {
+        overflow: visible;
+        max-height: none
+      }
+
+      .mobnav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: blur(10px);
+        border-top: 1px solid var(--g200);
+        z-index: 100;
+        padding-bottom: env(safe-area-inset-bottom, 0)
+      }
+
+      .mbn {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        padding: 10px 4px 8px;
+        color: var(--g600);
+        font-size: 10px;
+        font-weight: 600;
+        transition: color 0.2s;
+        border: none;
+        background: none;
+        cursor: pointer;
+        font-family: inherit
+      }
+
+      .mbn svg {
+        width: 20px;
+        height: 20px
+      }
+
+      .mbn.active {
+        color: var(--blue)
+      }
+
+      .mbn.active svg {
+        stroke: var(--blue)
+      }
+
+      .rp {
+        padding-bottom: 70px
+      }
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <!-- SKELETON -->
+  <div id="skelView">
+    <div class="sk-side">
+      <div class="sk-logo"></div>
+      <div class="sk-nav"></div>
+      <div class="sk-nav"></div>
+      <div class="sk-nav"></div>
+      <div class="sk-nav"></div>
+    </div>
+    <div class="sk-map"></div>
+    <div class="sk-panel">
+      <div class="sk sk" style="height:26px;width:55%;border-radius:6px"></div>
+      <div class="sk sk" style="height:110px;border-radius:16px"></div>
+      <div class="sk sk" style="height:110px;border-radius:16px"></div>
+      <div class="sk sk" style="height:110px;border-radius:16px"></div>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="mainView">
+    <div class="app">
+
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="sb-logo">
+          <div class="sb-logo-icon">🐟</div>
+          <div><span class="brand">Arowana</span><span class="brand-sub">Direct</span></div>
+        </div>
+        <div class="sb-search">
+          <svg class="sb-si" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input type="text" placeholder="Search fish, shops…" oninput="sidebarSearch(this.value)" />
+        </div>
+        <div class="sb-sec">Navigate</div>
+        <nav class="sb-nav">
+          <button class="ni active" id="nav-map" onclick="switchTab('map')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" />
+              <line x1="8" y1="2" x2="8" y2="18" />
+              <line x1="16" y1="6" x2="16" y2="22" />
+            </svg>
+            <span>Explore Map</span>
+          </button>
+          <button class="ni" id="nav-price" onclick="switchTab('price')">
+            <i class="fa-solid fa-indian-rupee-sign" style="color: rgb(207, 222, 218);"></i>
+            <span>Price Compare</span>
+          </button>
+          <button class="ni" id="nav-chat" onclick="switchTab('chat')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+            <span>AI FishBot</span>
+          </button>
+          <button class="ni" id="nav-cart" onclick="switchTab('cart')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <circle cx="9" cy="21" r="1" />
+              <circle cx="20" cy="21" r="1" />
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+            </svg>
+            <span>My Cart</span>
+            <span class="nb" id="navBadge" style="display:none">0</span>
+          </button>
+        </nav>
+        <div class="sb-sec">Filter</div>
+        <div class="sb-filters">
+          <button class="fchip active" onclick="setFilter('all',this)">All</button>
+          <button class="fchip" onclick="setFilter('fish',this)"><i class="fa-solid fa-fish" style="color: rgb(116, 192, 252);"></i> Fish</button>
+          <button class="fchip" onclick="setFilter('shellfish',this)"><i class="fa-solid fa-shrimp" style="color: rgb(239, 9, 9);"></i> Shellfish</button>
+          <button class="fchip" onclick="setFilter('premium',this)"><i class="fa-solid fa-star" style="color: rgb(255, 212, 59);"></i> Premium</button>
+        </div>
+        <div class="sb-loc">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="10" r="3" />
+            <path d="M12 2a8 8 0 0 0-8 8c0 5.5 8 14 8 14s8-8.5 8-14a8 8 0 0 0-8-8z" />
+          </svg>
+          <div>
+            <div class="ll">Delivering to</div>
+            <div class="lc">Koramangala, Bengaluru</div>
+          </div>
+        </div>
+        <button class="cw" onclick="switchTab('cart')">
+          <div class="cw-ic">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1c1c2e" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="9" cy="21" r="1" />
+              <circle cx="20" cy="21" r="1" />
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+            </svg>
+            <span class="cw-b" id="cartCount">0</span>
+          </div>
+          <div class="cwi">
+            <div class="cwl">Your Cart</div>
+            <div class="cwt" id="cartTotal">₹0.00</div>
+          </div>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#475569" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
+      </aside>
+
+      <!-- MAP -->
+      <main class="map-area">
+        <div class="map-topbar">
+          <div class="mswrap">
+            <svg class="ms-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input class="msbox" placeholder="Search area or landmark…" oninput="mapSearch(this.value)" />
+          </div>
+          <button class="mbtn" onclick="toggleMapMode()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3" />
+              <path
+                d="M12 1v3M12 20v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M1 12h3M20 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" />
+            </svg>
+            <span id="mapModeBtn">Satellite</span>
+          </button>
+          <button class="mbtn" onclick="centerMap()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <circle cx="12" cy="10" r="3" />
+              <path d="M12 2a8 8 0 0 0-8 8c0 5.5 8 14 8 14s8-8.5 8-14a8 8 0 0 0-8-8z" />
+            </svg>
+            My Location
+          </button>
+        </div>
+        <canvas id="mapCanvas"></canvas>
+        <div class="map-strip">
+          <div class="mss" id="storeStrip"></div>
+        </div>
+      </main>
+
+      <!-- RIGHT PANEL -->
+      <aside class="rp">
+
+        <!-- MAP TAB -->
+        <div class="ptab active" id="tab-map">
+          <div class="phdr">
+            <div class="phdr-row">
+              <div>
+                <div class="ptitle" id="panelTitle">Shops Near You</div>
+                <div class="psub" id="panelSub">6 fresh fish markets · Koramangala</div>
+              </div>
+              <span class="opill" id="panelBadge" style="display:none">Open Now</span>
+            </div>
+          </div>
+          <div class="psearch" id="panelSearchBar" style="display:none">
+            <div class="pswrap">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+              <input type="text" placeholder="Search fish in this shop…" oninput="filterShopItems(this.value)" />
+            </div>
+          </div>
+          <div class="welcome" id="welcomeView">
+            <div class="wh">
+              <div class="whe"><i class="fa-solid fa-map" style="color: rgb(99, 230, 190);"></i></div>
+              <h3>6 Fresh Markets Near You</h3>
+              <p>Click any pin on the map or a shop card below to browse fresh catch and add to cart</p>
+            </div>
+            <div class="shoplist" id="shopList"></div>
+          </div>
+          <div class="catalog" id="catalogView" style="display:none">
+            <div class="cat-hero" id="catHero"></div>
+            <div id="catContent"></div>
+          </div>
+        </div>
+
+        <!-- PRICE TAB -->
+        <div class="ptab" id="tab-price">
+          <div class="phdr">
+            <div>
+              <div class="ptitle">Price Intelligence</div>
+              <div class="psub" id="priceSubTitle">Pomfret · Updated 20 min ago</div>
+            </div>
+          </div>
+          <div class="plist" id="priceCards"></div>
+          <div class="sstrip">
+            <div>
+              <div class="ssl">Potential Savings</div>
+              <div class="ssh">vs. most expensive shop</div>
+            </div>
+            <div class="ssa" id="savingsAmount">₹0</div>
+          </div>
+          <div class="cmpsec">
+            <div class="cmpl">Compare another fish</div>
+            <div class="crow" id="priceChips"></div>
+          </div>
+        </div>
+
+        <!-- CHAT TAB -->
+        <div class="ptab" id="tab-chat">
+          <div class="chdr">
+            <div class="bav">🐟</div>
+            <div>
+              <div class="bn">FishBot AI</div>
+              <div class="bst">● Online · Powered by Claude</div>
+            </div>
+          </div>
+          <div class="cmsgs" id="chatMessages"></div>
+          <div id="typingArea"></div>
+          <div class="cchips">
+            <button class="chip" onclick="sendChip('🐟 Compare Pomfret prices')">🐟 Pomfret</button>
+            <button class="chip" onclick="sendChip('🚚 Check delivery time')">🚚 Delivery</button>
+            <button class="chip" onclick="sendChip('⭐ Best rated shop?')">⭐ Best rated</button>
+            <button class="chip" onclick="sendChip('🔥 Whats fresh today?')">🔥 Fresh today</button>
+            <button class="chip" onclick="sendChip('🦐 Cheapest prawns?')">🦐 Prawns</button>
+            <button class="chip" onclick="sendChip('🦞 Lobster available?')">🦞 Lobster</button>
+          </div>
+          <div class="cinrow">
+            <input class="cin" id="chatInput" placeholder="Ask about fish, prices, shops…"
+              onkeydown="if(event.key==='Enter')sendMsg()" />
+            <button class="sbtn" onclick="sendMsg()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13" />
+                <polygon points="22 2 15 22 11 13 2 9 22 2" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- CART TAB -->
+        <div class="ptab" id="tab-cart">
+          <div class="phdr">
+            <div>
+              <div class="ptitle">Your Cart</div>
+              <div class="psub" id="cartShopLabel">No items yet</div>
+            </div>
+          </div>
+          <div class="clist" id="cartItems"></div>
+          <div class="cempty vis" id="cartEmpty">
+            <div class="cei">🛒</div>
+            <div class="cet">Your cart is empty</div>
+            <div class="ces">Browse the map and add fresh catch</div>
+          </div>
+          <div class="cfoot" id="cartFooter" style="display:none">
+            <div class="cfr"><span>Subtotal</span><span id="cartSub">₹0</span></div>
+            <div class="cfr"><span>Delivery</span><span class="fdel">FREE</span></div>
+            <div class="cfr tot"><span>Total</span><span id="cartGrand">₹0</span></div>
+            <button class="chkbtn">Proceed to Checkout →</button>
+          </div>
+        </div>
+
+      </aside>
+    </div>
+  </div>
+
+  <!-- MOBILE NAV -->
+  <nav class="mobnav">
+    <button class="mbn active" id="mob-map" onclick="switchTab('map')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" />
+        <line x1="8" y1="2" x2="8" y2="18" />
+        <line x1="16" y1="6" x2="16" y2="22" />
+      </svg>
+      <span>Map</span>
+    </button>
+    <button class="mbn" id="mob-price" onclick="switchTab('price')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <line x1="12" y1="1" x2="12" y2="23" />
+        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+      </svg>
+      <span>Prices</span>
+    </button>
+    <button class="mbn" id="mob-chat" onclick="switchTab('chat')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+      </svg>
+      <span>AI Chat</span>
+    </button>
+    <button class="mbn" id="mob-cart" onclick="switchTab('cart')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round">
+        <circle cx="9" cy="21" r="1" />
+        <circle cx="20" cy="21" r="1" />
+        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+      </svg>
+      <span>Cart (<span id="mobCount">0</span>)</span>
+    </button>
+  </nav>
+
+  <script>
+    // DATA
+    const shops = [
+      { id: 0, name: "Coastal Fresh Fish Co.", short: "Coastal Fresh", dist: "0.3 km", rating: "4.5", tag: "Closest", emoji: "🐟", desc: "5th Block, Koramangala", full: "Koramangala Market, 5th Block · Est. 1998", open: true, mapX: 0.28, mapY: 0.36, spec: "Best Pomfret in Koramangala" },
+      { id: 1, name: "Neptune's Catch", short: "Neptune's", dist: "0.7 km", rating: "4.3", tag: "Highly Rated", emoji: "🦐", desc: "BTM Layout, 2nd Stage", full: "BTM Layout, 2nd Stage · Est. 2005", open: true, mapX: 0.63, mapY: 0.24, spec: "Fresh Kingfish arrivals daily" },
+      { id: 2, name: "Harbourside Seafoods", short: "Harbourside", dist: "1.1 km", rating: "4.1", tag: "Budget Pick", emoji: "🐡", desc: "Jayanagar 4th Block", full: "Jayanagar 4th Block · Est. 2010", open: true, mapX: 0.20, mapY: 0.63, spec: "Lowest prices guaranteed" },
+      { id: 3, name: "The Fish House", short: "Fish House", dist: "1.4 km", rating: "4.7", tag: "Premium", emoji: "🦞", desc: "HSR Layout, Sector 2", full: "HSR Layout, Sector 2 · Est. 2015", open: false, mapX: 0.71, mapY: 0.59, spec: "Premium & rare seafood" },
+      { id: 4, name: "Blue Waves Seafood", short: "Blue Waves", dist: "1.8 km", rating: "4.2", tag: "New", emoji: "🐠", desc: "Indiranagar 12th Main", full: "Indiranagar, 12th Main · Est. 2022", open: true, mapX: 0.83, mapY: 0.41, spec: "Freshwater + saltwater varieties" },
+      { id: 5, name: "Marina Market", short: "Marina", dist: "2.1 km", rating: "4.0", tag: "Largest", emoji: "🦀", desc: "Domlur, Old Airport Rd", full: "Domlur, Old Airport Rd · Est. 1990", open: true, mapX: 0.52, mapY: 0.73, spec: "Widest variety in Bangalore" }
+    ];
+    const menus = {
+      0: {
+        fish: [
+          { name: "Pomfret", price: 680, desc: "Fresh-caught · Cleaned & gutted · 500g", tag: "Best Seller", status: "🔥 High Demand", emoji: "🐟", type: "fish" },
+          { name: "Kingfish", price: 520, desc: "Seer fish · Ideal for fry · 1 kg", tag: "Fresh Arrival", status: "⚡ Few Left", emoji: "🐠", type: "fish" },
+          { name: "Red Snapper", price: 420, desc: "Whole fish · Great for curry · 800g", tag: "", status: "", emoji: "🐡", type: "fish" },
+          { name: "Sardines", price: 180, desc: "Small batch · Fresh today · 500g", tag: "Value Pick", status: "", emoji: "🐟", type: "fish" },
+          { name: "Rohu", price: 260, desc: "River fish · Cleaned · 1 kg", tag: "", status: "", emoji: "🐠", type: "fish" },
+          { name: "Catla", price: 300, desc: "Large river fish · Curry cut · 1 kg", tag: "", status: "", emoji: "🐟", type: "fish" }
+        ], shellfish: [
+          { name: "Tiger Prawns", price: 440, desc: "Large, juicy · 500g pack · Shell-on", tag: "", status: "", emoji: "🦐", type: "shellfish" },
+          { name: "Lobster", price: 1200, desc: "Live weight · Market price", tag: "Premium", status: "🔥 High Demand", emoji: "🦞", type: "shellfish" },
+          { name: "Mussels", price: 220, desc: "Cleaned & debearded · 500g", tag: "Fresh", status: "", emoji: "🐚", type: "shellfish" }
+        ]
+      },
+      1: {
+        fish: [
+          { name: "Kingfish", price: 460, desc: "Morning arrival · Cleaned · 1 kg", tag: "Best Seller", status: "🔥 Hot Today", emoji: "🐠", type: "fish" },
+          { name: "Pomfret", price: 620, desc: "Medium sized · Gutted · 500g", tag: "", status: "", emoji: "🐟", type: "fish" },
+          { name: "Rohu", price: 240, desc: "River fish · Fresh stock · 1 kg", tag: "Value Pick", status: "", emoji: "🐡", type: "fish" },
+          { name: "Hilsa", price: 780, desc: "Seasonal special · Whole fish · 800g", tag: "Seasonal", status: "⚡ Limited", emoji: "🐟", type: "fish" },
+          { name: "Barramundi", price: 580, desc: "Sea bass · Thick fillets · 500g", tag: "Popular", status: "", emoji: "🐠", type: "fish" }
+        ], shellfish: [
+          { name: "Prawns (Medium)", price: 380, desc: "Shell-on · 500g pack", tag: "", status: "", emoji: "🦐", type: "shellfish" },
+          { name: "Crab", price: 650, desc: "Live · Approx 400g each", tag: "Premium", status: "⚡ Few Left", emoji: "🦀", type: "shellfish" },
+          { name: "Squid", price: 320, desc: "Cleaned rings · 500g", tag: "Fresh", status: "", emoji: "🦑", type: "shellfish" }
+        ]
+      },
+      2: {
+        fish: [
+          { name: "Sardines", price: 140, desc: "Budget pick · Fresh batch · 500g", tag: "Value Pick", status: "", emoji: "🐡", type: "fish" },
+          { name: "Mackerel", price: 220, desc: "Good for fry · 500g pack", tag: "", status: "", emoji: "🐟", type: "fish" },
+          { name: "Red Snapper", price: 380, desc: "Whole fish · Cleaned · 800g", tag: "Fresh", status: "⚡ Few Left", emoji: "🐠", type: "fish" },
+          { name: "Pomfret", price: 560, desc: "Small-medium · Cleaned · 500g", tag: "Best Value", status: "", emoji: "🐟", type: "fish" },
+          { name: "Tilapia", price: 160, desc: "Farm fresh · Cleaned · 1 kg", tag: "Budget", status: "", emoji: "🐠", type: "fish" }
+        ], shellfish: [
+          { name: "Small Prawns", price: 280, desc: "Peeled & deveined · 250g", tag: "Budget", status: "", emoji: "🦐", type: "shellfish" },
+          { name: "Clams", price: 180, desc: "Fresh · 500g", tag: "Local", status: "", emoji: "🐚", type: "shellfish" }
+        ]
+      },
+      3: {
+        fish: [
+          { name: "Pomfret", price: 820, desc: "Premium grade · Large · 600g", tag: "Premium", status: "🔥 Most Popular", emoji: "🐟", type: "fish" },
+          { name: "Halibut", price: 950, desc: "Rare catch · Fillets · 500g", tag: "Rare Catch", status: "⚡ Limited", emoji: "🐠", type: "fish" },
+          { name: "Kingfish", price: 640, desc: "Premium seer · Thick steaks · 1 kg", tag: "", status: "", emoji: "🐡", type: "fish" },
+          { name: "Salmon", price: 1400, desc: "Norwegian · Fillets · 500g", tag: "Premium", status: "", emoji: "🐟", type: "fish" },
+          { name: "Swordfish", price: 1100, desc: "Imported · Thick steaks · 500g", tag: "Import", status: "⚡ Limited", emoji: "🐠", type: "fish" }
+        ], shellfish: [
+          { name: "Lobster", price: 1400, desc: "Live · Premium size · 600g+", tag: "Premium", status: "🔥 High Demand", emoji: "🦞", type: "shellfish" },
+          { name: "Tiger Prawns", price: 520, desc: "Jumbo · 500g · Shell-on", tag: "Jumbo", status: "", emoji: "🦐", type: "shellfish" },
+          { name: "Scallops", price: 800, desc: "Freshly shucked · 12 pcs", tag: "Rare", status: "⚡ Limited", emoji: "🐚", type: "shellfish" },
+          { name: "Oysters", price: 680, desc: "Fresh · Half shell · 6 pcs", tag: "Premium", status: "", emoji: "🦪", type: "shellfish" }
+        ]
+      },
+      4: {
+        fish: [
+          { name: "Basa", price: 280, desc: "Boneless fillets · 500g", tag: "Popular", status: "", emoji: "🐠", type: "fish" },
+          { name: "Catfish", price: 240, desc: "Fresh · Cleaned · 1 kg", tag: "", status: "", emoji: "🐟", type: "fish" },
+          { name: "Red Snapper", price: 400, desc: "Saltwater · Large · 800g", tag: "Fresh", status: "", emoji: "🐡", type: "fish" },
+          { name: "Pompano", price: 560, desc: "Rare find · Whole · 700g", tag: "Rare", status: "⚡ Few Left", emoji: "🐠", type: "fish" }
+        ], shellfish: [
+          { name: "Freshwater Prawns", price: 360, desc: "Local farm · 500g · Shell-on", tag: "Local", status: "", emoji: "🦐", type: "shellfish" },
+          { name: "River Snails", price: 150, desc: "River snails · 500g", tag: "Unique", status: "", emoji: "🐌", type: "shellfish" }
+        ]
+      },
+      5: {
+        fish: [
+          { name: "Pomfret", price: 600, desc: "Whole fish · Various sizes · 500g", tag: "", status: "", emoji: "🐟", type: "fish" },
+          { name: "Kingfish", price: 500, desc: "Seer fish · Steaks · 1 kg", tag: "", status: "", emoji: "🐠", type: "fish" },
+          { name: "Rohu", price: 220, desc: "River fish · Curry cut · 1 kg", tag: "Value", status: "", emoji: "🐡", type: "fish" },
+          { name: "Sardines", price: 160, desc: "Fresh batch · 500g", tag: "", status: "", emoji: "🐟", type: "fish" },
+          { name: "Mackerel", price: 200, desc: "Good stock today · 500g", tag: "", status: "", emoji: "🐠", type: "fish" },
+          { name: "Tilapia", price: 180, desc: "Farm fresh · Cleaned · 1 kg", tag: "Budget", status: "", emoji: "🐡", type: "fish" }
+        ], shellfish: [
+          { name: "Prawns (Large)", price: 420, desc: "Shell-on · 500g", tag: "Popular", status: "", emoji: "🦐", type: "shellfish" },
+          { name: "Sea Crab", price: 600, desc: "Live · 500g", tag: "", status: "", emoji: "🦀", type: "shellfish" },
+          { name: "Squid", price: 300, desc: "Whole · 500g", tag: "", status: "", emoji: "🦑", type: "shellfish" },
+          { name: "Mussels", price: 200, desc: "Cleaned · 500g", tag: "", status: "", emoji: "🐚", type: "shellfish" }
+        ]
+      }
+    };
+    const prices = {
+      Pomfret: [{ s: "Coastal Fresh", p: 680 }, { s: "Neptune's", p: 620 }, { s: "Harbourside", p: 560, best: true }, { s: "Fish House", p: 820 }, { s: "Marina", p: 600 }],
+      Kingfish: [{ s: "Coastal Fresh", p: 520 }, { s: "Neptune's", p: 460, best: true }, { s: "Harbourside", p: 580 }, { s: "Fish House", p: 640 }, { s: "Marina", p: 500 }],
+      Sardines: [{ s: "Coastal Fresh", p: 180 }, { s: "Neptune's", p: 200 }, { s: "Harbourside", p: 140, best: true }, { s: "Fish House", p: 195 }, { s: "Marina", p: 160 }],
+      Prawns: [{ s: "Coastal Fresh", p: 440 }, { s: "Neptune's", p: 380, best: true }, { s: "Harbourside", p: 280 }, { s: "Fish House", p: 520 }, { s: "Marina", p: 420 }],
+      Lobster: [{ s: "Coastal Fresh", p: 1200 }, { s: "Fish House", p: 1400 }],
+      Rohu: [{ s: "Coastal Fresh", p: 260 }, { s: "Neptune's", p: 240, best: true }, { s: "Marina", p: 220 }]
+    };
+    const bots = {
+      'pomfret': ["Pomfret today: Harbourside cheapest at ₹560/kg, Neptune's ₹620, Fish House most expensive at ₹820. That's ₹260 savings! Check Price Compare tab for the chart. 💰"],
+      'delivery': ["Delivery to Koramangala: Coastal Fresh (0.3km) ~25 min 🏃, Neptune's (0.7km) ~35 min, Harbourside (1.1km) ~45 min. Free delivery on orders above ₹500!"],
+      'best rated': ["Fish House tops at ⭐ 4.7 — premium & rare seafood. Coastal Fresh 4.5 with great value. Neptune's 4.3 has the best Kingfish. Note: Fish House is closed today!"],
+      'fresh': ["Today freshest: 🐠 Kingfish at Neptune's (morning arrival!), 🐟 Pomfret at Coastal Fresh (high demand!), 🦞 Lobster at Coastal Fresh, 🦐 Tiger Prawns at Coastal Fresh & Fish House."],
+      'prawn': ["Cheapest prawns: Harbourside ₹280/500g (small peeled). Neptune's ₹380 medium. Best value for curry: Neptune's medium prawns. 🦐"],
+      'lobster': ["Lobster: Coastal Fresh ₹1200/kg (live) and Fish House ₹1400/kg (premium). Fish House is closed today, go with Coastal Fresh! 🦞"],
+      'default': ["I can help you find fresh catch across 6 shops near you! Ask about specific fish prices, shop ratings, delivery times, or what's fresh today. 🎣"]
+    };
+
+    // STATE
+    const S = {
+      cart: {}, total: 0, shop: null, tab: 'map', filter: 'all', mapMode: 'street',
+      offset: { x: 0, y: 0 }, zoom: 1, dragging: false, ds: { x: 0, y: 0 }
+    };
+
+    // INIT
+    setTimeout(() => {
+      document.getElementById('skelView').style.display = 'none';
+      document.getElementById('mainView').style.display = 'block';
+      renderShops(); renderStrip(); initPriceChips(); updatePrice('Pomfret');
+      initChat(); updateCart(); initMap();
+    }, 1500);
+
+    // MAP
+    const MC = {
+      street: { bg: '#EAF0D0', road: '#FFFFFF', road2: '#F5F2EB', water: '#A8D8EA', park: '#C4DBA8', bld: '#D9D0C3', blds: '#C0B8A8' },
+      satellite: { bg: '#2C4820', road: 'rgba(255,255,255,0.75)', road2: 'rgba(255,255,255,0.4)', water: '#1A6B8A', park: '#386628', bld: 'rgba(255,255,255,0.12)', blds: 'rgba(255,255,255,0.25)' }
+    };
+    const ROADS = [
+      { x1: 0, y1: 0.34, x2: 1, y2: 0.37, w: 3, m: true }, { x1: 0, y1: 0.54, x2: 1, y2: 0.51, w: 3, m: true },
+      { x1: 0, y1: 0.71, x2: 1, y2: 0.73, w: 2.5, m: true }, { x1: 0, y1: 0.17, x2: 1, y2: 0.14, w: 1.8, m: false },
+      { x1: 0.41, y1: 0, x2: 0.39, y2: 1, w: 3, m: true }, { x1: 0.68, y1: 0, x2: 0.70, y2: 1, w: 2.5, m: true },
+      { x1: 0.16, y1: 0, x2: 0.14, y2: 1, w: 1.8, m: false }, { x1: 0.85, y1: 0, x2: 0.87, y2: 1, w: 1.5, m: false },
+      { x1: 0, y1: 0.43, x2: 0.41, y2: 0.51, w: 1.4, m: false }, { x1: 0.70, y1: 0.37, x2: 1, y2: 0.47, w: 1.4, m: false },
+      { x1: 0.41, y1: 0.51, x2: 0.68, y2: 0.57, w: 1.4, m: false }, { x1: 0.24, y1: 0.17, x2: 0.41, y2: 0.34, w: 1.2, m: false },
+      { x1: 0.70, y1: 0.14, x2: 0.68, y2: 0.37, w: 1.2, m: false }, { x1: 0.16, y1: 0.54, x2: 0.39, y2: 0.71, w: 1.2, m: false },
+      { x1: 0.70, y1: 0.57, x2: 0.84, y2: 0.71, w: 1.2, m: false }
+    ];
+    const PARKS = [{ x: 0.73, y: 0.16, w: 0.13, h: 0.11 }, { x: 0.04, y: 0.57, w: 0.09, h: 0.10 }, { x: 0.46, y: 0.03, w: 0.17, h: 0.09 }];
+    const WATER = [{ cx: 0.54, cy: 0.82, rx: 0.10, ry: 0.055 }];
+    const BLDS = [
+      { x: 0.05, y: 0.05, w: 0.08, h: 0.07 }, { x: 0.20, y: 0.04, w: 0.07, h: 0.08 }, { x: 0.30, y: 0.06, w: 0.09, h: 0.06 },
+      { x: 0.05, y: 0.41, w: 0.07, h: 0.08 }, { x: 0.05, y: 0.75, w: 0.08, h: 0.07 }, { x: 0.19, y: 0.76, w: 0.06, h: 0.07 },
+      { x: 0.47, y: 0.05, w: 0.08, h: 0.07 }, { x: 0.57, y: 0.04, w: 0.08, h: 0.07 }, { x: 0.44, y: 0.58, w: 0.07, h: 0.07 },
+      { x: 0.50, y: 0.60, w: 0.11, h: 0.07 }, { x: 0.44, y: 0.76, w: 0.08, h: 0.08 }, { x: 0.55, y: 0.77, w: 0.09, h: 0.07 },
+      { x: 0.75, y: 0.49, w: 0.07, h: 0.07 }, { x: 0.84, y: 0.50, w: 0.08, h: 0.07 }, { x: 0.85, y: 0.05, w: 0.08, h: 0.07 },
+      { x: 0.75, y: 0.62, w: 0.07, h: 0.07 }, { x: 0.85, y: 0.62, w: 0.07, h: 0.07 }, { x: 0.29, y: 0.39, w: 0.07, h: 0.06 },
+      { x: 0.19, y: 0.38, w: 0.06, h: 0.06 }, { x: 0.56, y: 0.39, w: 0.07, h: 0.07 }, { x: 0.07, y: 0.21, w: 0.06, h: 0.07 },
+      { x: 0.90, y: 0.22, w: 0.07, h: 0.06 }, { x: 0.90, y: 0.75, w: 0.07, h: 0.08 }, { x: 0.03, y: 0.24, w: 0.08, h: 0.11 }
+    ];
+    const LABELS = [
+      { t: 'Koramangala Main Rd', wx: 0.5, wy: 0.37 }, { t: '80 Feet Road', wx: 0.5, wy: 0.51 },
+      { t: 'BTM Layout Rd', wx: 0.25, wy: 0.64 }, { t: 'Sarjapur Rd', wx: 0.71, wy: 0.28 }, { t: 'HAL Airport Rd', wx: 0.82, wy: 0.43 }
+    ];
+
+    let cv, ctx, mW, mH, raf;
+    function initMap() {
+      cv = document.getElementById('mapCanvas'); ctx = cv.getContext('2d');
+      resize(); window.addEventListener('resize', resize);
+      cv.addEventListener('mousedown', e => { S.ds = { x: e.clientX - S.offset.x, y: e.clientY - S.offset.y }; S.dragging = false; cv.style.cursor = 'grabbing'; cv.addEventListener('mousemove', drag) });
+      cv.addEventListener('mouseup', e => { cv.removeEventListener('mousemove', drag); cv.style.cursor = 'grab' });
+      cv.addEventListener('mouseleave', e => { cv.removeEventListener('mousemove', drag); cv.style.cursor = 'grab' });
+      cv.addEventListener('click', e => { if (S.dragging) { S.dragging = false; return; } const r = cv.getBoundingClientRect(); hitPin(e.clientX - r.left, e.clientY - r.top); });
+      cv.addEventListener('wheel', e => { e.preventDefault(); const r = cv.getBoundingClientRect(); const mx = e.clientX - r.left, my = e.clientY - r.top; const d = e.deltaY > 0 ? 0.85 : 1.18; const nz = Math.max(0.35, Math.min(4, S.zoom * d)); const sc = nz / S.zoom; S.offset.x = mx + (S.offset.x - mx) * sc; S.offset.y = my + (S.offset.y - my) * sc; S.zoom = nz; }, { passive: false });
+      let ltd = null;
+      cv.addEventListener('touchstart', e => { if (e.touches.length === 1) S.ds = { x: e.touches[0].clientX - S.offset.x, y: e.touches[0].clientY - S.offset.y }; else if (e.touches.length === 2) ltd = dist2(e.touches); }, { passive: true });
+      cv.addEventListener('touchmove', e => { e.preventDefault(); if (e.touches.length === 1) { S.dragging = true; S.offset = { x: e.touches[0].clientX - S.ds.x, y: e.touches[0].clientY - S.ds.y }; } else if (e.touches.length === 2 && ltd) { const d = dist2(e.touches); const sc = d / ltd; const cx = (e.touches[0].clientX + e.touches[1].clientX) / 2; const cy = (e.touches[0].clientY + e.touches[1].clientY) / 2; const r = cv.getBoundingClientRect(); const mx = cx - r.left, my = cy - r.top; const nz = Math.max(0.35, Math.min(4, S.zoom * sc)); const s = nz / S.zoom; S.offset.x = mx + (S.offset.x - mx) * s; S.offset.y = my + (S.offset.y - my) * s; S.zoom = nz; ltd = d; } }, { passive: false });
+      cv.addEventListener('touchend', e => { ltd = null; if (!S.dragging && e.changedTouches.length === 1) { const r = cv.getBoundingClientRect(); hitPin(e.changedTouches[0].clientX - r.left, e.changedTouches[0].clientY - r.top); } S.dragging = false; }, { passive: true });
+      draw();
+    }
+    function dist2(t) { return Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY); }
+    function drag(e) { S.dragging = true; S.offset = { x: e.clientX - S.ds.x, y: e.clientY - S.ds.y }; }
+    function resize() { mW = cv.offsetWidth; mH = cv.offsetHeight; cv.width = mW * devicePixelRatio; cv.height = mH * devicePixelRatio; ctx.scale(devicePixelRatio, devicePixelRatio); }
+    function ws(wx, wy) { return { x: wx * mW * S.zoom + S.offset.x, y: wy * mH * S.zoom + S.offset.y }; }
+    function rr(x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.arcTo(x + w, y, x + w, y + r, r); ctx.lineTo(x + w, y + h - r); ctx.arcTo(x + w, y + h, x + w - r, y + h, r); ctx.lineTo(x + r, y + h); ctx.arcTo(x, y + h, x, y + h - r, r); ctx.lineTo(x, y + r); ctx.arcTo(x, y, x + r, y, r); ctx.closePath(); }
+    function draw() {
+      if (!cv) return;
+      const c = MC[S.mapMode], z = S.zoom, ox = S.offset.x, oy = S.offset.y, W = mW * z, H = mH * z;
+      ctx.clearRect(0, 0, mW, mH);
+      ctx.fillStyle = c.bg; ctx.fillRect(0, 0, mW, mH);
+      // Parks
+      PARKS.forEach(p => {
+        ctx.fillStyle = c.park; rr(p.x * W + ox, p.y * H + oy, p.w * W, p.h * H, 4 * z); ctx.fill();
+        if (S.mapMode === 'street') { ctx.fillStyle = 'rgba(70,130,50,0.35)'; for (let i = 0; i < 5; i++) { ctx.beginPath(); ctx.arc(p.x * W + ox + p.w * W * (0.15 + i * 0.15), p.y * H + oy + p.h * H * (0.4 + Math.sin(i) * 0.2), 3.5 * z, 0, Math.PI * 2); ctx.fill(); } ctx.fillStyle = c.park; }
+      });
+      // Water
+      WATER.forEach(w => {
+        ctx.fillStyle = c.water; ctx.beginPath(); ctx.ellipse(w.cx * W + ox, w.cy * H + oy, w.rx * W, w.ry * H, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = S.mapMode === 'satellite' ? 'rgba(255,255,255,0.12)' : 'rgba(80,170,220,0.35)'; ctx.lineWidth = 1 * z;
+        for (let i = 1; i <= 3; i++) { ctx.beginPath(); ctx.ellipse(w.cx * W + ox, w.cy * H + oy, w.rx * W * (0.35 + i * 0.2), w.ry * H * (0.35 + i * 0.2), 0, 0, Math.PI * 2); ctx.stroke(); }
+      });
+      // Roads
+      [false, true].forEach(m => {
+        ROADS.filter(r => r.m === m).forEach(r => {
+          const x1 = r.x1 * W + ox, y1 = r.y1 * H + oy, x2 = r.x2 * W + ox, y2 = r.y2 * H + oy;
+          ctx.strokeStyle = S.mapMode === 'satellite' ? 'rgba(0,0,0,0.3)' : '#C8C0A8'; ctx.lineWidth = (r.w + 1.5) * z; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+          ctx.strokeStyle = m ? c.road : c.road2; ctx.lineWidth = r.w * z; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+          if (m && z > 0.55) { ctx.strokeStyle = S.mapMode === 'satellite' ? 'rgba(255,255,255,0.18)' : 'rgba(190,185,165,0.7)'; ctx.lineWidth = 0.6 * z; ctx.setLineDash([10 * z, 9 * z]); ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.setLineDash([]); }
+        });
+      });
+      // Buildings
+      BLDS.forEach(b => {
+        const x = b.x * W + ox, y = b.y * H + oy, w = b.w * W, h = b.h * H;
+        ctx.fillStyle = 'rgba(0,0,0,0.07)'; rr(x + 2 * z, y + 2 * z, w, h, 2 * z); ctx.fill();
+        ctx.fillStyle = c.bld; rr(x, y, w, h, 2 * z); ctx.fill();
+        ctx.strokeStyle = c.blds; ctx.lineWidth = 0.5; ctx.stroke();
+      });
+      // Road labels
+      if (z >= 0.75 && S.mapMode === 'street') {
+        ctx.fillStyle = 'rgba(80,70,55,0.65)'; ctx.font = `600 ${8.5 * z}px Poppins,sans-serif`; ctx.textAlign = 'center';
+        LABELS.forEach(l => { const p = ws(l.wx, l.wy); ctx.fillText(l.t, p.x, p.y); });
+      }
+      // Water label
+      if (z >= 0.65) { const wp = ws(0.54, 0.82); ctx.fillStyle = S.mapMode === 'satellite' ? 'rgba(255,255,255,0.55)' : 'rgba(60,150,190,0.8)'; ctx.font = `500 ${8 * z}px Poppins,sans-serif`; ctx.textAlign = 'center'; ctx.fillText('Iblur Lake', wp.x, wp.y); }
+      // User pin + pulse
+      const up = ws(0.45, 0.45); const t = Date.now() / 1000;
+      [0, 0.4, 0.8].forEach(ph => { const p = ((t * 0.55 + ph) % 1); ctx.beginPath(); ctx.arc(up.x, up.y, (10 + p * 22) * z, 0, Math.PI * 2); ctx.fillStyle = `rgba(10,110,189,${(1 - p) * 0.16})`; ctx.fill(); });
+      ctx.beginPath(); ctx.arc(up.x, up.y, 9 * z, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill();
+      ctx.beginPath(); ctx.arc(up.x, up.y, 6.5 * z, 0, Math.PI * 2); ctx.fillStyle = '#0A6EBD'; ctx.fill();
+      ctx.fillStyle = '#0A6EBD'; ctx.font = `700 ${8 * z}px Poppins,sans-serif`; ctx.textAlign = 'center'; ctx.fillText('YOU', up.x, up.y - 14 * z);
+      // Shop pins
+      shops.forEach(sh => {
+        const pos = ws(sh.mapX, sh.mapY), active = S.shop === sh.id, pr = (active ? 16 : 13) * z;
+        ctx.beginPath(); ctx.arc(pos.x, pos.y, pr + 2, 0, Math.PI * 2); ctx.fillStyle = 'rgba(0,0,0,0.18)'; ctx.fill();
+        ctx.beginPath(); ctx.arc(pos.x, pos.y, pr, 0, Math.PI * 2); ctx.fillStyle = active ? '#084C83' : sh.open ? '#0A6EBD' : '#94a3b8'; ctx.fill();
+        ctx.strokeStyle = '#fff'; ctx.lineWidth = 2.5 * z; ctx.stroke();
+        ctx.font = `${pr * 1.1}px Arial`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(sh.emoji, pos.x, pos.y + 1); ctx.textBaseline = 'alphabetic';
+        if (z >= 0.5) {
+          ctx.font = `600 ${9 * z}px Poppins,sans-serif`; const tw = ctx.measureText(sh.short).width; const pw = tw + 10 * z, ph = 14 * z, lx = pos.x - pw / 2, ly = pos.y + pr + 4 * z;
+          ctx.fillStyle = 'rgba(255,255,255,0.95)'; rr(lx, ly, pw, ph, 4 * z); ctx.fill();
+          ctx.strokeStyle = 'rgba(0,0,0,0.07)'; ctx.lineWidth = 0.5; ctx.stroke();
+          ctx.fillStyle = active ? '#084C83' : '#0F172A'; ctx.textAlign = 'center'; ctx.fillText(sh.short, pos.x, ly + ph * 0.76);
+        }
+      });
+      cancelAnimationFrame(raf); raf = requestAnimationFrame(draw);
+    }
+    function hitPin(sx, sy) {
+      let hit = null, md = 999;
+      shops.forEach(sh => { const pos = ws(sh.mapX, sh.mapY); const d = Math.hypot(sx - pos.x, sy - pos.y); if (d < 26 * S.zoom && d < md) { md = d; hit = sh.id; } });
+      if (hit !== null) selectShop(hit);
+    }
+    function toggleMapMode() { S.mapMode = S.mapMode === 'street' ? 'satellite' : 'street'; document.getElementById('mapModeBtn').textContent = S.mapMode === 'street' ? 'Satellite' : 'Street'; }
+    function centerMap() { S.offset = { x: 0, y: 0 }; S.zoom = 1; }
+    function mapSearch(v) { }
+
+    // SHOPS
+    function renderShops() {
+      document.getElementById('shopList').innerHTML = shops.map(s => `
+    <div class="scard" id="sc${s.id}" onclick="selectShop(${s.id})">
+      <div class="sc-em">${s.emoji}</div>
+      <div class="sc-body">
+        <div class="sc-name">${s.name}</div>
+        <div class="sc-meta">${s.dist} · ${s.desc}</div>
+        <div class="sc-tags"><span class="stag">${s.tag}</span><span class="srat">★ ${s.rating}</span>${s.open ? '<span class="sopen">Open</span>' : '<span class="sclosed">Closed</span>'}</div>
+      </div>
+    </div>`).join('');
+    }
+    function renderStrip() {
+      document.getElementById('storeStrip').innerHTML = shops.map(s => `
+    <div class="mpill" id="pill${s.id}" onclick="selectShop(${s.id})">
+      ${s.emoji} ${s.short}<span class="pstar">★ ${s.rating}</span><span class="pdist">${s.dist}</span>
+    </div>`).join('');
+    }
+    function selectShop(id) {
+      S.shop = id; const sh = shops[id];
+      shops.forEach(s => {
+        const sc = document.getElementById('sc' + s.id); if (sc) sc.classList.toggle('active', s.id === id);
+        const p = document.getElementById('pill' + s.id); if (p) p.classList.toggle('active', s.id === id);
+      });
+      document.getElementById('panelTitle').textContent = sh.name;
+      document.getElementById('panelSub').textContent = sh.dist + ' away · ' + sh.desc;
+      document.getElementById('panelBadge').style.display = sh.open ? '' : 'none';
+      document.getElementById('panelSearchBar').style.display = 'block';
+      document.getElementById('welcomeView').style.display = 'none';
+      document.getElementById('catalogView').style.display = 'block';
+      document.getElementById('catHero').innerHTML = `<div class="ch-name">${sh.emoji} ${sh.name}</div><div class="ch-desc">${sh.full} · ${sh.spec}</div><div class="ch-stats"><div class="chst">★ ${sh.rating}</div><div class="chst">📍 ${sh.dist}</div><div class="chst">🕐 ~${Math.round(parseFloat(sh.dist) * 22 + 18)} min</div><div class="chst">${sh.open ? '🟢 Open' : '🔴 Closed'}</div></div>`;
+      renderCatalog(id, '');
+      if (S.tab !== 'map') switchTab('map');
+    }
+    function renderCatalog(id, ft) {
+      const m = menus[id] || menus[0], f = S.filter, fl = ft.toLowerCase();
+      function filt(items) { return items.filter(it => { const mt = f === 'all' || (f === 'fish' && it.type === 'fish') || (f === 'shellfish' && it.type === 'shellfish') || (f === 'premium' && it.price >= 500); const ms = !fl || it.name.toLowerCase().includes(fl) || it.desc.toLowerCase().includes(fl); return mt && ms; }); }
+      const fish = filt(m.fish), shell = filt(m.shellfish);
+      let h = '';
+      if (fish.length) { h += `<div class="csec">🐟 Today's Fresh Catch (${fish.length} items)</div>`; h += fish.map(i => catItem(i, id)).join(''); }
+      if (shell.length) { h += `<div class="csec">🦐 Shellfish & Prawns (${shell.length} items)</div>`; h += shell.map(i => catItem(i, id)).join(''); }
+      if (!fish.length && !shell.length) h = `<div style="padding:40px 22px;text-align:center;color:#475569;font-size:13px">No items match your filter</div>`;
+      document.getElementById('catContent').innerHTML = h;
+    }
+    function catItem(it, si) {
+      const k = si + '-' + it.name, ic = S.cart[k];
+      return `<div class="citem" id="ci${k.replace(/\W/g, '_')}">
+    <div class="cimg">${it.emoji}</div>
+    <div class="cbody">
+      <div class="cname">${it.name}${it.tag ? `<span class="ctag">${it.tag}</span>` : ''}</div>
+      <div class="cdesc">${it.desc}</div>
+      <div class="cprice">₹${it.price} <span>per kg</span></div>
+      ${it.status ? `<div class="cstatus">${it.status}</div>` : ''}
+    </div>
+    ${ic ? `<div class="qctrl"><button class="qbtn" onclick="rm('${k}',${it.price},${si})">−</button><span class="qnum">${ic.qty}</span><button class="qbtn" onclick="add('${k}','${it.name}',${it.price},${si},'${it.emoji}')">+</button></div>` : `<button class="add-btn" onclick="add('${k}','${it.name}',${it.price},${si},'${it.emoji}')">ADD</button>`}
+  </div>`;
+    }
+    function filterShopItems(v) { if (S.shop !== null) renderCatalog(S.shop, v); }
+    function sidebarSearch(v) { const l = v.toLowerCase(); document.querySelectorAll('.scard').forEach((el, i) => { el.style.display = !l || shops[i].name.toLowerCase().includes(l) || shops[i].desc.toLowerCase().includes(l) ? '' : 'none'; }); }
+    function setFilter(f, btn) { S.filter = f; document.querySelectorAll('.fchip').forEach(c => c.classList.remove('active')); btn.classList.add('active'); if (S.shop !== null) renderCatalog(S.shop, ''); }
+
+    // CART
+    function add(k, name, price, si, em) { if (!S.cart[k]) S.cart[k] = { name, price, qty: 0, shop: shops[si].name, em }; S.cart[k].qty++; S.total += price; updateCart(); refreshBtn(k, price, si); }
+    function rm(k, price, si) { if (!S.cart[k]) return; S.cart[k].qty--; S.total -= price; if (S.cart[k].qty <= 0) delete S.cart[k]; updateCart(); refreshBtn(k, price, si); }
+    function refreshBtn(k, price, si) {
+      const el = document.getElementById('ci' + k.replace(/\W/g, '_')); if (!el) return;
+      const m = menus[si]; const it = [...m.fish, ...m.shellfish].find(i => si + '-' + i.name === k); if (!it) return;
+      const ic = S.cart[k];
+      const btn = el.querySelector('.add-btn,.qctrl');
+      if (btn) btn.outerHTML = ic ? `<div class="qctrl"><button class="qbtn" onclick="rm('${k}',${price},${si})">−</button><span class="qnum">${ic.qty}</span><button class="qbtn" onclick="add('${k}','${it.name}',${price},${si},'${it.emoji}')">+</button></div>` : `<button class="add-btn" onclick="add('${k}','${it.name}',${price},${si},'${it.emoji}')">ADD</button>`;
+    }
+    function updateCart() {
+      const items = Object.values(S.cart); const qty = items.reduce((s, i) => s + i.qty, 0); const tot = items.reduce((s, i) => s + i.qty * i.price, 0);
+      document.getElementById('cartCount').textContent = qty; document.getElementById('cartTotal').textContent = '₹' + tot.toLocaleString('en-IN');
+      const mc = document.getElementById('mobCount'); if (mc) mc.textContent = qty;
+      const nb = document.getElementById('navBadge'); nb.textContent = qty; nb.style.display = qty > 0 ? '' : 'none';
+      const cl = document.getElementById('cartItems'), ce = document.getElementById('cartEmpty'), cf = document.getElementById('cartFooter');
+      if (!items.length) { cl.innerHTML = ''; cl.style.display = 'none'; ce.classList.add('vis'); cf.style.display = 'none'; }
+      else {
+        cl.style.display = 'flex'; ce.classList.remove('vis'); cf.style.display = 'block';
+        cl.innerHTML = items.map(i => `<div class="cicard"><div class="cie">${i.em}</div><div style="flex:1;min-width:0"><div class="cin2">${i.name}</div><div class="cish">from ${i.shop}</div><div class="cip">₹${i.price.toLocaleString('en-IN')}/kg</div></div><div class="ciq">×${i.qty}</div></div>`).join('');
+        document.getElementById('cartSub').textContent = '₹' + tot.toLocaleString('en-IN');
+        document.getElementById('cartGrand').textContent = '₹' + tot.toLocaleString('en-IN');
+        const sn = [...new Set(items.map(i => i.shop))]; document.getElementById('cartShopLabel').textContent = sn.length === 1 ? sn[0] : sn.length + ' shops combined';
+      }
+    }
+
+    // PRICE
+    function initPriceChips() {
+      const row = document.getElementById('priceChips');
+      Object.keys(prices).forEach((fish, idx) => {
+        const b = document.createElement('button'); b.className = 'chip' + (idx === 0 ? ' ach' : ''); b.textContent = fish;
+        b.onclick = () => { document.querySelectorAll('#priceChips .chip').forEach(c => c.classList.remove('ach')); b.classList.add('ach'); updatePrice(fish); };
+        row.appendChild(b);
+      });
+    }
+    function updatePrice(fish) {
+      const data = (prices[fish] || prices.Pomfret).filter(d => d.p !== null && d.p !== undefined);
+      document.getElementById('priceSubTitle').textContent = fish + ' (1 kg) · Updated 20 min ago';
+      const low = Math.min(...data.map(d => d.p)), high = Math.max(...data.map(d => d.p));
+      document.getElementById('priceCards').innerHTML = data.map(d => {
+        const pct = Math.round(((d.p - low) / (high - low || 1)) * 100); const col = pct < 30 ? '#0D9488' : pct > 70 ? '#dc2626' : '#EA580C';
+        return `<div class="pcard${d.best ? ' best' : ''}"><div class="pctop"><div class="pcshop">${d.s}</div>${d.best ? '<div class="vbadge">Best Value ✓</div>' : ''}</div><div class="prow"><div class="pamt">₹${d.p}</div><div class="pper">/ kg</div></div><div class="plabels"><span>₹${low} low</span><span>₹${high} high</span></div><div class="pbar"><div class="pfill" style="width:${Math.max(8, pct)}%;background:${col}"></div></div></div>`;
+      }).join('');
+      document.getElementById('savingsAmount').textContent = '₹' + (high - low).toLocaleString('en-IN');
+    }
+
+    // CHAT
+    function initChat() { document.getElementById('chatMessages').innerHTML = ''; addBot("Hello! 🎣 I can help you find the freshest catch across 6 shops in Koramangala. Ask me about prices, stock, ratings, or delivery times!"); }
+    function addBot(t) { const m = document.getElementById('chatMessages'); const b = document.createElement('div'); b.className = 'bubble bot'; b.textContent = t; m.appendChild(b); m.scrollTop = m.scrollHeight; }
+    function addUser(t) { const m = document.getElementById('chatMessages'); const b = document.createElement('div'); b.className = 'bubble user'; b.textContent = t; m.appendChild(b); m.scrollTop = m.scrollHeight; }
+    function showTyping() { document.getElementById('typingArea').innerHTML = '<div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>'; }
+    function hideTyping() { document.getElementById('typingArea').innerHTML = ''; }
+    function getReply(txt) { const l = txt.toLowerCase(); for (const k of Object.keys(bots)) { if (k !== 'default' && l.includes(k)) { const r = bots[k]; return Array.isArray(r) ? r[0] : r; } } return bots.default[0]; }
+    function sendMsg() { const inp = document.getElementById('chatInput'); const t = inp.value.trim(); if (!t) return; inp.value = ''; addUser(t); showTyping(); setTimeout(() => { hideTyping(); addBot(getReply(t)); }, 700 + Math.random() * 400); }
+    function sendChip(t) { addUser(t); showTyping(); setTimeout(() => { hideTyping(); addBot(getReply(t)); }, 700 + Math.random() * 400); }
+
+    // TABS
+    function switchTab(tab) {
+      S.tab = tab;
+      ['map', 'price', 'chat', 'cart'].forEach(t => {
+        const n = document.getElementById('nav-' + t); if (n) n.classList.toggle('active', t === tab);
+        const m = document.getElementById('mob-' + t); if (m) m.classList.toggle('active', t === tab);
+        const p = document.getElementById('tab-' + t); if (p) p.classList.toggle('active', t === tab);
+      });
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AROWANA — Luxury Fish Pickle from Coastal India</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; line-height: 1.6; color: #333; background: #FAF6EF; }
+        h1, h2, h3 { font-family: 'Playfair Display', serif; font-weight: 400; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        /* Hero */
+        .hero { background: #1B2D4F; height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; position: relative; overflow: hidden; }
+        .hero::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('https://images.unsplash.com/photo-1579586337278-4ec8e50b7c3d?w=1920&auto=format&fit=crop') center/cover; opacity: 0.1; }
+        .hero-content { position: relative; z-index: 2; max-width: 800px; }
+        .logo { font-size: 4rem; color: #C9A84C; font-family: 'Playfair Display', serif; font-weight: 700; margin-bottom: 1rem; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+        .tagline { font-size: 2.5rem; color: #F5F0E8; margin-bottom: 2rem; }
+        .cta { background: #C9A84C; color: #1B2D4F; padding: 1.2rem 3rem; font-size: 1.2rem; font-weight: 500; border: none; border-radius: 50px; cursor: pointer; transition: all 0.3s; text-decoration: none; display: inline-block; }
+        .cta:hover { background: #F5F0E8; transform: translateY(-2px); box-shadow: 0 10px 30px rgba(201,168,76,0.4); }
+
+        /* Story */
+        .story { padding: 120px 0; background: #F5F0E8; }
+        .story-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+        .story-text h2 { font-size: 3.5rem; color: #1B2D4F; margin-bottom: 1.5rem; }
+        .story-text p { font-size: 1.2rem; color: #555; max-width: 500px; }
+        .story-img { height: 500px; background: url('https://images.unsplash.com/photo-1556909114-f6e7ad7d3133?w=800&auto=format&fit=crop') center/cover; border-radius: 20px; }
+
+        /* Products */
+        .products { padding: 120px 0; background: #FAF6EF; }
+        .products h2 { text-align: center; font-size: 3.5rem; color: #1B2D4F; margin-bottom: 4rem; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; }
+        .product-card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.1); transition: transform 0.3s; }
+        .product-card:hover { transform: translateY(-10px); }
+        .product-img { height: 300px; background-size: cover; background-position: center; }
+        .product-img.one { background-image: url('https://images.unsplash.com/photo-1541599468178-6b2a3e6e88f8?w=500&auto=format&fit=crop'); }
+        .product-img.two { background-image: url('https://images.unsplash.com/photo-1621934506033-3f3d3f5f7cf5?w=500&auto=format&fit=crop'); }
+        .product-img.three { background-image: url('https://images.unsplash.com/photo-1579586140161-b4d375e7ce49?w=500&auto=format&fit=crop'); }
+        .product-info { padding: 2rem; }
+        .product-name { font-size: 1.8rem; color: #1B2D4F; margin-bottom: 0.5rem; font-family: 'Playfair Display', serif; }
+        .product-desc { color: #666; margin-bottom: 1rem; }
+        .product-price { font-size: 1.5rem; color: #C9A84C; font-weight: 500; margin-bottom: 1rem; }
+        .add-cart { @extend .cta; width: 100%; font-size: 1rem; padding: 1rem; }
+
+        /* Why AROWANA */
+        .why { padding: 120px 0; background: #1B2D4F; }
+        .why h2 { text-align: center; font-size: 3.5rem; color: #F5F0E8; margin-bottom: 4rem; }
+        .why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; text-align: center; }
+        .why-item i { font-size: 3rem; color: #C9A84C; margin-bottom: 1rem; }
+        .why-item h3 { font-size: 1.5rem; color: #F5F0E8; margin-bottom: 1rem; font-family: 'Playfair Display', serif; }
+        .why-item p { color: #F5F0E8; opacity: 0.9; }
+
+        /* Testimonials */
+        .testimonials { padding: 120px 0; background: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&auto=format&fit=crop') center/cover fixed; position: relative; }
+        .testimonials::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(27,45,79,0.8); }
+        .testimonials .container { position: relative; }
+        .testimonials h2 { text-align: center; font-size: 3.5rem; color: #F5F0E8; margin-bottom: 4rem; }
+        .testimonial-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+        .testimonial-card { background: rgba(255,255,255,0.95); padding: 2.5rem; border-radius: 20px; text-align: center; backdrop-filter: blur(10px); }
+        .testimonial-text { font-style: italic; font-size: 1.2rem; color: #1B2D4F; margin-bottom: 1.5rem; }
+        .testimonial-author { font-weight: 500; color: #C9A84C; }
+
+        /* NRI */
+        .nri { padding: 120px 0; background: linear-gradient(135deg, #F5F0E8 0%, #FAF6EF 100%); text-align: center; }
+        .nri h2 { font-size: 3.5rem; color: #1B2D4F; margin-bottom: 1.5rem; }
+        .nri p { font-size: 1.3rem; color: #555; max-width: 600px; margin: 0 auto 3rem; }
+
+        /* Footer */
+        .footer { background: #1B2D4F; color: #F5F0E8; padding: 3rem 0 1rem; text-align: center; }
+        .footer .logo { font-size: 2rem; color: #C9A84C; font-family: 'Playfair Display', serif; margin-bottom: 1rem; }
+        .footer .tagline { color: #F5F0E8; margin-bottom: 2rem; opacity: 0.9; }
+        .social-links { margin-bottom: 2rem; }
+        .social-links a { color: #C9A84C; font-size: 1.5rem; margin: 0 1rem; transition: color 0.3s; }
+        .social-links a:hover { color: #F5F0E8; }
+        .footer-info { opacity: 0.7; font-size: 0.9rem; }
+
+        @media (max-width: 768px) {
+            .story-grid { grid-template-columns: 1fr; text-align: center; gap: 2rem; }
+            .logo { font-size: 2.5rem; }
+            .tagline, .story-text h2, .products h2, .why h2, .testimonials h2, .nri h2 { font-size: 2.5rem; }
+            .product-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="logo">AROWANA</div>
+            <h1 class="tagline">Crafted for the Finest Plates</h1>
+            <a href="#products" class="cta">Shop Now</a>
+        </div>
+    </section>
+
+    <!-- Story Section -->
+    <section class="story">
+        <div class="container">
+            <div class="story-grid">
+                <div class="story-text">
+                    <h2>Born on the Coast</h2>
+                    <p>Handcrafted in small batches using authentic coastal recipes passed down through generations. We blend tradition with modern hygienic packaging to bring you the pure taste of India's coastline—fresh, bold, and unforgettable.</p>
+                </div>
+                <div class="story-img"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Showcase -->
+    <section class="products" id="products">
+        <div class="container">
+            <h2>Our Collection</h2>
+            <div class="product-grid">
+                <div class="product-card">
+                    <div class="product-img one"></div>
+                    <div class="product-info">
+                        <h3 class="product-name">Kingfish Pickle</h3>
+                        <p class="product-desc">Surmai chunks in a fiery blend of coastal spices. Bold, succulent, perfect with rice or drinks.</p>
+                        <div class="product-price">300g - ₹850</div>
+                        <button class="add-cart">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-img two"></div>
+                    <div class="product-info">
+                        <h3 class="product-name">Prawn Pickle</h3>
+                        <p class="product-desc">Fresh prawns marinated in tangy mustard and chili. A coastal delicacy that travels anywhere.</p>
+                        <div class="product-price">250g - ₹950</div>
+                        <button class="add-cart">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-img three"></div>
+                    <div class="product-info">
+                        <h3 class="product-name">Kerala-Style Pickle</h3>
+                        <p class="product-desc">Mixed seafood in aromatic Kerala spices. Authentic flavor, premium quality.</p>
+                        <div class="product-price">350g - ₹900</div>
+                        <button class="add-cart">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why AROWANA -->
+    <section class="why">
+        <div class="container">
+            <h2>Why AROWANA</h2>
+            <div class="why-grid">
+                <div class="why-item">
+                    <i class="fas fa-leaf"></i>
+                    <h3>Traditional Recipe</h3>
+                    <p>Authentic coastal recipes, unchanged for generations</p>
+                </div>
+                <div class="why-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3>No Artificial Preservatives</h3>
+                    <p>Only natural ingredients, naturally preserved</p>
+                </div>
+                <div class="why-item">
+                    <i class="fas fa-hand-holding"></i>
+                    <h3>Small-Batch Production</h3>
+                    <p>Handcrafted with care in hygienic facilities</p>
+                </div>
+                <div class="why-item">
+                    <i class="fas fa-shipping-fast"></i>
+                    <h3>Ships Pan-India</h3>
+                    <p>Fresh to your door, anywhere in India</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials">
+        <div class="container">
+            <h2>What Our Customers Say</h2>
+            <div class="testimonial-grid">
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"Finally, authentic fish pickle that tastes like home. The Kingfish is perfection."</p>
+                    <div class="testimonial-author">- Priya S., Mumbai</div>
+                </div>
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"Packaging is luxurious, taste is even better. My new dinner party staple."</p>
+                    <div class="testimonial-author">- Arjun K., Bangalore</div>
+                </div>
+                <div class="testimonial-card">
+                    <p class="testimonial-text">"Shipped to Dubai perfectly. Tastes just like Amma's kitchen."</p>
+                    <div class="testimonial-author">- Lakshmi R., Dubai</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NRI Section -->
+    <section class="nri">
+        <div class="container">
+            <h2>Miss the taste of home?</h2>
+            <p>Bring coastal India to your table, wherever you are. Perfect for gifting to family back home or treating yourself to authentic flavors.</p>
+            <a href="https://wa.me/919999999999?text=I%20want%20to%20gift%20AROWANA%20jars" class="cta">Gift a Jar</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="logo">AROWANA</div>
+            <div class="tagline">Crafted for the Finest Plates</div>
+            <div class="social-links">
+                <a href="https://instagram.com/arowanapickle" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://wa.me/919999999999" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            </div>
+            <div class="footer-info">
+                FSSAI: 12345678901234 | hello@arowana.in<br>
+                © 2024 AROWANA. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scroll for CTAs
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        // Add to cart animation
+        document.querySelectorAll('.add-cart').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.textContent = 'Added!';
+                this.style.background = '#1B2D4F';
+                this.style.color = '#C9A84C';
+                setTimeout(() => {
+                    this.textContent = 'Add to Cart';
+                    this.style.background = '#C9A84C';
+                    this.style.color = '#1B2D4F';
+                }, 1500);
+            });
+        });
+    </script>
+</body>
+</html>

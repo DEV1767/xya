@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Arowana Admin — Fish Supply Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+/* ═══════════════════════════════════════════════════
+   DESIGN TOKENS — mirrored from Aboutus.html palette
+═══════════════════════════════════════════════════ */
+:root {
+  --blue:      #1E90FF;
+  --blue-dk:   #1A78D6;
+  --blue-lt:   #EFF8FF;
+  --blue-bd:   #DBEFFE;
+  --aqua:      #00C6FB;
+  --amber:     #EF9F27;
+  --amber-lt:  #FAEEDA;
+  --green:     #10B981;
+  --green-lt:  #D1FAE5;
+  --red:       #EF4444;
+  --red-lt:    #FEE2E2;
+  --purple:    #8B5CF6;
+  --purple-lt: #EDE9FE;
+
+  /* Light mode surfaces */
+  --bg:        #F4F7FB;
+  --surface:   #FFFFFF;
+  --surface2:  #F8FAFC;
+  --border:    #E2E8F0;
+  --text:      #1E293B;
+  --muted:     #475569;
+  --subtle:    #94A3B8;
+
+  /* Sidebar */
+  --sb-w:      260px;
+  --sb-bg:     #0D1B2E;
+  --sb-text:   #94A3B8;
+  --sb-active: #1E90FF;
+  --sb-hover:  rgba(30,144,255,0.10);
+
+  --nav-h:     64px;
+  --radius:    16px;
+  --radius-sm: 10px;
+  --ease:      0.22s cubic-bezier(0.4,0,0.2,1);
+  --ff-serif:  'Playfair Display', Georgia, serif;
+  --ff-sans:   'Poppins', sans-serif;
+  --shadow:    0 4px 24px rgba(30,144,255,0.08);
+  --shadow-lg: 0 8px 48px rgba(30,144,255,0.13);
+}
+
+[data-theme="dark"] {
+  --bg:       #0A1628;
+  --surface:  #0F2040;
+  --surface2: #162848;
+  --border:   #1E3A5F;
+  --text:     #E2E8F0;
+  --muted:    #94A3B8;
+  --subtle:   #475569;
+  --sb-bg:    #06111F;
+  --sb-text:  #64748B;
+  --shadow:   0 4px 24px rgba(0,0,0,0.40);
+  --shadow-lg:0 8px 48px rgba(0,0,0,0.50);
+}
+
+/* ═══ RESET & BASE ═══ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--ff-sans);
+  font-size: 14px; line-height: 1.6;
+  background: var(--bg); color: var(--text);
+  overflow-x: hidden; transition: background var(--ease), color var(--ease);
+}
+a { text-decoration: none; color: inherit; }
+img { max-width: 100%; display: block; }
+button { font-family: var(--ff-sans); cursor: pointer; border: none; outline: none; }
+
+/* ═══ SCROLLBAR ═══ */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+
+/* ═══════════════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════════════ */
+.sidebar {
+  position: fixed; top: 0; left: 0; bottom: 0;
+  width: var(--sb-w); background: var(--sb-bg);
+  display: flex; flex-direction: column; z-index: 900;
+  transition: transform var(--ease);
+  overflow-y: auto;
+}
+.sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); }
+
+.sb-logo {
+  display: flex; align-items: center; gap: 10px;
+  padding: 22px 24px 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.sb-logo-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--blue), var(--aqua));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; color: #fff; flex-shrink: 0;
+}
+.sb-logo-name {
+  font-family: var(--ff-serif); font-size: 1.1rem; font-weight: 700;
+  background: linear-gradient(120deg, var(--blue), var(--aqua));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.sb-logo-sub { font-size: 0.65rem; color: var(--sb-text); letter-spacing: 0.06em; text-transform: uppercase; }
+
+.sb-section { padding: 18px 14px 6px; }
+.sb-section-label {
+  font-size: 0.62rem; font-weight: 600; letter-spacing: 0.10em;
+  text-transform: uppercase; color: var(--sb-text); padding: 0 10px; margin-bottom: 6px;
+}
+.sb-link {
+  display: flex; align-items: center; gap: 11px;
+  padding: 10px 14px; border-radius: var(--radius-sm);
+  color: var(--sb-text); font-size: 0.82rem; font-weight: 500;
+  transition: all var(--ease); cursor: pointer; margin-bottom: 2px;
+}
+.sb-link i { width: 18px; text-align: center; font-size: 0.9rem; }
+.sb-link:hover { background: var(--sb-hover); color: #fff; }
+.sb-link.active {
+  background: linear-gradient(135deg,rgba(30,144,255,0.18),rgba(0,198,251,0.10));
+  color: #fff; border-left: 3px solid var(--blue);
+}
+.sb-link.active i { color: var(--blue); }
+.sb-badge {
+  margin-left: auto; background: var(--blue); color: #fff;
+  font-size: 0.62rem; font-weight: 700;
+  padding: 2px 7px; border-radius: 20px;
+}
+.sb-badge.amber { background: var(--amber); }
+.sb-badge.red   { background: var(--red); }
+
+.sb-bottom {
+  margin-top: auto; padding: 14px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.sb-user {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.04); cursor: pointer;
+}
+.sb-avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue), var(--aqua));
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
+}
+.sb-user-name { font-size: 0.8rem; font-weight: 600; color: #E2E8F0; line-height: 1.2; }
+.sb-user-role { font-size: 0.65rem; color: var(--sb-text); }
+
+/* ═══════════════════════════════════════════════
+   TOPBAR
+═══════════════════════════════════════════════ */
+.topbar {
+  position: fixed; top: 0; left: var(--sb-w); right: 0;
+  height: var(--nav-h); z-index: 800;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 28px;
+  gap: 16px; box-shadow: 0 1px 12px rgba(0,0,0,0.05);
+  transition: background var(--ease);
+}
+.topbar-title { font-family: var(--ff-serif); font-size: 1.15rem; font-weight: 700; }
+.topbar-search {
+  margin-left: auto; display: flex; align-items: center; gap: 9px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 30px; padding: 8px 16px; min-width: 240px;
+  transition: border-color var(--ease), box-shadow var(--ease);
+}
+.topbar-search:focus-within { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(30,144,255,0.12); }
+.topbar-search i { color: var(--subtle); font-size: 0.85rem; }
+.topbar-search input {
+  border: none; background: transparent; font-family: var(--ff-sans);
+  font-size: 0.82rem; color: var(--text); width: 100%; outline: none;
+}
+.topbar-search input::placeholder { color: var(--subtle); }
+
+.topbar-actions { display: flex; align-items: center; gap: 10px; }
+.icon-btn {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: var(--bg); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--muted); font-size: 0.9rem;
+  transition: all var(--ease); cursor: pointer; position: relative;
+}
+.icon-btn:hover { background: var(--blue-lt); color: var(--blue); border-color: var(--blue-bd); }
+.icon-btn .dot {
+  position: absolute; top: 6px; right: 6px;
+  width: 7px; height: 7px; background: var(--red);
+  border-radius: 50%; border: 2px solid var(--surface);
+}
+.theme-toggle { gap: 0; }
+
+.topbar-profile {
+  display: flex; align-items: center; gap: 9px;
+  padding: 5px 12px 5px 5px; border-radius: 30px;
+  background: var(--bg); border: 1px solid var(--border); cursor: pointer;
+  transition: all var(--ease);
+}
+.topbar-profile:hover { border-color: var(--blue-bd); }
+.t-avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue), var(--aqua));
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 700; font-size: 0.75rem;
+}
+.t-name { font-size: 0.78rem; font-weight: 600; }
+
+/* ═══════════════════════════════════════════════
+   MAIN CONTENT
+═══════════════════════════════════════════════ */
+.main {
+  margin-left: var(--sb-w);
+  padding-top: var(--nav-h);
+  min-height: 100vh;
+}
+.page { display: none; padding: 28px 28px 40px; }
+.page.active { display: block; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ═══ PAGE HEADER ═══ */
+.page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+.page-header h1 { font-family: var(--ff-serif); font-size: 1.55rem; font-weight: 800; }
+.page-header p { font-size: 0.82rem; color: var(--muted); margin-top: 2px; }
+
+/* ═══ BUTTONS ═══ */
+.btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: var(--ff-sans); font-size: 0.82rem; font-weight: 600;
+  border-radius: var(--radius-sm); padding: 9px 18px;
+  transition: all var(--ease); cursor: pointer; border: none;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--blue), var(--aqua));
+  color: #fff; box-shadow: 0 3px 14px rgba(30,144,255,0.30);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(30,144,255,0.42); }
+.btn-ghost { background: transparent; color: var(--blue); border: 1.5px solid var(--blue-bd); }
+.btn-ghost:hover { background: var(--blue-lt); }
+.btn-sm { padding: 6px 14px; font-size: 0.75rem; }
+.btn-danger { background: var(--red-lt); color: var(--red); }
+.btn-danger:hover { background: var(--red); color: #fff; }
+.btn-success { background: var(--green-lt); color: var(--green); }
+.btn-success:hover { background: var(--green); color: #fff; }
+.btn-amber { background: var(--amber-lt); color: var(--amber); }
+.btn-amber:hover { background: var(--amber); color: #fff; }
+
+/* ═══ STAT CARDS ═══ */
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-bottom: 24px; }
+.stat-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 22px 24px;
+  box-shadow: var(--shadow); transition: all var(--ease);
+  position: relative; overflow: hidden;
+}
+.stat-card::after {
+  content: ''; position: absolute; top: 0; right: 0;
+  width: 80px; height: 80px; border-radius: 0 var(--radius) 0 80px;
+  opacity: 0.08;
+}
+.stat-card.blue::after  { background: var(--blue); }
+.stat-card.aqua::after  { background: var(--aqua); }
+.stat-card.amber::after { background: var(--amber); }
+.stat-card.green::after { background: var(--green); }
+.stat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.stat-icon {
+  width: 42px; height: 42px; border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem; margin-bottom: 14px;
+}
+.stat-icon.blue   { background: var(--blue-lt);   color: var(--blue); }
+.stat-icon.aqua   { background: rgba(0,198,251,0.12); color: var(--aqua); }
+.stat-icon.amber  { background: var(--amber-lt);  color: var(--amber); }
+.stat-icon.green  { background: var(--green-lt);  color: var(--green); }
+.stat-label { font-size: 0.75rem; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+.stat-value { font-size: 1.7rem; font-weight: 700; line-height: 1; margin-bottom: 8px; color: var(--text); }
+.stat-change { font-size: 0.72rem; display: flex; align-items: center; gap: 4px; }
+.stat-change.up   { color: var(--green); }
+.stat-change.down { color: var(--red); }
+
+/* ═══ CARD ═══ */
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+  overflow: hidden; transition: background var(--ease);
+}
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 22px; border-bottom: 1px solid var(--border);
+}
+.card-title { font-weight: 700; font-size: 0.95rem; }
+.card-subtitle { font-size: 0.75rem; color: var(--muted); margin-top: 1px; }
+.card-body { padding: 20px 22px; }
+
+/* ═══ CHARTS ROW ═══ */
+.charts-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 18px; margin-bottom: 24px; }
+
+/* ═══ TABLE ═══ */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+thead th {
+  padding: 12px 16px; text-align: left; font-weight: 600;
+  color: var(--muted); background: var(--surface2);
+  font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--border); white-space: nowrap;
+}
+tbody tr { border-bottom: 1px solid var(--border); transition: background var(--ease); }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: var(--surface2); }
+tbody td { padding: 12px 16px; color: var(--text); vertical-align: middle; }
+tbody td.muted { color: var(--muted); }
+
+/* ═══ BADGES / PILLS ═══ */
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: 20px;
+  font-size: 0.7rem; font-weight: 600; white-space: nowrap;
+}
+.badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; }
+.badge-green  { background: var(--green-lt);  color: var(--green); }
+.badge-green::before  { background: var(--green); }
+.badge-amber  { background: var(--amber-lt);  color: var(--amber); }
+.badge-amber::before  { background: var(--amber); }
+.badge-red    { background: var(--red-lt);    color: var(--red); }
+.badge-red::before    { background: var(--red); }
+.badge-blue   { background: var(--blue-lt);   color: var(--blue); }
+.badge-blue::before   { background: var(--blue); }
+.badge-purple { background: var(--purple-lt); color: var(--purple); }
+.badge-purple::before { background: var(--purple); }
+
+/* ═══ FILTER BAR ═══ */
+.filter-bar {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 14px 22px; border-bottom: 1px solid var(--border);
+}
+.filter-search {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 7px 14px; min-width: 200px;
+}
+.filter-search input {
+  border: none; background: transparent; font-family: var(--ff-sans);
+  font-size: 0.8rem; color: var(--text); outline: none; width: 100%;
+}
+.filter-search i { color: var(--subtle); font-size: 0.8rem; }
+.filter-select {
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 7px 14px;
+  font-family: var(--ff-sans); font-size: 0.8rem; color: var(--muted);
+  outline: none; cursor: pointer;
+}
+.filter-tags { display: flex; gap: 6px; margin-left: auto; flex-wrap: wrap; }
+.filter-tag {
+  padding: 5px 12px; border-radius: 20px;
+  font-size: 0.72rem; font-weight: 600; cursor: pointer;
+  border: 1.5px solid var(--border); color: var(--muted);
+  background: transparent; transition: all var(--ease);
+}
+.filter-tag.active, .filter-tag:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-lt); }
+
+/* ═══ FISH GRID ═══ */
+.fish-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 18px; padding: 22px; }
+.fish-card {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden; transition: all var(--ease);
+}
+.fish-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.fish-img {
+  height: 130px; display: flex; align-items: center; justify-content: center;
+  font-size: 3.5rem; background: linear-gradient(135deg, var(--blue-lt), rgba(0,198,251,0.10));
+  position: relative;
+}
+.fish-stock-badge { position: absolute; top: 10px; right: 10px; }
+.fish-body { padding: 14px; }
+.fish-name { font-weight: 700; font-size: 0.9rem; margin-bottom: 4px; }
+.fish-qty { font-size: 0.75rem; color: var(--muted); margin-bottom: 10px; }
+.fish-price { font-size: 1.1rem; font-weight: 700; color: var(--blue); margin-bottom: 12px; }
+.fish-actions { display: flex; gap: 6px; }
+
+/* ═══ TOGGLE ═══ */
+.toggle-wrap { display: flex; align-items: center; gap: 9px; font-size: 0.8rem; }
+.toggle { position: relative; width: 38px; height: 22px; }
+.toggle input { display: none; }
+.toggle-slider {
+  position: absolute; inset: 0; background: var(--border);
+  border-radius: 20px; cursor: pointer; transition: background var(--ease);
+}
+.toggle-slider::before {
+  content: ''; position: absolute; left: 3px; top: 3px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: #fff; transition: transform var(--ease);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}
+.toggle input:checked + .toggle-slider { background: var(--green); }
+.toggle input:checked + .toggle-slider::before { transform: translateX(16px); }
+
+/* ═══ MODAL ═══ */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(10,24,50,0.45);
+  backdrop-filter: blur(4px); z-index: 2000;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity var(--ease);
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--surface); border-radius: 20px;
+  width: min(540px, 95vw); max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.20);
+  transform: scale(0.95); transition: transform var(--ease);
+}
+.modal-overlay.open .modal { transform: scale(1); }
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px; border-bottom: 1px solid var(--border);
+}
+.modal-title { font-family: var(--ff-serif); font-size: 1.1rem; font-weight: 700; }
+.modal-body { padding: 22px 24px; }
+.modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
+
+/* ═══ FORM ═══ */
+.form-group { margin-bottom: 18px; }
+.form-label { display: block; font-size: 0.78rem; font-weight: 600; margin-bottom: 7px; color: var(--text); }
+.form-input, .form-select, .form-textarea {
+  width: 100%; background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm); padding: 10px 14px;
+  font-family: var(--ff-sans); font-size: 0.83rem; color: var(--text);
+  outline: none; transition: border-color var(--ease), box-shadow var(--ease);
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--blue); box-shadow: 0 0 0 3px rgba(30,144,255,0.12);
+}
+.form-textarea { resize: vertical; min-height: 90px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.upload-box {
+  border: 2px dashed var(--border); border-radius: var(--radius);
+  padding: 28px; text-align: center; cursor: pointer;
+  transition: all var(--ease); color: var(--subtle);
+  background: var(--bg);
+}
+.upload-box:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-lt); }
+.upload-box i { font-size: 2rem; margin-bottom: 8px; display: block; }
+.upload-box span { font-size: 0.8rem; }
+
+/* ═══ PROGRESS BAR ═══ */
+.progress-bar { height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--blue), var(--aqua)); transition: width 0.6s ease; }
+
+/* ═══ AVATAR GROUP ═══ */
+.avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.75rem; color: #fff; flex-shrink: 0; }
+.avatar.blue   { background: linear-gradient(135deg, var(--blue), var(--aqua)); }
+.avatar.amber  { background: linear-gradient(135deg, var(--amber), #F97316); }
+.avatar.green  { background: linear-gradient(135deg, var(--green), #06B6D4); }
+.avatar.purple { background: linear-gradient(135deg, var(--purple), #EC4899); }
+
+/* ═══ MINI CHART ═══ */
+.mini-bar-chart { display: flex; align-items: flex-end; gap: 4px; height: 50px; }
+.mini-bar { flex: 1; border-radius: 3px 3px 0 0; background: var(--blue-lt); transition: all var(--ease); }
+.mini-bar.active { background: linear-gradient(to top, var(--blue), var(--aqua)); }
+
+/* ═══ UPCOMING CARD ═══ */
+.upcoming-list { display: flex; flex-direction: column; gap: 12px; padding: 16px 22px; }
+.upcoming-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 16px; border-radius: var(--radius-sm);
+  background: var(--surface2); border: 1px solid var(--border);
+  transition: all var(--ease);
+}
+.upcoming-item:hover { border-color: var(--blue-bd); }
+.upcoming-emoji { font-size: 2rem; }
+.upcoming-info { flex: 1; }
+.upcoming-name { font-weight: 600; font-size: 0.88rem; }
+.upcoming-date { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+
+/* ═══ ANALYTICS ═══ */
+.analytics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.top-fish-item { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.top-fish-rank { width: 24px; height: 24px; border-radius: 50%; background: var(--blue-lt); color: var(--blue); font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.top-fish-info { flex: 1; }
+.top-fish-name { font-size: 0.83rem; font-weight: 600; }
+.top-fish-kg { font-size: 0.72rem; color: var(--muted); }
+.top-fish-amount { font-size: 0.85rem; font-weight: 700; color: var(--blue); }
+
+/* ═══ PAYMENT TABLE EXTRAS ═══ */
+.pay-amount { font-weight: 700; }
+
+/* ═══ NOTIFICATION PANEL ═══ */
+.notif-panel {
+  position: fixed; top: var(--nav-h); right: 0;
+  width: 340px; height: calc(100vh - var(--nav-h));
+  background: var(--surface); border-left: 1px solid var(--border);
+  z-index: 700; transform: translateX(100%); transition: transform var(--ease);
+  overflow-y: auto; padding: 20px;
+}
+.notif-panel.open { transform: translateX(0); }
+.notif-item { display: flex; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+.notif-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; flex-shrink: 0; }
+.notif-text { font-size: 0.8rem; line-height: 1.5; }
+.notif-time { font-size: 0.7rem; color: var(--subtle); margin-top: 3px; }
+
+/* ═══ MOBILE ═══ */
+.hamburger { display: none; }
+.sidebar-overlay { display: none; }
+
+@media (max-width: 1100px) { .stats-grid { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 900px)  { .charts-grid { grid-template-columns: 1fr; } .analytics-grid { grid-template-columns: 1fr; } }
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-overlay { display: block; position: fixed; inset: 0; background: rgba(10,24,50,0.45); z-index: 850; opacity: 0; pointer-events: none; transition: opacity var(--ease); }
+  .sidebar-overlay.open { opacity: 1; pointer-events: all; }
+  .topbar { left: 0; }
+  .main { margin-left: 0; }
+  .hamburger { display: flex; }
+  .topbar-search { display: none; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .page { padding: 18px; }
+}
+@media (max-width: 480px) { .stats-grid { grid-template-columns: 1fr; } .form-row { grid-template-columns: 1fr; } }
+
+/* ═══ SECTION LABEL ═══ */
+.section-label {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--blue-lt); border: 1px solid var(--blue-bd);
+  color: var(--blue); font-size: 0.68rem; font-weight: 600;
+  text-transform: uppercase; padding: 4px 12px; border-radius: 30px; letter-spacing: 0.05em;
+}
+
+/* ═══ ORDER DETAIL PANEL ═══ */
+.order-detail {
+  background: var(--surface2); border-radius: var(--radius);
+  border: 1px solid var(--border); padding: 18px; margin-top: 14px;
+}
+.detail-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.82rem; }
+.detail-row:last-child { border-bottom: none; }
+.detail-label { color: var(--muted); }
+.detail-value { font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ SIDEBAR OVERLAY (mobile) ═══════════ -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- ═══════════ SIDEBAR ═══════════ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-icon"><i class="fa-solid fa-fish"></i></div>
+    <div>
+      <div class="sb-logo-name">Arowana</div>
+      <div class="sb-logo-sub">Admin Portal</div>
+    </div>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-section-label">Main</div>
+    <div class="sb-link active" onclick="navigate('dashboard',this)"><i class="fa-solid fa-gauge-high"></i> Dashboard</div>
+    <div class="sb-link" onclick="navigate('fish-management',this)"><i class="fa-solid fa-fish-fins"></i> Fish Management <span class="sb-badge">24</span></div>
+    <div class="sb-link" onclick="navigate('upcoming-fish',this)"><i class="fa-solid fa-calendar-days"></i> Upcoming Fish <span class="sb-badge amber">6</span></div>
+    <div id="nav-orders-link" class="sb-link" onclick="navigate('orders',this)"><i class="fa-solid fa-box-open"></i> Orders <span class="sb-badge red">9</span></div>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-section-label">Business</div>
+    <div class="sb-link" onclick="navigate('buyers',this)"><i class="fa-solid fa-building-columns"></i> Buyers</div>
+    <div class="sb-link" onclick="navigate('payments',this)"><i class="fa-solid fa-credit-card"></i> Payments</div>
+    <div class="sb-link" onclick="navigate('analytics',this)"><i class="fa-solid fa-chart-line"></i> Analytics</div>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-section-label">System</div>
+    <div class="sb-link" onclick="navigate('settings',this)"><i class="fa-solid fa-gear"></i> Settings</div>
+  </div>
+
+  <div class="sb-bottom">
+    <div class="sb-user">
+      <div class="sb-avatar">AR</div>
+      <div>
+        <div class="sb-user-name">Admin Ravi</div>
+        <div class="sb-user-role">Super Administrator</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══════════ TOPBAR ═══════════ -->
+<header class="topbar">
+  <button class="icon-btn hamburger" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+  <div class="topbar-title" id="topbarTitle">Dashboard</div>
+
+  <div class="topbar-search">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="text" placeholder="Search fish, orders, buyers…" />
+  </div>
+
+  <div class="topbar-actions">
+    <button class="icon-btn theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+      <i class="fa-solid fa-moon" id="themeIcon"></i>
+    </button>
+    <button class="icon-btn" onclick="toggleNotif()">
+      <i class="fa-solid fa-bell"></i>
+      <span class="dot"></span>
+    </button>
+    <div class="topbar-profile">
+      <div class="t-avatar">AR</div>
+      <span class="t-name">Admin Ravi</span>
+      <i class="fa-solid fa-chevron-down" style="font-size:0.65rem;color:var(--subtle);margin-left:2px;"></i>
+    </div>
+  </div>
+</header>
+
+<!-- ═══════════ NOTIFICATION PANEL ═══════════ -->
+<div class="notif-panel" id="notifPanel">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+    <span style="font-weight:700;font-size:0.95rem;">Notifications</span>
+    <button class="btn btn-ghost btn-sm" onclick="toggleNotif()">Close</button>
+  </div>
+  <div class="notif-item">
+    <div class="notif-icon" style="background:var(--blue-lt);color:var(--blue)"><i class="fa-solid fa-box"></i></div>
+    <div><div class="notif-text">New order from <strong>Sea Pearl Hotel</strong> — 25kg Pomfret</div><div class="notif-time">2 min ago</div></div>
+  </div>
+  <div class="notif-item">
+    <div class="notif-icon" style="background:var(--green-lt);color:var(--green)"><i class="fa-solid fa-check"></i></div>
+    <div><div class="notif-text">Order #ORD-0041 marked as <strong>Delivered</strong></div><div class="notif-time">18 min ago</div></div>
+  </div>
+  <div class="notif-item">
+    <div class="notif-icon" style="background:var(--amber-lt);color:var(--amber)"><i class="fa-solid fa-triangle-exclamation"></i></div>
+    <div><div class="notif-text"><strong>Rohu</strong> stock is running low — only 10kg left</div><div class="notif-time">45 min ago</div></div>
+  </div>
+  <div class="notif-item">
+    <div class="notif-icon" style="background:var(--purple-lt);color:var(--purple)"><i class="fa-solid fa-fish"></i></div>
+    <div><div class="notif-text">Upcoming arrival: <strong>Barramundi</strong> expected tomorrow</div><div class="notif-time">2 hrs ago</div></div>
+  </div>
+  <div class="notif-item">
+    <div class="notif-icon" style="background:var(--red-lt);color:var(--red)"><i class="fa-solid fa-xmark"></i></div>
+    <div><div class="notif-text">Order #ORD-0038 rejected by buyer <strong>Taj Residency</strong></div><div class="notif-time">3 hrs ago</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     MAIN CONTENT
+═══════════════════════════════ -->
+<main class="main">
+
+<!-- ════════════ PAGE: DASHBOARD ════════════ -->
+<div class="page active" id="page-dashboard">
+  <div class="page-header">
+    <div>
+      <h1>Good morning, Ravi 👋</h1>
+      <p>Here's what's happening with Arowana today.</p>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-ghost"><i class="fa-solid fa-download"></i> Export</button>
+      <button class="btn btn-primary" onclick="openModal('addFishModal')"><i class="fa-solid fa-plus"></i> Add Fish</button>
+    </div>
+  </div>
+
+  <!-- Stat Cards -->
+  <div class="stats-grid">
+    <div class="stat-card blue">
+      <div class="stat-icon blue"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+      <div class="stat-label">Total Revenue</div>
+      <div class="stat-value">₹4,82,300</div>
+      <div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> +18.4% vs last week</div>
+    </div>
+    <div class="stat-card aqua">
+      <div class="stat-icon aqua"><i class="fa-solid fa-box-open"></i></div>
+      <div class="stat-label">Total Orders</div>
+      <div class="stat-value">1,284</div>
+      <div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> +8.1% vs last week</div>
+    </div>
+    <div class="stat-card amber">
+      <div class="stat-icon amber"><i class="fa-solid fa-building"></i></div>
+      <div class="stat-label">Active Buyers</div>
+      <div class="stat-value">48</div>
+      <div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> +3 this month</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-icon green"><i class="fa-solid fa-clock-rotate-left"></i></div>
+      <div class="stat-label">Pending Orders</div>
+      <div class="stat-value">9</div>
+      <div class="stat-change down"><i class="fa-solid fa-arrow-trend-down"></i> needs action</div>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="charts-grid">
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Revenue Overview</div>
+          <div class="card-subtitle">Daily sales for the past 30 days</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-ghost btn-sm" onclick="switchChart('daily',this)" style="background:var(--blue-lt);border-color:var(--blue);color:var(--blue)">Daily</button>
+          <button class="btn btn-ghost btn-sm" onclick="switchChart('weekly',this)">Weekly</button>
+        </div>
+      </div>
+      <div class="card-body"><canvas id="revenueChart" height="120"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Orders by Status</div>
+      </div>
+      <div class="card-body" style="display:flex;flex-direction:column;align-items:center;gap:16px;">
+        <canvas id="statusChart" height="160" width="160"></canvas>
+        <div style="display:flex;flex-direction:column;gap:8px;width:100%;">
+          <div style="display:flex;align-items:center;justify-content:space-between;font-size:0.78rem;"><span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;background:var(--green);display:inline-block;"></span>Delivered</span><strong>842</strong></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;font-size:0.78rem;"><span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;background:var(--blue);display:inline-block;"></span>Confirmed</span><strong>243</strong></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;font-size:0.78rem;"><span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;background:var(--amber);display:inline-block;"></span>Pending</span><strong>190</strong></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;font-size:0.78rem;"><span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;background:var(--red);display:inline-block;"></span>Rejected</span><strong>9</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Orders -->
+  <div class="card">
+    <div class="card-header">
+      <div><div class="card-title">Recent Orders</div><div class="card-subtitle">Latest 8 transactions</div></div>
+      <button class="btn btn-ghost btn-sm" onclick="navigate('orders', document.getElementById('nav-orders-link'))">View All</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Order ID</th><th>Buyer</th><th>Fish</th><th>Qty</th><th>Total</th><th>Status</th><th>Date</th><th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="recentOrdersBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ PAGE: FISH MANAGEMENT ════════════ -->
+<div class="page" id="page-fish-management">
+  <div class="page-header">
+    <div><h1>Fish Management</h1><p>Manage available fish inventory</p></div>
+    <button class="btn btn-primary" onclick="openModal('addFishModal')"><i class="fa-solid fa-plus"></i> Add Fish</button>
+  </div>
+
+  <div class="card">
+    <div class="filter-bar">
+      <div class="filter-search"><i class="fa-solid fa-magnifying-glass"></i><input type="text" placeholder="Search fish…" oninput="filterFish(this.value)" /></div>
+      <select class="filter-select">
+        <option>All Categories</option>
+        <option>Saltwater</option>
+        <option>Freshwater</option>
+        <option>Premium</option>
+      </select>
+      <div class="filter-tags">
+        <button class="filter-tag active" onclick="filterFishByStock('all',this)">All</button>
+        <button class="filter-tag" onclick="filterFishByStock('in',this)">In Stock</button>
+        <button class="filter-tag" onclick="filterFishByStock('out',this)">Out of Stock</button>
+      </div>
+    </div>
+    <div class="fish-grid" id="fishGrid"></div>
+  </div>
+</div>
+
+<!-- ════════════ PAGE: UPCOMING FISH ════════════ -->
+<div class="page" id="page-upcoming-fish">
+  <div class="page-header">
+    <div><h1>Upcoming Fish</h1><p>Manage expected fish arrivals</p></div>
+    <button class="btn btn-primary" onclick="openModal('addUpcomingModal')"><i class="fa-solid fa-plus"></i> Add Upcoming</button>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><div class="card-title">Expected Arrivals</div><div class="card-subtitle">Move to available list when fish arrives</div></div>
+    <div class="upcoming-list" id="upcomingList"></div>
+  </div>
+</div>
+
+<!-- ════════════ PAGE: ORDERS ════════════ -->
+<div class="page" id="page-orders">
+  <div class="page-header">
+    <div><h1>Order Management</h1><p>Track and manage all buyer orders</p></div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn btn-ghost"><i class="fa-solid fa-download"></i> Export</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="filter-bar">
+      <div class="filter-search"><i class="fa-solid fa-magnifying-glass"></i><input type="text" placeholder="Search by ID, buyer…" /></div>
+      <select class="filter-select"><option>All Status</option><option>Pending</option><option>Confirmed</option><option>Delivered</option><option>Rejected</option></select>
+      <select class="filter-select"><option>All Fish</option><option>Pomfret</option><option>Rohu</option><option>Surmai</option></select>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th><input type="checkbox" /></th><th>Order ID</th><th>Buyer</th><th>Fish Type</th><th>Qty (kg)</th><th>Total</th><th>Status</th><th>Date</th><th>Actions</th></tr>
+        </thead>
+        <tbody id="ordersTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Order Detail -->
+  <div id="orderDetailSection" style="display:none;">
+    <div class="card" style="margin-top:18px;">
+      <div class="card-header">
+        <div><div class="card-title">Order Details</div></div>
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('orderDetailSection').style.display='none'">Close</button>
+      </div>
+      <div class="card-body" id="orderDetailBody"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ PAGE: BUYERS ════════════ -->
+<div class="page" id="page-buyers">
+  <div class="page-header">
+    <div><h1>Buyer Management</h1><p>Restaurants &amp; Hotels using Arowana</p></div>
+    <button class="btn btn-primary" onclick="openModal('addBuyerModal')"><i class="fa-solid fa-plus"></i> Add Buyer</button>
+  </div>
+
+  <div class="card">
+    <div class="filter-bar">
+      <div class="filter-search"><i class="fa-solid fa-magnifying-glass"></i><input type="text" placeholder="Search buyers…" /></div>
+      <select class="filter-select"><option>All Types</option><option>Restaurant</option><option>Hotel</option><option>Catering</option></select>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Buyer</th><th>Type</th><th>Contact</th><th>Location</th><th>Total Orders</th><th>Total Spent</th><th>Status</th><th>Action</th></tr>
+        </thead>
+        <tbody id="buyersTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ PAGE: PAYMENTS ════════════ -->
+<div class="page" id="page-payments">
+  <div class="page-header">
+    <div><h1>Payments</h1><p>Track and manage payment status</p></div>
+  </div>
+
+  <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
+    <div class="stat-card green">
+      <div class="stat-icon green"><i class="fa-solid fa-circle-check"></i></div>
+      <div class="stat-label">Collected</div>
+      <div class="stat-value">₹3,64,800</div>
+      <div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> 76% of total</div>
+    </div>
+    <div class="stat-card amber">
+      <div class="stat-icon amber"><i class="fa-solid fa-clock"></i></div>
+      <div class="stat-label">Pending</div>
+      <div class="stat-value">₹1,17,500</div>
+      <div class="stat-change down"><i class="fa-solid fa-arrow-trend-up"></i> 24% of total</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-icon blue"><i class="fa-solid fa-wallet"></i></div>
+      <div class="stat-label">Total Billed</div>
+      <div class="stat-value">₹4,82,300</div>
+      <div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> This month</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="filter-bar">
+      <div class="filter-search"><i class="fa-solid fa-magnifying-glass"></i><input type="text" placeholder="Search orders…" /></div>
+      <select class="filter-select"><option>All Status</option><option>Paid</option><option>Pending</option></select>
+      <div class="filter-tags">
+        <button class="filter-tag active">All</button>
+        <button class="filter-tag">This Week</button>
+        <button class="filter-tag">This Month</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Order ID</th><th>Buyer</th><th>Fish</th><th>Amount</th><th>Payment Status</th><th>Delivery Date</th><th>Action</th></tr>
+        </thead>
+        <tbody id="paymentsTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ PAGE: ANALYTICS ════════════ -->
+<div class="page" id="page-analytics">
+  <div class="page-header">
+    <div><h1>Analytics</h1><p>Business performance insights</p></div>
+    <div style="display:flex;gap:8px;">
+      <select class="filter-select"><option>Last 30 Days</option><option>Last 3 Months</option><option>This Year</option></select>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card blue"><div class="stat-icon blue"><i class="fa-solid fa-chart-line"></i></div><div class="stat-label">Monthly Revenue</div><div class="stat-value">₹4,82,300</div><div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> +18.4%</div></div>
+    <div class="stat-card green"><div class="stat-icon green"><i class="fa-solid fa-weight-hanging"></i></div><div class="stat-label">Total Fish Sold</div><div class="stat-value">8,240 kg</div><div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> +12.1%</div></div>
+    <div class="stat-card amber"><div class="stat-icon amber"><i class="fa-solid fa-repeat"></i></div><div class="stat-label">Repeat Buyers</div><div class="stat-value">82%</div><div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> +5% vs last month</div></div>
+    <div class="stat-card aqua"><div class="stat-icon aqua"><i class="fa-solid fa-handshake"></i></div><div class="stat-label">Avg Order Value</div><div class="stat-value">₹3,758</div><div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> +9.2%</div></div>
+  </div>
+
+  <div class="charts-grid" style="margin-bottom:24px;">
+    <div class="card">
+      <div class="card-header"><div class="card-title">Revenue Trend</div><div class="card-subtitle">Monthly growth this year</div></div>
+      <div class="card-body"><canvas id="trendChart" height="120"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">Fish Category Mix</div></div>
+      <div class="card-body" style="display:flex;align-items:center;justify-content:center;"><canvas id="categoryChart" height="200" width="200"></canvas></div>
+    </div>
+  </div>
+
+  <div class="analytics-grid">
+    <div class="card">
+      <div class="card-header"><div class="card-title">Most Sold Fish</div><div class="card-subtitle">By total kilograms this month</div></div>
+      <div class="card-body" id="topFishList"></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">Top Buyers</div><div class="card-subtitle">By total spend this month</div></div>
+      <div class="card-body" id="topBuyersList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ PAGE: SETTINGS ════════════ -->
+<div class="page" id="page-settings">
+  <div class="page-header"><div><h1>Settings</h1><p>Manage your admin preferences</p></div></div>
+  <div class="card" style="max-width:600px;">
+    <div class="card-header"><div class="card-title">Profile Settings</div></div>
+    <div class="card-body">
+      <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" value="Admin Ravi" /></div>
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" value="admin@arowana.in" /></div>
+      <div class="form-group"><label class="form-label">Phone</label><input class="form-input" value="+91 98765 43210" /></div>
+      <div class="form-group">
+        <label class="form-label">Theme</label>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-ghost btn-sm" onclick="setTheme('light')"><i class="fa-solid fa-sun"></i> Light</button>
+          <button class="btn btn-ghost btn-sm" onclick="setTheme('dark')"><i class="fa-solid fa-moon"></i> Dark</button>
+        </div>
+      </div>
+      <button class="btn btn-primary">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+</main><!-- end .main -->
+
+<!-- ═══════════════════════════════
+     MODALS
+═══════════════════════════════ -->
+
+<!-- Add Fish Modal -->
+<div class="modal-overlay" id="addFishModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Add New Fish</span>
+      <button class="icon-btn" onclick="closeModal('addFishModal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Fish Image</label>
+        <div class="upload-box">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+          <span>Click or drag to upload image</span>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Fish Name</label><input class="form-input" placeholder="e.g. Pomfret" /></div>
+        <div class="form-group"><label class="form-label">Category</label><select class="form-select"><option>Saltwater</option><option>Freshwater</option><option>Premium</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Price per kg (₹)</label><input class="form-input" type="number" placeholder="450" /></div>
+        <div class="form-group"><label class="form-label">Available Quantity (kg)</label><input class="form-input" type="number" placeholder="100" /></div>
+      </div>
+      <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" placeholder="Brief description of the fish…"></textarea></div>
+      <div class="form-group">
+        <label class="form-label">Availability</label>
+        <label class="toggle-wrap">
+          <label class="toggle"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+          In Stock
+        </label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('addFishModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="closeModal('addFishModal')"><i class="fa-solid fa-plus"></i> Add Fish</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Upcoming Fish Modal -->
+<div class="modal-overlay" id="addUpcomingModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Add Upcoming Fish</span>
+      <button class="icon-btn" onclick="closeModal('addUpcomingModal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Fish Name</label><input class="form-input" placeholder="e.g. Barramundi" /></div>
+        <div class="form-group"><label class="form-label">Expected Quantity (kg)</label><input class="form-input" type="number" placeholder="200" /></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Expected Arrival Date</label><input class="form-input" type="date" /></div>
+        <div class="form-group"><label class="form-label">Price per kg (₹)</label><input class="form-input" type="number" placeholder="580" /></div>
+      </div>
+      <div class="form-group"><label class="form-label">Source / Fisherman</label><input class="form-input" placeholder="Fisherman name or region" /></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('addUpcomingModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="closeModal('addUpcomingModal')">Add Upcoming</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Buyer Modal -->
+<div class="modal-overlay" id="addBuyerModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Add New Buyer</span>
+      <button class="icon-btn" onclick="closeModal('addBuyerModal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Business Name</label><input class="form-input" placeholder="e.g. Sea Pearl Hotel" /></div>
+        <div class="form-group"><label class="form-label">Type</label><select class="form-select"><option>Restaurant</option><option>Hotel</option><option>Catering</option><option>Other</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Contact Person</label><input class="form-input" placeholder="Name" /></div>
+        <div class="form-group"><label class="form-label">Phone</label><input class="form-input" placeholder="+91 …" /></div>
+      </div>
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" placeholder="info@…" /></div>
+      <div class="form-group"><label class="form-label">Location / City</label><input class="form-input" placeholder="e.g. Bengaluru" /></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('addBuyerModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="closeModal('addBuyerModal')">Add Buyer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════ -->
+<script>
+/* ────────── DATA ────────── */
+const fishData = [
+  { id:1, emoji:'🐟', name:'Pomfret', price:520, qty:80,  inStock:true,  cat:'Saltwater' },
+  { id:2, emoji:'🐠', name:'Surmai',  price:680, qty:45,  inStock:true,  cat:'Premium'   },
+  { id:3, emoji:'🐡', name:'Rohu',    price:180, qty:10,  inStock:true,  cat:'Freshwater'},
+  { id:4, emoji:'🦈', name:'Shark',   price:420, qty:0,   inStock:false, cat:'Saltwater' },
+  { id:5, emoji:'🐟', name:'Hilsa',   price:850, qty:30,  inStock:true,  cat:'Premium'   },
+  { id:6, emoji:'🐠', name:'Tilapia', price:150, qty:120, inStock:true,  cat:'Freshwater'},
+  { id:7, emoji:'🐡', name:'Catla',   price:200, qty:60,  inStock:true,  cat:'Freshwater'},
+  { id:8, emoji:'🦑', name:'Squid',   price:310, qty:0,   inStock:false, cat:'Saltwater' },
+];
+
+const orderData = [
+  { id:'ORD-0048', buyer:'Sea Pearl Hotel',    fish:'Pomfret',  qty:25, total:13000, status:'Pending',   date:'05 Apr 2026' },
+  { id:'ORD-0047', buyer:'Taj Residency',      fish:'Surmai',   qty:10, total: 6800, status:'Confirmed', date:'05 Apr 2026' },
+  { id:'ORD-0046', buyer:'Spice Garden Rest.', fish:'Hilsa',    qty:8,  total: 6800, status:'Delivered', date:'04 Apr 2026' },
+  { id:'ORD-0045', buyer:'The Blue Lagoon',    fish:'Rohu',     qty:50, total: 9000, status:'Delivered', date:'04 Apr 2026' },
+  { id:'ORD-0044', buyer:'Hotel Ashoka',       fish:'Tilapia',  qty:30, total: 4500, status:'Pending',   date:'03 Apr 2026' },
+  { id:'ORD-0043', buyer:'Fisherman\'s Wharf', fish:'Catla',    qty:20, total: 4000, status:'Confirmed', date:'03 Apr 2026' },
+  { id:'ORD-0042', buyer:'Marina Bay Hotel',   fish:'Squid',    qty:15, total: 4650, status:'Rejected',  date:'02 Apr 2026' },
+  { id:'ORD-0041', buyer:'Coastal Kitchen',    fish:'Pomfret',  qty:40, total:20800, status:'Delivered', date:'02 Apr 2026' },
+];
+
+const buyersData = [
+  { name:'Sea Pearl Hotel',    type:'Hotel',      contact:'Rajesh M.',   phone:'+91 98410 11223', location:'Bengaluru', orders:84, spent:240000, active:true },
+  { name:'Taj Residency',      type:'Hotel',      contact:'Priya K.',    phone:'+91 98765 09876', location:'Mysuru',    orders:61, spent:187000, active:true },
+  { name:'Spice Garden Rest.', type:'Restaurant', contact:'Suresh B.',   phone:'+91 99001 23456', location:'Bengaluru', orders:48, spent:124000, active:true },
+  { name:'The Blue Lagoon',    type:'Restaurant', contact:'Anita S.',    phone:'+91 97654 32101', location:'Mangaluru', orders:37, spent: 92000, active:true },
+  { name:'Hotel Ashoka',       type:'Hotel',      contact:'Vikram P.',   phone:'+91 96543 21098', location:'Hubballi',  orders:29, spent: 68000, active:false},
+  { name:'Fisherman\'s Wharf', type:'Restaurant', contact:'Deepa R.',    phone:'+91 95432 10987', location:'Udupi',     orders:52, spent:138000, active:true },
+];
+
+const upcomingData = [
+  { emoji:'🐬', name:'Barramundi', qty:200, price:620, date:'06 Apr 2026', source:'Karwar Fisheries' },
+  { emoji:'🦐', name:'Tiger Prawn',qty:80,  price:980, date:'07 Apr 2026', source:'Coastal Exports' },
+  { emoji:'🐟', name:'Red Snapper',qty:150, price:490, date:'08 Apr 2026', source:'Mangalore Port'   },
+  { emoji:'🦀', name:'Crab',       qty:60,  price:750, date:'09 Apr 2026', source:'Udupi Fishers'    },
+  { emoji:'🐡', name:'Mackerel',   qty:300, price:220, date:'10 Apr 2026', source:'Malpe Harbour'    },
+  { emoji:'🦑', name:'Cuttlefish', qty:90,  price:360, date:'11 Apr 2026', source:'Coastal Exports'  },
+];
+
+/* ────────── STATUS BADGE ────────── */
+const statusBadge = s => {
+  const m = { Pending:'amber', Confirmed:'blue', Delivered:'green', Rejected:'red' };
+  return `<span class="badge badge-${m[s]||'blue'}">${s}</span>`;
+};
+
+/* ────────── RENDER RECENT ORDERS ────────── */
+function renderRecentOrders() {
+  const tbody = document.getElementById('recentOrdersBody');
+  tbody.innerHTML = orderData.slice(0,8).map(o => `
+    <tr>
+      <td><span style="font-family:monospace;font-size:0.8rem;color:var(--blue)">${o.id}</span></td>
+      <td>${o.buyer}</td>
+      <td>${o.fish}</td>
+      <td class="muted">${o.qty} kg</td>
+      <td><strong>₹${o.total.toLocaleString()}</strong></td>
+      <td>${statusBadge(o.status)}</td>
+      <td class="muted">${o.date}</td>
+      <td><button class="btn btn-ghost btn-sm" onclick="viewOrder('${o.id}')">View</button></td>
+    </tr>`).join('');
+}
+
+/* ────────── RENDER ORDERS TABLE ────────── */
+function renderOrdersTable() {
+  const tbody = document.getElementById('ordersTableBody');
+  tbody.innerHTML = orderData.map(o => `
+    <tr>
+      <td><input type="checkbox" /></td>
+      <td><span style="font-family:monospace;font-size:0.8rem;color:var(--blue)">${o.id}</span></td>
+      <td>${o.buyer}</td>
+      <td>${o.fish}</td>
+      <td class="muted">${o.qty}</td>
+      <td><strong>₹${o.total.toLocaleString()}</strong></td>
+      <td>${statusBadge(o.status)}</td>
+      <td class="muted">${o.date}</td>
+      <td>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;">
+          ${o.status==='Pending' ? `<button class="btn btn-success btn-sm" onclick="updateOrderStatus('${o.id}','Confirmed')">Confirm</button><button class="btn btn-danger btn-sm" onclick="updateOrderStatus('${o.id}','Rejected')">Reject</button>` : ''}
+          ${o.status==='Confirmed' ? `<button class="btn btn-primary btn-sm" onclick="updateOrderStatus('${o.id}','Delivered')">Deliver</button>` : ''}
+          <button class="btn btn-ghost btn-sm" onclick="viewOrder('${o.id}')"><i class="fa-solid fa-eye"></i></button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function viewOrder(id) {
+  const o = orderData.find(x => x.id === id);
+  if (!o) return;
+  const sec = document.getElementById('orderDetailSection');
+  document.getElementById('orderDetailBody').innerHTML = `
+    <div class="order-detail">
+      <div class="detail-row"><span class="detail-label">Order ID</span><span class="detail-value" style="font-family:monospace;color:var(--blue)">${o.id}</span></div>
+      <div class="detail-row"><span class="detail-label">Buyer</span><span class="detail-value">${o.buyer}</span></div>
+      <div class="detail-row"><span class="detail-label">Fish Type</span><span class="detail-value">${o.fish}</span></div>
+      <div class="detail-row"><span class="detail-label">Quantity</span><span class="detail-value">${o.qty} kg</span></div>
+      <div class="detail-row"><span class="detail-label">Unit Price</span><span class="detail-value">₹${Math.round(o.total/o.qty)}/kg</span></div>
+      <div class="detail-row"><span class="detail-label">Total Amount</span><span class="detail-value" style="color:var(--blue);font-size:1rem;">₹${o.total.toLocaleString()}</span></div>
+      <div class="detail-row"><span class="detail-label">Status</span><span class="detail-value">${statusBadge(o.status)}</span></div>
+      <div class="detail-row"><span class="detail-label">Date</span><span class="detail-value">${o.date}</span></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:16px;">
+      ${o.status==='Pending'?`<button class="btn btn-primary" onclick="updateOrderStatus('${o.id}','Confirmed')">Confirm Order</button><button class="btn btn-danger" onclick="updateOrderStatus('${o.id}','Rejected')">Reject</button>`:''}
+      ${o.status==='Confirmed'?`<button class="btn btn-primary" onclick="updateOrderStatus('${o.id}','Delivered')">Mark Delivered</button>`:''}
+    </div>`;
+  sec.style.display = 'block';
+  sec.scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+function updateOrderStatus(id, newStatus) {
+  const o = orderData.find(x => x.id === id);
+  if (o) { o.status = newStatus; renderOrdersTable(); renderRecentOrders(); viewOrder(id); }
+}
+
+/* ────────── RENDER FISH GRID ────────── */
+let fishFilter = '';
+let stockFilter = 'all';
+
+function renderFishGrid() {
+  const grid = document.getElementById('fishGrid');
+  let data = fishData.filter(f => f.name.toLowerCase().includes(fishFilter));
+  if (stockFilter === 'in')  data = data.filter(f => f.inStock);
+  if (stockFilter === 'out') data = data.filter(f => !f.inStock);
+  grid.innerHTML = data.map(f => `
+    <div class="fish-card">
+      <div class="fish-img">
+        ${f.emoji}
+        <span class="fish-stock-badge"><span class="badge ${f.inStock?'badge-green':'badge-red'}">${f.inStock?'In Stock':'Out of Stock'}</span></span>
+      </div>
+      <div class="fish-body">
+        <div class="fish-name">${f.name}</div>
+        <div class="fish-qty">${f.qty} kg available · ${f.cat}</div>
+        <div class="fish-price">₹${f.price}<span style="font-size:0.7rem;color:var(--muted);font-weight:400">/kg</span></div>
+        <div class="fish-actions">
+          <button class="btn btn-ghost btn-sm" style="flex:1" onclick="editFish(${f.id})"><i class="fa-solid fa-pen"></i></button>
+          <label class="toggle"><input type="checkbox" ${f.inStock?'checked':''} onchange="toggleFishStock(${f.id},this.checked)" /><span class="toggle-slider"></span></label>
+          <button class="btn btn-danger btn-sm" onclick="deleteFish(${f.id})"><i class="fa-solid fa-trash"></i></button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function filterFish(v) { fishFilter = v.toLowerCase(); renderFishGrid(); }
+function filterFishByStock(v, el) {
+  stockFilter = v;
+  document.querySelectorAll('[onclick^="filterFishByStock"]').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderFishGrid();
+}
+function toggleFishStock(id, val) { const f = fishData.find(x => x.id===id); if(f){ f.inStock=val; renderFishGrid(); } }
+function deleteFish(id) { const i = fishData.findIndex(x=>x.id===id); if(i>-1){ fishData.splice(i,1); renderFishGrid(); } }
+function editFish(id) { openModal('addFishModal'); }
+
+/* ────────── RENDER UPCOMING ────────── */
+function renderUpcoming() {
+  document.getElementById('upcomingList').innerHTML = upcomingData.map((u,i) => `
+    <div class="upcoming-item">
+      <div class="upcoming-emoji">${u.emoji}</div>
+      <div class="upcoming-info">
+        <div class="upcoming-name">${u.name}</div>
+        <div class="upcoming-date"><i class="fa-solid fa-calendar-day" style="color:var(--blue);margin-right:4px;"></i>${u.date} &nbsp;·&nbsp; ${u.qty} kg &nbsp;·&nbsp; ₹${u.price}/kg</div>
+        <div class="upcoming-date" style="margin-top:2px;"><i class="fa-solid fa-anchor" style="color:var(--muted);margin-right:4px;"></i>${u.source}</div>
+      </div>
+      <button class="btn btn-amber btn-sm" onclick="moveToAvailable(${i})"><i class="fa-solid fa-arrow-right"></i> Move to Available</button>
+    </div>`).join('');
+}
+
+function moveToAvailable(i) {
+  const u = upcomingData[i];
+  fishData.push({ id: fishData.length+1, emoji: u.emoji, name: u.name, price: u.price, qty: u.qty, inStock: true, cat:'Saltwater' });
+  upcomingData.splice(i, 1);
+  renderUpcoming();
+  renderFishGrid();
+}
+
+/* ────────── RENDER BUYERS ────────── */
+function renderBuyers() {
+  const colors = ['blue','amber','green','purple','blue','green'];
+  document.getElementById('buyersTableBody').innerHTML = buyersData.map((b,i) => `
+    <tr>
+      <td><div style="display:flex;align-items:center;gap:10px;"><div class="avatar ${colors[i]}">${b.name.charAt(0)}</div><div><div style="font-weight:600;font-size:0.85rem;">${b.name}</div><div style="font-size:0.72rem;color:var(--muted)">${b.contact}</div></div></div></td>
+      <td><span class="badge badge-blue">${b.type}</span></td>
+      <td><div style="font-size:0.8rem;">${b.phone}</div></td>
+      <td class="muted">${b.location}</td>
+      <td><strong>${b.orders}</strong></td>
+      <td><strong style="color:var(--blue)">₹${b.spent.toLocaleString()}</strong></td>
+      <td><span class="badge ${b.active?'badge-green':'badge-red'}">${b.active?'Active':'Inactive'}</span></td>
+      <td><button class="btn btn-ghost btn-sm">View History</button></td>
+    </tr>`).join('');
+}
+
+/* ────────── RENDER PAYMENTS ────────── */
+function renderPayments() {
+  const paid = [true,false,true,true,false,true,false,true];
+  document.getElementById('paymentsTableBody').innerHTML = orderData.map((o,i) => `
+    <tr>
+      <td><span style="font-family:monospace;font-size:0.8rem;color:var(--blue)">${o.id}</span></td>
+      <td>${o.buyer}</td>
+      <td>${o.fish}</td>
+      <td><strong class="pay-amount">₹${o.total.toLocaleString()}</strong></td>
+      <td><span class="badge ${paid[i]?'badge-green':'badge-amber'}">${paid[i]?'Paid':'Pending'}</span></td>
+      <td class="muted">${o.date}</td>
+      <td>${paid[i]?`<span style="color:var(--subtle);font-size:0.75rem;">Collected</span>`:`<button class="btn btn-success btn-sm" onclick="this.closest('td').innerHTML='<span style=\\'color:var(--subtle);font-size:0.75rem;\\'>Collected</span>'; this.closest('tr').querySelector('.badge').className='badge badge-green'; this.closest('tr').querySelector('.badge').textContent='Paid'">Mark Paid</button>`}</td>
+    </tr>`).join('');
+}
+
+/* ────────── TOP FISH & BUYERS (Analytics) ────────── */
+function renderTopFish() {
+  const data = [
+    { name:'Pomfret',  kg:1840, amount:956800 },
+    { name:'Surmai',   kg:1200, amount:816000 },
+    { name:'Hilsa',    kg: 980, amount:833000 },
+    { name:'Rohu',     kg:1600, amount:288000 },
+    { name:'Tilapia',  kg:1620, amount:243000 },
+  ];
+  document.getElementById('topFishList').innerHTML = data.map((f,i)=>`
+    <div class="top-fish-item">
+      <div class="top-fish-rank">${i+1}</div>
+      <div class="top-fish-info">
+        <div class="top-fish-name">${f.name}</div>
+        <div style="margin-top:4px;"><div class="progress-bar"><div class="progress-fill" style="width:${Math.round(f.kg/18.4)}%"></div></div></div>
+        <div class="top-fish-kg">${f.kg.toLocaleString()} kg sold</div>
+      </div>
+      <div class="top-fish-amount">₹${(f.amount/1000).toFixed(0)}k</div>
+    </div>`).join('');
+}
+
+function renderTopBuyers() {
+  const cols = ['blue','amber','green','purple','aqua'];
+  const sorted = [...buyersData].sort((a,b)=>b.spent-a.spent).slice(0,5);
+  document.getElementById('topBuyersList').innerHTML = sorted.map((b,i)=>`
+    <div class="top-fish-item">
+      <div class="avatar ${cols[i]}">${b.name.charAt(0)}</div>
+      <div class="top-fish-info">
+        <div class="top-fish-name">${b.name}</div>
+        <div style="margin-top:4px;"><div class="progress-bar"><div class="progress-fill" style="width:${Math.round(b.spent/2400)}%"></div></div></div>
+        <div class="top-fish-kg">${b.orders} orders</div>
+      </div>
+      <div class="top-fish-amount">₹${(b.spent/1000).toFixed(0)}k</div>
+    </div>`).join('');
+}
+
+/* ────────── CHARTS ────────── */
+let revenueChartInstance, statusChartInstance, trendChartInstance, categoryChartInstance;
+
+function getChartColors() {
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  return {
+    grid: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+    label: dark ? '#64748B' : '#94A3B8',
+  };
+}
+
+function initCharts() {
+  const colors = getChartColors();
+  const labels = ['Mar 7','Mar 9','Mar 11','Mar 13','Mar 15','Mar 17','Mar 19','Mar 21','Mar 23','Mar 25','Mar 27','Mar 29','Apr 1','Apr 3','Apr 5'];
+  const daily  = [8400,12000,9800,15000,11000,18000,14000,21000,17000,24000,19000,28000,22000,31000,26000];
+
+  if (revenueChartInstance) revenueChartInstance.destroy();
+  revenueChartInstance = new Chart(document.getElementById('revenueChart'), {
+    type:'line',
+    data:{
+      labels,
+      datasets:[{
+        label:'Revenue (₹)',
+        data: daily,
+        borderColor:'#1E90FF',
+        backgroundColor:'rgba(30,144,255,0.10)',
+        fill:true, tension:0.4, pointRadius:3,
+        pointBackgroundColor:'#1E90FF',
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:true,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{ grid:{color:colors.grid}, ticks:{color:colors.label,font:{size:10},maxRotation:0} },
+        y:{ grid:{color:colors.grid}, ticks:{color:colors.label,font:{size:10},callback:v=>'₹'+v.toLocaleString()} }
+      }
+    }
+  });
+
+  if (statusChartInstance) statusChartInstance.destroy();
+  statusChartInstance = new Chart(document.getElementById('statusChart'), {
+    type:'doughnut',
+    data:{
+      labels:['Delivered','Confirmed','Pending','Rejected'],
+      datasets:[{ data:[842,243,190,9], backgroundColor:['#10B981','#1E90FF','#EF9F27','#EF4444'], borderWidth:0, hoverOffset:6 }]
+    },
+    options:{ responsive:false, plugins:{legend:{display:false}}, cutout:'72%' }
+  });
+
+  const trendCtx = document.getElementById('trendChart');
+  if (trendCtx) {
+    if (trendChartInstance) trendChartInstance.destroy();
+    trendChartInstance = new Chart(trendCtx, {
+      type:'bar',
+      data:{
+        labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+        datasets:[{
+          label:'Revenue',
+          data:[180000,210000,190000,240000,220000,280000,260000,310000,290000,340000,380000,420000],
+          backgroundColor:'rgba(30,144,255,0.20)',
+          borderColor:'#1E90FF', borderWidth:2, borderRadius:6,
+        }]
+      },
+      options:{
+        responsive:true, maintainAspectRatio:true,
+        plugins:{legend:{display:false}},
+        scales:{
+          x:{grid:{color:colors.grid},ticks:{color:colors.label,font:{size:10}}},
+          y:{grid:{color:colors.grid},ticks:{color:colors.label,font:{size:10},callback:v=>'₹'+(v/1000)+'k'}}
+        }
+      }
+    });
+  }
+
+  const catCtx = document.getElementById('categoryChart');
+  if (catCtx) {
+    if (categoryChartInstance) categoryChartInstance.destroy();
+    categoryChartInstance = new Chart(catCtx, {
+      type:'pie',
+      data:{
+        labels:['Saltwater','Freshwater','Premium'],
+        datasets:[{ data:[48,32,20], backgroundColor:['#1E90FF','#10B981','#EF9F27'], borderWidth:0 }]
+      },
+      options:{ responsive:false, plugins:{legend:{position:'bottom',labels:{color:colors.label,font:{size:11}}}} }
+    });
+  }
+}
+
+function switchChart(mode, btn) {
+  document.querySelectorAll('[onclick^="switchChart"]').forEach(b=>{ b.style.background='transparent'; b.style.borderColor='var(--blue-bd)'; b.style.color='var(--blue)'; });
+  btn.style.background='var(--blue-lt)'; btn.style.borderColor='var(--blue)';
+  // chart update would go here
+}
+
+/* ────────── NAVIGATION ────────── */
+const titles = { dashboard:'Dashboard', 'fish-management':'Fish Management', 'upcoming-fish':'Upcoming Fish', orders:'Orders', buyers:'Buyers', payments:'Payments', analytics:'Analytics', settings:'Settings' };
+
+function navigate(id, el) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sb-link').forEach(l=>l.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(el) el.classList.add('active');
+  document.getElementById('topbarTitle').textContent = titles[id]||'';
+  if(id==='analytics') setTimeout(initCharts, 100);
+  closeSidebar();
+}
+
+/* ────────── MODALS ────────── */
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(el => el.addEventListener('click', e => { if(e.target===el) el.classList.remove('open'); }));
+
+/* ────────── SIDEBAR MOBILE ────────── */
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+}
+
+/* ────────── NOTIFICATIONS ────────── */
+function toggleNotif() { document.getElementById('notifPanel').classList.toggle('open'); }
+
+/* ────────── THEME ────────── */
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme');
+  setTheme(current === 'dark' ? 'light' : 'dark');
+}
+function setTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  document.getElementById('themeIcon').className = t==='dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+  if (revenueChartInstance || statusChartInstance) initCharts();
+}
+
+/* ────────── INIT ────────── */
+function initDashboard() {
+  renderRecentOrders();
+  renderOrdersTable();
+  renderFishGrid();
+  renderUpcoming();
+  renderBuyers();
+  renderPayments();
+  renderTopFish();
+  renderTopBuyers();
+  initCharts();
+  setTheme(document.documentElement.getAttribute('data-theme') || 'light');
+}
+
+document.addEventListener('DOMContentLoaded', initDashboard);
+</script>
+</body>
+</html>

@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FishMandi - Authentication</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Brand tokens */
+            --blue: #0A6EBD;
+            --blue-light: #2E9EE0;
+            --blue-dark: #084C83;
+            --yellow: #F7C948;
+            --teal: #0D9488;
+            --orange: #EA580C;
+
+            /* Grey scale */
+            --grey-900: #0F172A;
+            --grey-600: #475569;
+            --grey-50: #F1F5F9;
+            --white: #FFFFFF;
+
+            /* Semantic mappings — light mode */
+            --primary: var(--blue);
+            --primary-dark: var(--blue-dark);
+            --primary-light: var(--blue-light);
+            --bg-main: var(--grey-50);
+            --bg-card: var(--white);
+            --bg-sidebar: var(--blue);
+            --text-primary: var(--grey-900);
+            --text-secondary: var(--grey-600);
+            --border: #e2e8f0;
+            --error: #ef4444;
+            --success: var(--teal);
+            --input-bg: var(--grey-50);
+
+            /* Design tokens */
+            --radius-card: 20px;
+            --radius-sm: 10px;
+            --radius-pill: 50px;
+            --shadow-sm: 0 2px 8px rgba(10,110,189,0.15);
+            --shadow-md: 0 4px 20px rgba(10,110,189,0.22);
+            --shadow-lg: 0 8px 40px rgba(10,110,189,0.28);
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ── Sidebar ── */
+        .sidebar {
+            width: 380px;
+            background: linear-gradient(145deg, var(--blue-dark) 0%, var(--blue) 60%, var(--blue-light) 100%);
+            padding: 48px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: -60%;
+            right: -40%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(247,201,72,0.12) 0%, transparent 65%);
+            animation: float 20s infinite;
+        }
+
+        .sidebar::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -20%;
+            width: 140%;
+            height: 140%;
+            background: radial-gradient(circle, rgba(13,148,136,0.1) 0%, transparent 60%);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-25px, 25px) rotate(5deg); }
+        }
+
+        .logo-section {
+            position: relative;
+            z-index: 1;
+            margin-bottom: 56px;
+        }
+
+        .logo-icon {
+            width: 68px;
+            height: 68px;
+            background: rgba(255,255,255,0.15);
+            border-radius: var(--radius-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+            margin-bottom: 22px;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: var(--shadow-md);
+        }
+
+        .logo-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 38px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text .highlight {
+            color: var(--yellow);
+        }
+
+        .tagline {
+            font-size: 14px;
+            color: rgba(255,255,255,0.85);
+            line-height: 1.7;
+            font-weight: 400;
+        }
+
+        .features {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 22px;
+            color: white;
+        }
+
+        .feature-icon {
+            width: 42px;
+            height: 42px;
+            background: rgba(255,255,255,0.14);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .feature-text {
+            font-size: 14px;
+            line-height: 1.5;
+            font-weight: 500;
+        }
+
+        .footer-text {
+            position: relative;
+            z-index: 1;
+            font-size: 12px;
+            color: rgba(255,255,255,0.6);
+        }
+
+        /* ── Main Content ── */
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 48px;
+            position: relative;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+
+        .back-button:hover {
+            color: var(--blue-light);
+        }
+
+        /* ── Auth Card ── */
+        .auth-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-card);
+            padding: 48px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+        }
+
+        /* ── Tabs ── */
+        .tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 32px;
+            background: var(--bg-main);
+            padding: 5px;
+            border-radius: var(--radius-sm);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 11px 24px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: var(--blue);
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* ── Welcome ── */
+        .welcome-text {
+            margin-bottom: 32px;
+        }
+
+        .welcome-text h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.3px;
+        }
+
+        .welcome-text p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* ── Form Elements ── */
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: 0.02em;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 13px 16px;
+            background: var(--input-bg);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            color: var(--text-primary);
+            transition: all 0.25s;
+        }
+
+        .form-input::placeholder { color: var(--text-secondary); }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(10,110,189,0.13);
+        }
+
+        .form-input.error {
+            border-color: var(--error);
+        }
+
+        .form-input.error:focus {
+            box-shadow: 0 0 0 3px rgba(239,68,68,0.1);
+        }
+
+        .form-input:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--error);
+            font-size: 12px;
+            margin-top: 6px;
+        }
+
+        .success-message {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--success);
+            font-size: 12px;
+            margin-top: 6px;
+        }
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 13px 16px;
+            background: var(--input-bg);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            color: var(--text-primary);
+            cursor: pointer;
+            appearance: none;
+            transition: all 0.25s;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(10,110,189,0.13);
+        }
+
+        .form-select:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .select-wrapper::after {
+            content: '▼';
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: var(--text-secondary);
+            font-size: 11px;
+        }
+
+        /* ── Badge / highlight pill ── */
+        .role-badge {
+            display: inline-block;
+            background: var(--yellow);
+            color: var(--grey-900);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: var(--radius-pill);
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        /* ── Forgot / OTP link ── */
+        .forgot-password {
+            text-align: right;
+            margin-bottom: 22px;
+        }
+
+        .forgot-password a {
+            color: var(--blue-light);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .forgot-password a:hover { color: var(--blue); text-decoration: underline; }
+
+        /* ── Submit Button ── */
+        .submit-button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--blue) 0%, var(--blue-light) 100%);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: 'Poppins', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            letter-spacing: 0.02em;
+        }
+
+        .submit-button:hover:not(:disabled) {
+            background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue) 100%);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .submit-button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .submit-button .button-text { display: inline-block; }
+
+        .submit-button .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto;
+        }
+
+        .submit-button.loading .button-text { display: none; }
+        .submit-button.loading .spinner { display: block; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Divider ── */
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 22px 0;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .divider span { padding: 0 14px; }
+
+        /* ── Google Button ── */
+        .google-button {
+            width: 100%;
+            padding: 13px;
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            color: var(--text-primary);
+        }
+
+        .google-button:hover {
+            background: var(--input-bg);
+            border-color: var(--blue-light);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* ── OTP Section ── */
+        .otp-container { display: none; }
+        .otp-container.active { display: block; }
+
+        .otp-inputs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .otp-input {
+            width: 54px;
+            height: 54px;
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            background: var(--input-bg);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            transition: all 0.25s;
+        }
+
+        .otp-input:focus {
+            outline: none;
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(10,110,189,0.13);
+        }
+
+        .otp-info {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .otp-info p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .otp-info .phone-number {
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        .resend-link {
+            color: var(--blue-light);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .resend-link:hover { text-decoration: underline; color: var(--blue); }
+        .resend-link.disabled { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
+
+        /* ── Alert ── */
+        .alert {
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 22px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .alert-error {
+            background: rgba(239,68,68,0.1);
+            border: 1px solid var(--error);
+            color: var(--error);
+        }
+
+        .alert-success {
+            background: rgba(13,148,136,0.1);
+            border: 1px solid var(--teal);
+            color: var(--teal);
+        }
+
+        .alert-icon { font-size: 18px; }
+
+        /* ── Responsive ── */
+        @media (max-width: 1024px) { .sidebar { display: none; } }
+
+        @media (max-width: 640px) {
+            .main-content { padding: 20px; }
+            .auth-card { padding: 28px 20px; }
+            .welcome-text h1 { font-size: 24px; }
+            .otp-input { width: 44px; height: 44px; font-size: 18px; }
+            .otp-inputs { gap: 7px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo-section">
+                <div class="logo-icon"><i class="fa-solid fa-fish" style="color: rgb(255, 212, 59);"></i></div>
+                <div class="logo-text">Aro<span class="highlight">Wana</span></div>
+                <p class="tagline">Your all-in-one platform for fresh fish trading and marketplace management</p>
+            </div>
+
+            <div class="features">
+                <div class="feature-item">
+                    <div class="feature-icon">🎣</div>
+                    <div class="feature-text">Direct connection with fishermen</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fa-solid fa-shop" style="color: rgb(230, 121, 99);"></i></div>
+                    <div class="feature-text">Hotel & restaurant partnerships</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon"><i class="fa-solid fa-square-poll-vertical" style="color: rgb(99, 230, 190);"></i></div>
+                    <div class="feature-text">Real-time market pricing</div>
+                </div>
+            </div>
+
+            <div class="footer-text">© 2026 FishMandi · Trusted by fishermen nationwide</div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="back-button" onclick="window.history.back()">← Back to home</div>
+
+            <div class="auth-card">
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('signin')">Sign In</button>
+                    <button class="tab" onclick="switchTab('signup')">Create Account</button>
+                </div>
+
+                <div id="alert-container"></div>
+
+                <!-- Sign In Form -->
+                <div id="signin-form" class="form-container">
+                    <div class="welcome-text">
+                        <h1>Welcome back </h1>
+                        <p>Sign in to manage your fish marketplace</p>
+                    </div>
+
+                    <form onsubmit="handleSignIn(event)">
+                        <div class="form-group">
+                            <label class="form-label">Phone Number</label>
+                            <div class="input-wrapper">
+                                <input type="tel" class="form-input" id="signin-phone" placeholder="+91 98765 43210" maxlength="15">
+                            </div>
+                            <div class="error-message" id="signin-phone-error" style="display: none;">
+                                <span><i class="fa-solid fa-circle-exclamation" style="color: rgb(243, 21, 6);"></i></span>
+                                <span id="signin-phone-error-text"></span>
+                            </div>
+                        </div>
+
+                        <div class="forgot-password">
+                            <a href="#" onclick="showOTPSection(event, 'signin')">Login with OTP instead</a>
+                        </div>
+
+                        <button type="submit" class="submit-button" id="signin-submit">
+                            <span class="button-text">Sign In</span>
+                            <div class="spinner"></div>
+                        </button>
+                    </form>
+
+                    <div class="divider"><span>or continue with</span></div>
+
+                    <button class="google-button" onclick="handleGoogleLogin()">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M19.8 10.2273C19.8 9.51818 19.7364 8.83636 19.6182 8.18182H10V12.05H15.5818C15.3364 13.3 14.5909 14.3591 13.4727 15.0682V17.5773H16.7727C18.7091 15.8364 19.8 13.2727 19.8 10.2273Z" fill="#4285F4"/>
+                            <path d="M10 20C12.7 20 14.9636 19.1045 16.7727 17.5773L13.4727 15.0682C12.5227 15.6682 11.3182 16.0227 10 16.0227C7.39545 16.0227 5.19091 14.2636 4.35909 11.9H0.954545V14.4909C2.75455 18.0591 6.10909 20 10 20Z" fill="#34A853"/>
+                            <path d="M4.35909 11.9C4.15909 11.3 4.04545 10.6591 4.04545 10C4.04545 9.34091 4.15909 8.7 4.35909 8.1V5.50909H0.954545C0.281818 6.84545 -0.09091 8.38182 -0.09091 10C-0.09091 11.6182 0.281818 13.1545 0.954545 14.4909L4.35909 11.9Z" fill="#FBBC04"/>
+                            <path d="M10 3.97727C11.4409 3.97727 12.7273 4.48182 13.7364 5.43636L16.6545 2.51818C14.9545 0.909091 12.6909 0 10 0C6.10909 0 2.75455 1.94091 0.954545 5.50909L4.35909 8.1C5.19091 5.73636 7.39545 3.97727 10 3.97727Z" fill="#EA4335"/>
+                        </svg>
+                        Continue with Google
+                    </button>
+                </div>
+
+                <!-- Sign Up Form -->
+                <div id="signup-form" class="form-container" style="display: none;">
+                    <div class="welcome-text">
+                        <h1>Create Account </h1>
+                        <p>Join FishMandi marketplace today</p>
+                    </div>
+
+                    <form onsubmit="handleSignUp(event)">
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <div class="input-wrapper">
+                                <input type="text" class="form-input" id="signup-name" placeholder="Enter your full name">
+                            </div>
+                            <div class="error-message" id="signup-name-error" style="display: none;">
+                                <span><i class="fa-solid fa-circle-exclamation" style="color: rgb(243, 21, 6);"></i></span><span id="signup-name-error-text"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Phone Number</label>
+                            <div class="input-wrapper">
+                                <input type="tel" class="form-input" id="signup-phone" placeholder="+91 98765 43210" maxlength="15">
+                            </div>
+                            <div class="error-message" id="signup-phone-error" style="display: none;">
+                                <span>⚠️</span><span id="signup-phone-error-text"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Role</label>
+                            <div class="select-wrapper">
+                                <select class="form-select" id="signup-role">
+                                    <option value="">Select your role</option>
+                                    <option value="Fisherman">Fisherman</option>
+                                    <option value="Hotel">Hotel</option>
+                                    <option value="Restaurant">Restaurant</option>
+                                    <option value="Others">Others</option>
+                                </select>
+                            </div>
+                            <div class="error-message" id="signup-role-error" style="display: none;">
+                                <span>⚠️</span><span id="signup-role-error-text"></span>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="submit-button" id="signup-submit">
+                            <span class="button-text">Create Account</span>
+                            <div class="spinner"></div>
+                        </button>
+                    </form>
+
+                    <div class="divider"><span>or continue with</span></div>
+
+                    <button class="google-button" onclick="handleGoogleLogin()">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M19.8 10.2273C19.8 9.51818 19.7364 8.83636 19.6182 8.18182H10V12.05H15.5818C15.3364 13.3 14.5909 14.3591 13.4727 15.0682V17.5773H16.7727C18.7091 15.8364 19.8 13.2727 19.8 10.2273Z" fill="#4285F4"/>
+                            <path d="M10 20C12.7 20 14.9636 19.1045 16.7727 17.5773L13.4727 15.0682C12.5227 15.6682 11.3182 16.0227 10 16.0227C7.39545 16.0227 5.19091 14.2636 4.35909 11.9H0.954545V14.4909C2.75455 18.0591 6.10909 20 10 20Z" fill="#34A853"/>
+                            <path d="M4.35909 11.9C4.15909 11.3 4.04545 10.6591 4.04545 10C4.04545 9.34091 4.15909 8.7 4.35909 8.1V5.50909H0.954545C0.281818 6.84545 -0.09091 8.38182 -0.09091 10C-0.09091 11.6182 0.281818 13.1545 0.954545 14.4909L4.35909 11.9Z" fill="#FBBC04"/>
+                            <path d="M10 3.97727C11.4409 3.97727 12.7273 4.48182 13.7364 5.43636L16.6545 2.51818C14.9545 0.909091 12.6909 0 10 0C6.10909 0 2.75455 1.94091 0.954545 5.50909L4.35909 8.1C5.19091 5.73636 7.39545 3.97727 10 3.97727Z" fill="#EA4335"/>
+                        </svg>
+                        Continue with Google
+                    </button>
+                </div>
+
+                <!-- OTP Verification -->
+                <div id="otp-container" class="otp-container">
+                    <div class="welcome-text">
+                        <h1>Verify OTP 🔐</h1>
+                        <p>Enter the verification code</p>
+                    </div>
+
+                    <div class="otp-info">
+                        <p>We've sent a 6-digit code to</p>
+                        <p class="phone-number" id="otp-phone-display"></p>
+                    </div>
+
+                    <div class="otp-inputs">
+                        <input type="text" class="otp-input" maxlength="1" id="otp1" onkeyup="moveToNext(this, 'otp2')" onkeydown="moveToPrev(event, this, null)">
+                        <input type="text" class="otp-input" maxlength="1" id="otp2" onkeyup="moveToNext(this, 'otp3')" onkeydown="moveToPrev(event, this, 'otp1')">
+                        <input type="text" class="otp-input" maxlength="1" id="otp3" onkeyup="moveToNext(this, 'otp4')" onkeydown="moveToPrev(event, this, 'otp2')">
+                        <input type="text" class="otp-input" maxlength="1" id="otp4" onkeyup="moveToNext(this, 'otp5')" onkeydown="moveToPrev(event, this, 'otp3')">
+                        <input type="text" class="otp-input" maxlength="1" id="otp5" onkeyup="moveToNext(this, 'otp6')" onkeydown="moveToPrev(event, this, 'otp4')">
+                        <input type="text" class="otp-input" maxlength="1" id="otp6" onkeyup="handleOTPComplete()" onkeydown="moveToPrev(event, this, 'otp5')">
+                    </div>
+
+                    <div class="error-message" id="otp-error" style="display: none; justify-content: center;">
+                        <span>⚠️</span><span id="otp-error-text"></span>
+                    </div>
+
+                    <button type="button" class="submit-button" id="verify-otp-btn" onclick="verifyOTP()">
+                        <span class="button-text">Verify OTP</span>
+                        <div class="spinner"></div>
+                    </button>
+
+                    <div style="text-align: center; margin-top: 16px;">
+                        <span style="color: var(--text-secondary); font-size: 13px;">Didn't receive code? </span>
+                        <a href="#" class="resend-link" id="resend-link" onclick="resendOTP(event)">Resend OTP</a>
+                        <span id="resend-timer" style="color: var(--text-secondary); font-size: 13px; display: none;"></span>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 14px;">
+                        <a href="#" class="resend-link" onclick="backToForm(event)">← Back to form</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentMode = 'signin';
+        let otpTimer = null;
+        let otpCountdown = 30;
+        let currentPhone = '';
+
+        function switchTab(tab) {
+            const tabs = document.querySelectorAll('.tab');
+            const signinForm = document.getElementById('signin-form');
+            const signupForm = document.getElementById('signup-form');
+            const otpContainer = document.getElementById('otp-container');
+
+            tabs.forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            clearAlerts(); resetForms();
+
+            if (tab === 'signin') {
+                signinForm.style.display = 'block';
+                signupForm.style.display = 'none';
+                otpContainer.classList.remove('active');
+                currentMode = 'signin';
+            } else {
+                signinForm.style.display = 'none';
+                signupForm.style.display = 'block';
+                otpContainer.classList.remove('active');
+                currentMode = 'signup';
+            }
+        }
+
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alert-container');
+            const alertClass = type === 'error' ? 'alert-error' : 'alert-success';
+            const icon = type === 'error' ? '❌' : '✅';
+            alertContainer.innerHTML = `<div class="alert ${alertClass}"><span class="alert-icon">${icon}</span><span>${message}</span></div>`;
+            setTimeout(() => { alertContainer.innerHTML = ''; }, 5000);
+        }
+
+        function clearAlerts() { document.getElementById('alert-container').innerHTML = ''; }
+
+        function showError(fieldId, message) {
+            const input = document.getElementById(fieldId);
+            const errorDiv = document.getElementById(`${fieldId}-error`);
+            const errorText = document.getElementById(`${fieldId}-error-text`);
+            input.classList.add('error');
+            errorDiv.style.display = 'flex';
+            errorText.textContent = message;
+        }
+
+        function clearError(fieldId) {
+            const input = document.getElementById(fieldId);
+            const errorDiv = document.getElementById(`${fieldId}-error`);
+            input.classList.remove('error');
+            errorDiv.style.display = 'none';
+        }
+
+        function clearAllErrors() {
+            ['signin-phone','signup-name','signup-phone','signup-role'].forEach(field => {
+                const input = document.getElementById(field);
+                if (input) clearError(field);
+            });
+        }
+
+        function validatePhone(phone) {
+            return /^[\+]?[0-9]{10,15}$/.test(phone.replace(/\s/g, ''));
+        }
+
+        function validateName(name) { return name && name.trim().length >= 2; }
+
+        async function handleSignIn(event) {
+            event.preventDefault();
+            clearAllErrors(); clearAlerts();
+            const phone = document.getElementById('signin-phone').value.trim();
+            const submitBtn = document.getElementById('signin-submit');
+
+            if (!phone) { showError('signin-phone', 'Phone number is required'); return; }
+            if (!validatePhone(phone)) { showError('signin-phone', 'Please enter a valid phone number'); return; }
+
+            submitBtn.classList.add('loading'); submitBtn.disabled = true;
+            setTimeout(() => {
+                submitBtn.classList.remove('loading'); submitBtn.disabled = false;
+                currentPhone = phone; showOTPScreen(phone);
+                showAlert('OTP sent successfully to your phone!', 'success');
+            }, 1500);
+        }
+
+        async function handleSignUp(event) {
+            event.preventDefault();
+            clearAllErrors(); clearAlerts();
+            const name = document.getElementById('signup-name').value.trim();
+            const phone = document.getElementById('signup-phone').value.trim();
+            const role = document.getElementById('signup-role').value;
+            const submitBtn = document.getElementById('signup-submit');
+            let hasError = false;
+
+            if (!name) { showError('signup-name', 'Name is required'); hasError = true; }
+            else if (!validateName(name)) { showError('signup-name', 'Name must be at least 2 characters'); hasError = true; }
+            if (!phone) { showError('signup-phone', 'Phone number is required'); hasError = true; }
+            else if (!validatePhone(phone)) { showError('signup-phone', 'Please enter a valid phone number'); hasError = true; }
+            if (!role) { showError('signup-role', 'Please select your role'); hasError = true; }
+            if (hasError) return;
+
+            submitBtn.classList.add('loading'); submitBtn.disabled = true;
+            setTimeout(() => {
+                submitBtn.classList.remove('loading'); submitBtn.disabled = false;
+                currentPhone = phone; showOTPScreen(phone);
+                showAlert('Account created! Please verify your phone number.', 'success');
+            }, 1500);
+        }
+
+        function showOTPSection(event, mode) {
+            event.preventDefault();
+            const phone = document.getElementById(`${mode}-phone`).value.trim();
+            if (!phone) { showError(`${mode}-phone`, 'Please enter phone number first'); return; }
+            if (!validatePhone(phone)) { showError(`${mode}-phone`, 'Please enter a valid phone number'); return; }
+            currentPhone = phone; showOTPScreen(phone);
+        }
+
+        function showOTPScreen(phone) {
+            document.getElementById('signin-form').style.display = 'none';
+            document.getElementById('signup-form').style.display = 'none';
+            document.getElementById('otp-container').classList.add('active');
+            document.getElementById('otp-phone-display').textContent = phone;
+            for (let i = 1; i <= 6; i++) document.getElementById(`otp${i}`).value = '';
+            document.getElementById('otp1').focus();
+            startResendTimer();
+        }
+
+        function backToForm(event) {
+            event.preventDefault(); clearAlerts(); clearOTPTimer();
+            document.getElementById('otp-container').classList.remove('active');
+            if (currentMode === 'signin') document.getElementById('signin-form').style.display = 'block';
+            else document.getElementById('signup-form').style.display = 'block';
+        }
+
+        function moveToNext(current, nextFieldId) {
+            if (current.value.length === 1 && nextFieldId) document.getElementById(nextFieldId).focus();
+        }
+
+        function moveToPrev(event, current, prevFieldId) {
+            if (event.key === 'Backspace' && current.value.length === 0 && prevFieldId)
+                document.getElementById(prevFieldId).focus();
+        }
+
+        function handleOTPComplete() {}
+
+        async function verifyOTP() {
+            clearAlerts();
+            document.getElementById('otp-error').style.display = 'none';
+            let otp = '';
+            for (let i = 1; i <= 6; i++) otp += document.getElementById(`otp${i}`).value;
+            if (otp.length !== 6) {
+                document.getElementById('otp-error').style.display = 'flex';
+                document.getElementById('otp-error-text').textContent = 'Please enter complete OTP';
+                return;
+            }
+            const verifyBtn = document.getElementById('verify-otp-btn');
+            verifyBtn.classList.add('loading'); verifyBtn.disabled = true;
+            setTimeout(() => {
+                verifyBtn.classList.remove('loading'); verifyBtn.disabled = false;
+                if (otp === '123456') {
+                    showAlert('Phone verified successfully! Redirecting...', 'success');
+                    setTimeout(() => { console.log('Redirect to dashboard'); }, 1500);
+                } else {
+                    document.getElementById('otp-error').style.display = 'flex';
+                    document.getElementById('otp-error-text').textContent = 'Invalid OTP. Please try again.';
+                }
+            }, 1500);
+        }
+
+        function resendOTP(event) {
+            event.preventDefault(); clearAlerts();
+            showAlert('OTP sent successfully!', 'success');
+            for (let i = 1; i <= 6; i++) document.getElementById(`otp${i}`).value = '';
+            document.getElementById('otp1').focus();
+            startResendTimer();
+        }
+
+        function startResendTimer() {
+            clearOTPTimer(); otpCountdown = 30;
+            const resendLink = document.getElementById('resend-link');
+            const resendTimer = document.getElementById('resend-timer');
+            resendLink.classList.add('disabled');
+            resendLink.style.display = 'none';
+            resendTimer.style.display = 'inline';
+            otpTimer = setInterval(() => {
+                otpCountdown--;
+                resendTimer.textContent = `Resend in ${otpCountdown}s`;
+                if (otpCountdown <= 0) {
+                    clearOTPTimer();
+                    resendLink.classList.remove('disabled');
+                    resendLink.style.display = 'inline';
+                    resendTimer.style.display = 'none';
+                }
+            }, 1000);
+        }
+
+        function clearOTPTimer() {
+            if (otpTimer) { clearInterval(otpTimer); otpTimer = null; }
+        }
+
+        function handleGoogleLogin() { showAlert('Google login integration coming soon!', 'success'); }
+
+        function resetForms() {
+            document.getElementById('signin-phone').value = '';
+            document.getElementById('signup-name').value = '';
+            document.getElementById('signup-phone').value = '';
+            document.getElementById('signup-role').value = '';
+            clearAllErrors();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const otpInputs = document.querySelectorAll('.otp-input');
+            otpInputs.forEach(input => {
+                input.addEventListener('paste', (e) => {
+                    e.preventDefault();
+                    const pasteData = e.clipboardData.getData('text').slice(0, 6);
+                    for (let i = 0; i < pasteData.length; i++) {
+                        const otpInput = document.getElementById(`otp${i + 1}`);
+                        if (otpInput) otpInput.value = pasteData[i];
+                    }
+                    if (pasteData.length === 6) document.getElementById('otp6').focus();
+                });
+                input.addEventListener('input', (e) => {
+                    e.target.value = e.target.value.replace(/[^0-9]/g, '');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
