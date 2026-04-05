@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AROWANA</title>
+    <link rel="icon" href="data:,">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -104,8 +105,7 @@
         .stat-item { text-align: center; padding: 16px; background: var(--white); border: 1px solid var(--s100); border-radius: var(--radius-sm); }
         .stat-item h3 { font-size: 2rem; background: linear-gradient(120deg, var(--blue), var(--aqua)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4px; }
         .stat-item p { font-size: 0.85rem; }
-        .hero-image { position: relative; animation: fadeIn 1s ease-out 0.3s both; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .hero-image { position: relative; }
         .hero-img-card { position: relative; border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 28px 80px rgba(30,144,255,0.18); }
         .hero-img-card img { width: 100%; height: auto; }
         .quality-badge { position: absolute; bottom: 24px; right: 24px; background: var(--white); padding: 12px 20px; border-radius: var(--radius); box-shadow: 0 8px 28px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 8px; font-weight: 600; color: var(--green); font-size: 0.9rem; }
@@ -122,11 +122,10 @@
         .filter-bar select { background: var(--white); border: 1px solid var(--s200); border-radius: var(--radius-sm); padding: 12px 16px; font-size: 0.9rem; color: var(--s700); cursor: pointer; min-width: 150px; transition: all var(--ease); }
         .filter-bar select:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-lt); }
         .fish-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(300px,1fr)); gap: 24px; }
-        .fish-card { background: var(--white); border: 1px solid var(--s100); border-radius: var(--radius); overflow: hidden; transition: all var(--ease); }
-        .fish-card:hover { transform: translateY(-6px); box-shadow: 0 24px 68px rgba(30,144,255,0.12); }
+        .fish-card { background: var(--white); border: 1px solid var(--s100); border-radius: var(--radius); overflow: hidden; }
+        .fish-card:hover { box-shadow: 0 24px 68px rgba(30,144,255,0.12); }
         .fish-card-image { position: relative; height: 220px; overflow: hidden; }
-        .fish-card-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
-        .fish-card:hover .fish-card-image img { transform: scale(1.08); }
+        .fish-card-image img { width: 100%; height: 100%; object-fit: cover; }
         .fish-badge { position: absolute; top: 12px; right: 12px; padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; background: var(--blue); color: white; }
         .fish-badge.premium { background: var(--amber); color: var(--s800); }
         .fish-badge.economy { background: var(--green); color: white; }
@@ -139,11 +138,13 @@
         .fish-price-unit { font-size: 0.9rem; color: var(--s400); }
         .fish-stock { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: var(--s50); border-radius: var(--radius-sm); margin: 12px 0; font-size: 0.9rem; }
         .fish-stock-value { font-weight: 600; color: var(--green); }
-        .fish-quantity { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-        .qty-btn { width: 36px; height: 36px; border: 1px solid var(--s200); background: var(--white); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; color: var(--blue); transition: all var(--ease); cursor: pointer; line-height: 1; }
+        .fish-quantity { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 16px; }
+        .qty-btn { width: 36px; height: 36px; border: 1px solid var(--s200); background: var(--white); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; color: var(--blue); cursor: pointer; line-height: 1; }
         .qty-btn:hover:not(:disabled) { background: var(--blue-lt); border-color: var(--blue); }
         .qty-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-        .qty-display { flex: 1; text-align: center; font-size: 1.1rem; font-weight: 600; }
+        .qty-display { width: 110px; }
+        .qty-input { width: 100%; text-align: center; font-size: 1rem; font-weight: 600; border: 1px solid var(--s200); border-radius: 8px; padding: 8px 10px; color: var(--s800); }
+        .qty-input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-lt); }
         .add-to-cart-btn { width: 100%; padding: 12px; background: linear-gradient(135deg, var(--blue), var(--aqua)); color: white; border: none; border-radius: var(--radius-sm); font-weight: 600; font-size: 0.95rem; transition: all var(--ease); cursor: pointer; font-family: var(--ff-sans); }
         .add-to-cart-btn:hover:not(:disabled) { background: linear-gradient(135deg, var(--blue-dk), var(--blue)); transform: translateY(-2px); }
         .add-to-cart-btn:disabled { background: var(--s200); color: var(--s400); cursor: not-allowed; }
@@ -287,6 +288,14 @@
     </style>
 </head>
 <body>
+    <!-- Authentication Scripts -->
+    <script src="js/auth.js"></script>
+    <script>
+        // Require authentication to access this page
+        if (!requireAuth()) {
+            // Redirect will happen in requireAuth()
+        }
+    </script>
 
 <!-- Navigation -->
 <nav class="navbar" id="navbar">
@@ -412,24 +421,24 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>First Name</label>
-                        <input type="text" placeholder="Rajesh">
+                        <input type="text" id="contactFirstName" placeholder="Rajesh">
                     </div>
                     <div class="form-group">
                         <label>Last Name</label>
-                        <input type="text" placeholder="Kumar">
+                        <input type="text" id="contactLastName" placeholder="Kumar">
                     </div>
                 </div>
                 <div class="form-group">
                     <label>Business Email</label>
-                    <input type="email" placeholder="rajesh@oceanview.com">
+                    <input type="email" id="contactEmail" placeholder="rajesh@oceanview.com">
                 </div>
                 <div class="form-group">
                     <label>Phone Number</label>
-                    <input type="tel" placeholder="+91 98765 43210">
+                    <input type="tel" id="contactPhone" placeholder="+91 98765 43210">
                 </div>
                 <div class="form-group">
                     <label>Subject</label>
-                    <select>
+                    <select id="contactSubject">
                         <option>Bulk Order Enquiry</option>
                         <option>Pricing Information</option>
                         <option>Partnership Opportunity</option>
@@ -439,7 +448,7 @@
                 </div>
                 <div class="form-group">
                     <label>Message</label>
-                    <textarea rows="5" placeholder="Tell us about your requirements..."></textarea>
+                    <textarea rows="5" id="contactMessage" placeholder="Tell us about your requirements..."></textarea>
                 </div>
                 <button class="btn btn-primary full-width" onclick="handleContactSubmit()">Send Message</button>
             </div>
@@ -475,6 +484,13 @@
                         <div>
                             <h4>Warehouse Address</h4>
                             <p>Plot 47, Sassoon Docks Complex, Colaba, Mumbai &ndash; 400005, Maharashtra</p>
+                        </div>
+                    </div>
+                    <div class="contact-info-item">
+                        <div class="contact-icon green">&#128279;</div>
+                        <div>
+                            <h4>Backend API</h4>
+                            <p><a href="https://techforgeinnovators.onrender.com" target="_blank" rel="noopener noreferrer">https://techforgeinnovators.onrender.com</a></p>
                         </div>
                     </div>
                 </div>
@@ -530,14 +546,14 @@
             <div class="profile-card">
                 <h3>Business Information</h3>
                 <div class="profile-info">
-                    <div class="info-row"><label>Business Name</label><input type="text" value="Ocean View Restaurant" readonly></div>
-                    <div class="info-row"><label>Business Type</label><input type="text" value="Fine Dining Restaurant" readonly></div>
-                    <div class="info-row"><label>Contact Person</label><input type="text" value="Rajesh Kumar" readonly></div>
-                    <div class="info-row"><label>Phone</label><input type="text" value="+91 98765 43210" readonly></div>
-                    <div class="info-row"><label>Email</label><input type="text" value="rajesh@oceanview.com" readonly></div>
-                    <div class="info-row"><label>Address</label><textarea rows="3" readonly>123 Marine Drive, Mumbai, Maharashtra - 400001</textarea></div>
+                    <div class="info-row"><label>Business Name</label><input type="text" id="profileBusinessName" value="" readonly></div>
+                    <div class="info-row"><label>Business Type</label><input type="text" id="profileBusinessType" value="" readonly></div>
+                    <div class="info-row"><label>Contact Person</label><input type="text" id="profileContactPerson" value="" readonly></div>
+                    <div class="info-row"><label>Phone</label><input type="text" id="profilePhone" value="" readonly></div>
+                    <div class="info-row"><label>Email</label><input type="text" id="profileEmail" value="" readonly></div>
+                    <div class="info-row"><label>Address</label><textarea rows="3" id="profileAddress" readonly></textarea></div>
                 </div>
-                <button class="btn btn-ghost" onclick="alert('Edit functionality coming soon!')">Edit Profile</button>
+                <button class="btn btn-ghost" id="profileEditBtn" onclick="toggleProfileEdit(this)">Edit Profile</button>
             </div>
             <div class="profile-card">
                 <h3>Order Statistics</h3>
@@ -612,17 +628,140 @@
 let cart = [];
 let orders = [];
 let fishQuantities = {};
+let isProfileEditMode = false;
 
-const fishData = [
-    { id:1, name:'Fresh Salmon', pricePerKg:850, availableQuantity:500, inStock:true, source:'Norwegian Waters', image:'https://images.unsplash.com/photo-1574781330885-b5bd0c8cb6ef?w=800&q=80', category:'Premium', minOrder:10 },
-    { id:2, name:'Tuna', pricePerKg:650, availableQuantity:350, inStock:true, source:'Indian Ocean', image:'https://images.unsplash.com/photo-1559627811-5d1c5ece9e29?w=800&q=80', category:'Popular', minOrder:15 },
-    { id:3, name:'Pomfret', pricePerKg:450, availableQuantity:200, inStock:true, source:'Mumbai Coast', image:'https://images.unsplash.com/photo-1544943910-4c1dc44aab44?w=800&q=80', category:'Local', minOrder:20 },
-    { id:4, name:'King Fish', pricePerKg:550, availableQuantity:150, inStock:true, source:'Kerala Coast', image:'https://images.unsplash.com/photo-1535591273668-578e31182c4f?w=800&q=80', category:'Premium', minOrder:10 },
-    { id:5, name:'Mackerel', pricePerKg:320, availableQuantity:400, inStock:true, source:'Goa Waters', image:'https://images.unsplash.com/photo-1560155016-bd4879ae8f21?w=800&q=80', category:'Economy', minOrder:25 },
-    { id:6, name:'Prawns (Large)', pricePerKg:950, availableQuantity:0, inStock:false, source:'Andhra Coast', image:'https://images.unsplash.com/photo-1559717201-fbb671ff56b7?w=800&q=80', category:'Premium', minOrder:5 },
-    { id:7, name:'Red Snapper', pricePerKg:720, availableQuantity:180, inStock:true, source:'Arabian Sea', image:'https://images.unsplash.com/photo-1599084993091-1cb5c0721cc6?w=800&q=80', category:'Premium', minOrder:12 },
-    { id:8, name:'Sardines', pricePerKg:280, availableQuantity:600, inStock:true, source:'Karnataka Coast', image:'https://images.unsplash.com/photo-1534043464124-3be32fe000c9?w=800&q=80', category:'Economy', minOrder:30 }
-];
+let fishData = [];
+
+const BACKEND_BASE = 'https://techforgeinnovators.onrender.com';
+const HOTEL_API_BASE = `${BACKEND_BASE}/v1/api`;
+const ROUTES = {
+    fish: '/fish',
+    orders: '/orders',
+    orderStatus: (id) => `/orders/${id}/status`,
+    profile: '/profile',
+    contact: '/contact'
+};
+
+async function apiFetch(path, method = 'GET', body = null, didRetry = false) {
+    const options = {
+        method,
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' }
+    };
+    if (body !== null) {
+        options.body = JSON.stringify(body);
+    }
+
+    const res = await fetch(`${HOTEL_API_BASE}${path}`, options);
+
+    if (res.status === 401 && !didRetry && typeof refreshAccessToken === 'function') {
+        const refreshed = await refreshAccessToken();
+        if (refreshed) {
+            return apiFetch(path, method, body, true);
+        }
+    }
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+        if (res.status === 401) {
+            if (typeof clearTokens === 'function') clearTokens();
+            window.location.href = 'login.html';
+        }
+        throw new Error(data.message || `HTTP ${res.status}`);
+    }
+    return data;
+}
+
+function normalizeFish(raw) {
+    const availableQuantity = Number(raw.availableQty ?? raw.quantity ?? raw.availableQuantity ?? 0);
+    const minOrder = Number(raw.minOrder ?? raw.minimumOrder ?? 10);
+    const inStock = typeof raw.inStock === 'boolean' ? raw.inStock : availableQuantity > 0;
+
+    return {
+        id: raw._id || raw.id || Date.now() + Math.random(),
+        name: raw.name || 'Unknown Fish',
+        pricePerKg: Number(raw.pricePerKg ?? raw.price ?? 0),
+        availableQuantity,
+        inStock,
+        source: raw.source || raw.location || 'Arowana Supply',
+        image: raw.image || raw.imageUrl || 'https://images.unsplash.com/photo-1544943910-4c1dc44aab44?w=800&q=80',
+        category: raw.category || 'Popular',
+        minOrder: Number.isFinite(minOrder) && minOrder > 0 ? minOrder : 10
+    };
+}
+
+function normalizeOrder(raw) {
+    const rawItems = Array.isArray(raw.items) ? raw.items : [];
+    return {
+        id: raw.orderId || raw._id || raw.id || ('ORD' + Date.now()),
+        date: raw.createdAt || raw.date || new Date().toISOString(),
+        status: raw.status ? String(raw.status).charAt(0).toUpperCase() + String(raw.status).slice(1).toLowerCase() : 'Pending',
+        total: Number(raw.totalAmount ?? raw.total ?? 0),
+        items: rawItems.map((item) => ({
+            id: item.fishId || item.id || item._id || Date.now() + Math.random(),
+            name: item.name || item.fishName || 'Fish Item',
+            pricePerKg: Number(item.pricePerKg ?? item.price ?? 0),
+            quantity: Number(item.quantityKg ?? item.quantity ?? 0),
+            image: item.image || item.imageUrl || 'https://images.unsplash.com/photo-1544943910-4c1dc44aab44?w=800&q=80'
+        }))
+    };
+}
+
+function resetFishQuantities() {
+    fishQuantities = {};
+    fishData.forEach(f => {
+        const min = Number.isFinite(f.minOrder) && f.minOrder > 0 ? f.minOrder : 10;
+        const max = Number.isFinite(f.availableQuantity) && f.availableQuantity > 0 ? f.availableQuantity : min;
+        fishQuantities[f.id] = Math.min(min, max);
+    });
+}
+
+async function loadFishFromApi() {
+    try {
+        const data = await apiFetch(ROUTES.fish);
+        const list = data.data || data.fish || data;
+        fishData = Array.isArray(list) ? list.map(normalizeFish) : [];
+        resetFishQuantities();
+    } catch (_) {
+        fishData = [];
+    }
+}
+
+async function loadOrdersFromApi() {
+    try {
+        const data = await apiFetch(ROUTES.orders);
+        const list = data.data || data.orders || data;
+        orders = Array.isArray(list) ? list.map(normalizeOrder) : [];
+    } catch (_) {
+        orders = [];
+    }
+}
+
+async function loadProfileFromApi() {
+    const fallbackName = localStorage.getItem('userName') || 'Arowana User';
+    const fallbackEmail = localStorage.getItem('userEmail') || '';
+
+    function applyProfile(p = {}) {
+        document.getElementById('profileBusinessName').value = p.businessName || p.hotelName || p.restaurantName || p.name || fallbackName;
+        document.getElementById('profileBusinessType').value = p.businessType || p.type || p.role || '';
+        document.getElementById('profileContactPerson').value = p.contactPerson || p.contactName || p.ownerName || p.name || fallbackName;
+        document.getElementById('profilePhone').value = p.phone || p.mobile || p.phonenumber || '';
+        document.getElementById('profileEmail').value = p.email || fallbackEmail;
+        document.getElementById('profileAddress').value = p.address || p.location || '';
+    }
+
+    try {
+        const data = await apiFetch(ROUTES.profile);
+        const p = data.data || data.profile || data;
+        if (!p || typeof p !== 'object') {
+            applyProfile();
+            return;
+        }
+        applyProfile(p);
+    } catch (_) {
+        applyProfile();
+    }
+}
 
 // ── SCROLL SPY ──────────────────────────────────────────────────────────────
 const sections = ['home','browse','orders','contact','profile'];
@@ -645,10 +784,14 @@ function updateActiveNav() {
 }
 
 // ── INIT ─────────────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     loadCartFromStorage();
-    loadOrdersFromStorage();
-    fishData.forEach(f => { fishQuantities[f.id] = f.minOrder; });
+    resetFishQuantities();
+
+    await loadFishFromApi();
+    await loadOrdersFromApi();
+    await loadProfileFromApi();
+
     renderFishGrid();
     renderOrders();
     updateCartCount();
@@ -683,9 +826,12 @@ function renderFishGrid() {
 }
 
 function createFishCard(fish) {
-    const qty = fishQuantities[fish.id];
+    const qty = Number.isFinite(fishQuantities[fish.id]) ? fishQuantities[fish.id] : fish.minOrder;
     const badgeClass = fish.inStock ? fish.category.toLowerCase() : 'out-of-stock';
     const badgeText = fish.inStock ? fish.category : 'Out of Stock';
+    const safeFishId = String(fish.id)
+        .replace(/\\/g, '\\\\')
+        .replace(/'/g, "\\'");
     return `<div class="fish-card">
         <div class="fish-card-image">
             <img src="${fish.image}" alt="${fish.name}" loading="lazy">
@@ -701,21 +847,43 @@ function createFishCard(fish) {
                 <span class="fish-stock-value">${fish.availableQuantity} kg</span>
             </div>
             <div class="fish-quantity">
-                <button class="qty-btn" onclick="changeQty(${fish.id},-1)" ${qty <= fish.minOrder ? 'disabled' : ''}>&#8722;</button>
-                <div class="qty-display">${qty} kg</div>
-                <button class="qty-btn" onclick="changeQty(${fish.id},1)" ${qty >= fish.availableQuantity ? 'disabled' : ''}>&#43;</button>
+                <button class="qty-btn" onclick="changeQty('${safeFishId}',-1)" ${(qty - 5) < fish.minOrder ? 'disabled' : ''}>&#8722;</button>
+                <div class="qty-display">
+                    <input
+                        class="qty-input"
+                        type="number"
+                        min="${fish.minOrder}"
+                        max="${fish.availableQuantity}"
+                        step="1"
+                        value="${qty}"
+                        oninput="setQty('${safeFishId}', this.value)"
+                    />
+                </div>
+                <button class="qty-btn" onclick="changeQty('${safeFishId}',1)" ${(qty + 5) > fish.availableQuantity ? 'disabled' : ''}>&#43;</button>
             </div>
-            <button class="add-to-cart-btn" onclick="addToCart(${fish.id})">Add to Cart</button>
+            <button class="add-to-cart-btn" onclick="addToCart('${safeFishId}')">Add to Cart</button>
             ` : `<button class="add-to-cart-btn" disabled>Out of Stock</button>`}
         </div>
     </div>`;
 }
 
 function changeQty(id, dir) {
-    const fish = fishData.find(f => f.id === id);
+    const key = String(id);
+    const fish = fishData.find(f => String(f.id) === key);
     if(!fish) return;
-    if(dir > 0 && fishQuantities[id] < fish.availableQuantity) fishQuantities[id] += 10;
-    if(dir < 0 && fishQuantities[id] > fish.minOrder) fishQuantities[id] = Math.max(fish.minOrder, fishQuantities[id] - 10);
+    const current = Number(fishQuantities[key] ?? fish.minOrder);
+    if(dir > 0 && current < fish.availableQuantity) fishQuantities[key] = Math.min(fish.availableQuantity, current + 5);
+    if(dir < 0 && current > fish.minOrder) fishQuantities[key] = Math.max(fish.minOrder, current - 5);
+    renderFishGrid();
+}
+
+function setQty(id, value) {
+    const key = String(id);
+    const fish = fishData.find(f => String(f.id) === key);
+    if(!fish) return;
+    const parsed = Number(value);
+    if(!Number.isFinite(parsed)) return;
+    fishQuantities[key] = Math.max(fish.minOrder, Math.min(fish.availableQuantity, Math.round(parsed)));
     renderFishGrid();
 }
 
@@ -799,22 +967,36 @@ function updateCartCount() {
 }
 
 // ── ORDERS ────────────────────────────────────────────────────────────────────
-function placeOrder() {
+async function placeOrder() {
     if(!cart.length) return;
-    const order = {
-        id:'ORD'+Date.now(),
-        date:new Date().toISOString(),
-        items:[...cart],
-        total:cart.reduce((s,i) => s+(i.quantity*i.pricePerKg),0),
-        status:'Pending'
-    };
-    orders.unshift(order);
-    saveOrdersToStorage();
+    const totalAmount = cart.reduce((s,i) => s+(i.quantity*i.pricePerKg),0);
+
+    try {
+        const payload = {
+            items: cart.map(item => ({
+                fishId: item.id,
+                quantityKg: item.quantity,
+                pricePerKg: item.pricePerKg
+            })),
+            totalAmount
+        };
+        const created = await apiFetch(ROUTES.orders, 'POST', payload);
+        const normalized = normalizeOrder(created.data || created.order || created);
+        if (!normalized || !normalized.id) {
+            showNotification('Order created but response is incomplete');
+            return;
+        }
+        orders.unshift(normalized);
+    } catch (err) {
+        showNotification(err.message || 'Could not place order');
+        return;
+    }
+
     cart = [];
     saveCartToStorage();
     updateCartCount();
     closeCart();
-    showNotification('Order placed! ID: '+order.id);
+    showNotification('Order placed successfully');
     renderOrders();
     updateProfileStats();
     // Smooth scroll to orders section
@@ -857,15 +1039,21 @@ function createOrderCard(order) {
             <div class="order-total">Total: &#8377;${order.total.toLocaleString('en-IN')}</div>
             <div class="order-actions">
                 ${order.status === 'Confirmed' ? `<button class="btn btn-primary" onclick="initiatePayment('${order.id}')">Pay Now</button>` : ''}
-                ${order.status === 'Pending' ? `<button class="btn btn-ghost" onclick="simulateConfirmation('${order.id}')">Simulate Confirmation</button>` : ''}
             </div>
         </div>
     </div>`;
 }
 
-function simulateConfirmation(id) {
-    const o = orders.find(o => o.id === id);
-    if(o) { o.status = 'Confirmed'; saveOrdersToStorage(); renderOrders(); updateProfileStats(); showNotification('Order confirmed! Proceed to payment.'); }
+async function simulateConfirmation(id) {
+    try {
+        await apiFetch(ROUTES.orderStatus(id), 'PATCH', { status: 'confirmed' });
+        await loadOrdersFromApi();
+        renderOrders();
+        updateProfileStats();
+        showNotification('Order confirmed! Proceed to payment.');
+    } catch (err) {
+        showNotification(err.message || 'Could not confirm order');
+    }
 }
 
 function initiatePayment(id) {
@@ -886,20 +1074,19 @@ function closePaymentModal(e) {
     document.body.style.overflow = '';
 }
 
-function processPayment() {
+async function processPayment() {
     const modal = document.getElementById('paymentModal');
     const id = modal.dataset.orderId;
     const method = document.querySelector('input[name="payment"]:checked').value;
-    const o = orders.find(o => o.id === id);
-    if(o) {
-        o.status = 'Delivered';
-        o.paymentMethod = method;
-        o.paidAt = new Date().toISOString();
-        saveOrdersToStorage();
+    try {
+        await apiFetch(ROUTES.orderStatus(id), 'PATCH', { status: 'delivered', paymentMethod: method });
+        await loadOrdersFromApi();
         renderOrders();
         updateProfileStats();
         closePaymentModal();
         showNotification('Payment successful via '+method.toUpperCase()+'!');
+    } catch (err) {
+        showNotification(err.message || 'Payment update failed');
     }
 }
 
@@ -912,13 +1099,75 @@ function updateProfileStats() {
 }
 
 // ── CONTACT ───────────────────────────────────────────────────────────────────
-function handleContactSubmit() { showNotification('Message sent! We will get back to you within 24 hours.'); }
+async function handleContactSubmit() {
+    const getVal = (id) => {
+        const el = document.getElementById(id);
+        return el && typeof el.value === 'string' ? el.value.trim() : '';
+    };
+
+    const profileName = getVal('profileContactPerson') || getVal('profileBusinessName') || localStorage.getItem('userName') || '';
+    const profileEmail = getVal('profileEmail') || localStorage.getItem('userEmail') || '';
+
+    const typedFirstName = getVal('contactFirstName');
+    const typedLastName = getVal('contactLastName');
+    const fullName = `${typedFirstName} ${typedLastName}`.trim() || profileName;
+
+    const payload = {
+        name: fullName,
+        email: getVal('contactEmail') || profileEmail,
+        subject: getVal('contactSubject') || 'General Inquiry',
+        message: getVal('contactMessage'),
+        phone: getVal('contactPhone')
+    };
+
+    if (!payload.name || !payload.email || !payload.subject || !payload.message) {
+        showNotification('Please fill name, email, subject and message.');
+        return;
+    }
+
+    try {
+        await apiFetch(ROUTES.contact, 'POST', payload);
+        showNotification('Message sent! We will get back to you within 24 hours.');
+        document.getElementById('contactMessage').value = '';
+    } catch (err) {
+        showNotification(err.message || 'Could not send message right now.');
+    }
+}
+
+async function toggleProfileEdit(btn) {
+    const fields = ['profileBusinessName','profileBusinessType','profileContactPerson','profilePhone','profileEmail','profileAddress'];
+
+    if (!isProfileEditMode) {
+        fields.forEach(id => document.getElementById(id).removeAttribute('readonly'));
+        btn.textContent = 'Save Profile';
+        isProfileEditMode = true;
+        return;
+    }
+
+    const body = {
+        businessName: document.getElementById('profileBusinessName').value.trim(),
+        businessType: document.getElementById('profileBusinessType').value.trim(),
+        contactPerson: document.getElementById('profileContactPerson').value.trim(),
+        phone: document.getElementById('profilePhone').value.trim(),
+        email: document.getElementById('profileEmail').value.trim(),
+        address: document.getElementById('profileAddress').value.trim()
+    };
+
+    try {
+        await apiFetch(ROUTES.profile, 'PUT', body);
+        showNotification('Profile updated successfully');
+    } catch (err) {
+        showNotification(err.message || 'Could not update profile');
+    } finally {
+        fields.forEach(id => document.getElementById(id).setAttribute('readonly', 'readonly'));
+        btn.textContent = 'Edit Profile';
+        isProfileEditMode = false;
+    }
+}
 
 // ── STORAGE ───────────────────────────────────────────────────────────────────
 function saveCartToStorage() { try { localStorage.setItem('fishCart', JSON.stringify(cart)); } catch(e){} }
 function loadCartFromStorage() { try { const s = localStorage.getItem('fishCart'); if(s) cart = JSON.parse(s); } catch(e){} }
-function saveOrdersToStorage() { try { localStorage.setItem('fishOrders', JSON.stringify(orders)); } catch(e){} }
-function loadOrdersFromStorage() { try { const s = localStorage.getItem('fishOrders'); if(s) orders = JSON.parse(s); } catch(e){} }
 
 // ── UTILS ─────────────────────────────────────────────────────────────────────
 function formatDate(d) {

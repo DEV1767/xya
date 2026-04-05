@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FishMandi - Authentication</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
     <style>
         * {
@@ -14,7 +17,6 @@
         }
 
         :root {
-            /* Brand tokens */
             --blue: #0A6EBD;
             --blue-light: #2E9EE0;
             --blue-dark: #084C83;
@@ -22,13 +24,11 @@
             --teal: #0D9488;
             --orange: #EA580C;
 
-            /* Grey scale */
             --grey-900: #0F172A;
             --grey-600: #475569;
             --grey-50: #F1F5F9;
             --white: #FFFFFF;
 
-            /* Semantic mappings — light mode */
             --primary: var(--blue);
             --primary-dark: var(--blue-dark);
             --primary-light: var(--blue-light);
@@ -42,13 +42,12 @@
             --success: var(--teal);
             --input-bg: var(--grey-50);
 
-            /* Design tokens */
             --radius-card: 20px;
             --radius-sm: 10px;
             --radius-pill: 50px;
-            --shadow-sm: 0 2px 8px rgba(10,110,189,0.15);
-            --shadow-md: 0 4px 20px rgba(10,110,189,0.22);
-            --shadow-lg: 0 8px 40px rgba(10,110,189,0.28);
+            --shadow-sm: 0 2px 8px rgba(10, 110, 189, 0.15);
+            --shadow-md: 0 4px 20px rgba(10, 110, 189, 0.22);
+            --shadow-lg: 0 8px 40px rgba(10, 110, 189, 0.28);
         }
 
         body {
@@ -82,7 +81,7 @@
             right: -40%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(247,201,72,0.12) 0%, transparent 65%);
+            background: radial-gradient(circle, rgba(247, 201, 72, 0.12) 0%, transparent 65%);
             animation: float 20s infinite;
         }
 
@@ -93,12 +92,19 @@
             left: -20%;
             width: 140%;
             height: 140%;
-            background: radial-gradient(circle, rgba(13,148,136,0.1) 0%, transparent 60%);
+            background: radial-gradient(circle, rgba(13, 148, 136, 0.1) 0%, transparent 60%);
         }
 
         @keyframes float {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            50% { transform: translate(-25px, 25px) rotate(5deg); }
+
+            0%,
+            100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            50% {
+                transform: translate(-25px, 25px) rotate(5deg);
+            }
         }
 
         .logo-section {
@@ -110,7 +116,7 @@
         .logo-icon {
             width: 68px;
             height: 68px;
-            background: rgba(255,255,255,0.15);
+            background: rgba(255, 255, 255, 0.15);
             border-radius: var(--radius-card);
             display: flex;
             align-items: center;
@@ -118,7 +124,7 @@
             font-size: 34px;
             margin-bottom: 22px;
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: var(--shadow-md);
         }
 
@@ -137,7 +143,7 @@
 
         .tagline {
             font-size: 14px;
-            color: rgba(255,255,255,0.85);
+            color: rgba(255, 255, 255, 0.85);
             line-height: 1.7;
             font-weight: 400;
         }
@@ -159,14 +165,14 @@
         .feature-icon {
             width: 42px;
             height: 42px;
-            background: rgba(255,255,255,0.14);
+            background: rgba(255, 255, 255, 0.14);
             border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 20px;
             flex-shrink: 0;
-            border: 1px solid rgba(255,255,255,0.15);
+            border: 1px solid rgba(255, 255, 255, 0.15);
         }
 
         .feature-text {
@@ -179,7 +185,7 @@
             position: relative;
             z-index: 1;
             font-size: 12px;
-            color: rgba(255,255,255,0.6);
+            color: rgba(255, 255, 255, 0.6);
         }
 
         /* ── Main Content ── */
@@ -300,12 +306,14 @@
             transition: all 0.25s;
         }
 
-        .form-input::placeholder { color: var(--text-secondary); }
+        .form-input::placeholder {
+            color: var(--text-secondary);
+        }
 
         .form-input:focus {
             outline: none;
             border-color: var(--blue);
-            box-shadow: 0 0 0 3px rgba(10,110,189,0.13);
+            box-shadow: 0 0 0 3px rgba(10, 110, 189, 0.13);
         }
 
         .form-input.error {
@@ -313,7 +321,7 @@
         }
 
         .form-input.error:focus {
-            box-shadow: 0 0 0 3px rgba(239,68,68,0.1);
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
         }
 
         .form-input:disabled {
@@ -360,10 +368,13 @@
         .form-select:focus {
             outline: none;
             border-color: var(--blue);
-            box-shadow: 0 0 0 3px rgba(10,110,189,0.13);
+            box-shadow: 0 0 0 3px rgba(10, 110, 189, 0.13);
         }
 
-        .form-select:disabled { opacity: 0.6; cursor: not-allowed; }
+        .form-select:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
 
         .select-wrapper::after {
             content: '▼';
@@ -376,7 +387,6 @@
             font-size: 11px;
         }
 
-        /* ── Badge / highlight pill ── */
         .role-badge {
             display: inline-block;
             background: var(--yellow);
@@ -389,7 +399,6 @@
             vertical-align: middle;
         }
 
-        /* ── Forgot / OTP link ── */
         .forgot-password {
             text-align: right;
             margin-bottom: 22px;
@@ -403,7 +412,10 @@
             transition: color 0.2s;
         }
 
-        .forgot-password a:hover { color: var(--blue); text-decoration: underline; }
+        .forgot-password a:hover {
+            color: var(--blue);
+            text-decoration: underline;
+        }
 
         /* ── Submit Button ── */
         .submit-button {
@@ -430,25 +442,39 @@
             box-shadow: var(--shadow-lg);
         }
 
-        .submit-button:disabled { opacity: 0.6; cursor: not-allowed; }
+        .submit-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
 
-        .submit-button .button-text { display: inline-block; }
+        .submit-button .button-text {
+            display: inline-block;
+        }
 
         .submit-button .spinner {
             display: none;
             width: 20px;
             height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
+            border: 3px solid rgba(255, 255, 255, 0.3);
             border-top-color: white;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
             margin: 0 auto;
         }
 
-        .submit-button.loading .button-text { display: none; }
-        .submit-button.loading .spinner { display: block; }
+        .submit-button.loading .button-text {
+            display: none;
+        }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .submit-button.loading .spinner {
+            display: block;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
         /* ── Divider ── */
         .divider {
@@ -467,7 +493,9 @@
             border-bottom: 1px solid var(--border);
         }
 
-        .divider span { padding: 0 14px; }
+        .divider span {
+            padding: 0 14px;
+        }
 
         /* ── Google Button ── */
         .google-button {
@@ -496,8 +524,13 @@
         }
 
         /* ── OTP Section ── */
-        .otp-container { display: none; }
-        .otp-container.active { display: block; }
+        .otp-container {
+            display: none;
+        }
+
+        .otp-container.active {
+            display: block;
+        }
 
         .otp-inputs {
             display: flex;
@@ -523,7 +556,7 @@
         .otp-input:focus {
             outline: none;
             border-color: var(--blue);
-            box-shadow: 0 0 0 3px rgba(10,110,189,0.13);
+            box-shadow: 0 0 0 3px rgba(10, 110, 189, 0.13);
         }
 
         .otp-info {
@@ -551,8 +584,16 @@
             transition: color 0.2s;
         }
 
-        .resend-link:hover { text-decoration: underline; color: var(--blue); }
-        .resend-link.disabled { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
+        .resend-link:hover {
+            text-decoration: underline;
+            color: var(--blue);
+        }
+
+        .resend-link.disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
 
         /* ── Alert ── */
         .alert {
@@ -567,31 +608,54 @@
         }
 
         .alert-error {
-            background: rgba(239,68,68,0.1);
+            background: rgba(239, 68, 68, 0.1);
             border: 1px solid var(--error);
             color: var(--error);
         }
 
         .alert-success {
-            background: rgba(13,148,136,0.1);
+            background: rgba(13, 148, 136, 0.1);
             border: 1px solid var(--teal);
             color: var(--teal);
         }
 
-        .alert-icon { font-size: 18px; }
+        .alert-icon {
+            font-size: 18px;
+        }
 
         /* ── Responsive ── */
-        @media (max-width: 1024px) { .sidebar { display: none; } }
+        @media (max-width: 1024px) {
+            .sidebar {
+                display: none;
+            }
+        }
 
         @media (max-width: 640px) {
-            .main-content { padding: 20px; }
-            .auth-card { padding: 28px 20px; }
-            .welcome-text h1 { font-size: 24px; }
-            .otp-input { width: 44px; height: 44px; font-size: 18px; }
-            .otp-inputs { gap: 7px; }
+            .main-content {
+                padding: 20px;
+            }
+
+            .auth-card {
+                padding: 28px 20px;
+            }
+
+            .welcome-text h1 {
+                font-size: 24px;
+            }
+
+            .otp-input {
+                width: 44px;
+                height: 44px;
+                font-size: 18px;
+            }
+
+            .otp-inputs {
+                gap: 7px;
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <!-- Sidebar -->
@@ -612,7 +676,8 @@
                     <div class="feature-text">Hotel & restaurant partnerships</div>
                 </div>
                 <div class="feature-item">
-                    <div class="feature-icon"><i class="fa-solid fa-square-poll-vertical" style="color: rgb(99, 230, 190);"></i></div>
+                    <div class="feature-icon"><i class="fa-solid fa-square-poll-vertical"
+                            style="color: rgb(99, 230, 190);"></i></div>
                     <div class="feature-text">Real-time market pricing</div>
                 </div>
             </div>
@@ -643,10 +708,12 @@
                         <div class="form-group">
                             <label class="form-label">Phone Number</label>
                             <div class="input-wrapper">
-                                <input type="tel" class="form-input" id="signin-phone" placeholder="+91 98765 43210" maxlength="15">
+                                <input type="tel" class="form-input" id="signin-phone" placeholder="+91 98765 43210"
+                                    maxlength="15">
                             </div>
                             <div class="error-message" id="signin-phone-error" style="display: none;">
-                                <span><i class="fa-solid fa-circle-exclamation" style="color: rgb(243, 21, 6);"></i></span>
+                                <span><i class="fa-solid fa-circle-exclamation"
+                                        style="color: rgb(243, 21, 6);"></i></span>
                                 <span id="signin-phone-error-text"></span>
                             </div>
                         </div>
@@ -665,10 +732,18 @@
 
                     <button class="google-button" onclick="handleGoogleLogin()">
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                            <path d="M19.8 10.2273C19.8 9.51818 19.7364 8.83636 19.6182 8.18182H10V12.05H15.5818C15.3364 13.3 14.5909 14.3591 13.4727 15.0682V17.5773H16.7727C18.7091 15.8364 19.8 13.2727 19.8 10.2273Z" fill="#4285F4"/>
-                            <path d="M10 20C12.7 20 14.9636 19.1045 16.7727 17.5773L13.4727 15.0682C12.5227 15.6682 11.3182 16.0227 10 16.0227C7.39545 16.0227 5.19091 14.2636 4.35909 11.9H0.954545V14.4909C2.75455 18.0591 6.10909 20 10 20Z" fill="#34A853"/>
-                            <path d="M4.35909 11.9C4.15909 11.3 4.04545 10.6591 4.04545 10C4.04545 9.34091 4.15909 8.7 4.35909 8.1V5.50909H0.954545C0.281818 6.84545 -0.09091 8.38182 -0.09091 10C-0.09091 11.6182 0.281818 13.1545 0.954545 14.4909L4.35909 11.9Z" fill="#FBBC04"/>
-                            <path d="M10 3.97727C11.4409 3.97727 12.7273 4.48182 13.7364 5.43636L16.6545 2.51818C14.9545 0.909091 12.6909 0 10 0C6.10909 0 2.75455 1.94091 0.954545 5.50909L4.35909 8.1C5.19091 5.73636 7.39545 3.97727 10 3.97727Z" fill="#EA4335"/>
+                            <path
+                                d="M19.8 10.2273C19.8 9.51818 19.7364 8.83636 19.6182 8.18182H10V12.05H15.5818C15.3364 13.3 14.5909 14.3591 13.4727 15.0682V17.5773H16.7727C18.7091 15.8364 19.8 13.2727 19.8 10.2273Z"
+                                fill="#4285F4" />
+                            <path
+                                d="M10 20C12.7 20 14.9636 19.1045 16.7727 17.5773L13.4727 15.0682C12.5227 15.6682 11.3182 16.0227 10 16.0227C7.39545 16.0227 5.19091 14.2636 4.35909 11.9H0.954545V14.4909C2.75455 18.0591 6.10909 20 10 20Z"
+                                fill="#34A853" />
+                            <path
+                                d="M4.35909 11.9C4.15909 11.3 4.04545 10.6591 4.04545 10C4.04545 9.34091 4.15909 8.7 4.35909 8.1V5.50909H0.954545C0.281818 6.84545 -0.09091 8.38182 -0.09091 10C-0.09091 11.6182 0.281818 13.1545 0.954545 14.4909L4.35909 11.9Z"
+                                fill="#FBBC04" />
+                            <path
+                                d="M10 3.97727C11.4409 3.97727 12.7273 4.48182 13.7364 5.43636L16.6545 2.51818C14.9545 0.909091 12.6909 0 10 0C6.10909 0 2.75455 1.94091 0.954545 5.50909L4.35909 8.1C5.19091 5.73636 7.39545 3.97727 10 3.97727Z"
+                                fill="#EA4335" />
                         </svg>
                         Continue with Google
                     </button>
@@ -685,17 +760,21 @@
                         <div class="form-group">
                             <label class="form-label">Full Name</label>
                             <div class="input-wrapper">
-                                <input type="text" class="form-input" id="signup-name" placeholder="Enter your full name">
+                                <input type="text" class="form-input" id="signup-name"
+                                    placeholder="Enter your full name">
                             </div>
                             <div class="error-message" id="signup-name-error" style="display: none;">
-                                <span><i class="fa-solid fa-circle-exclamation" style="color: rgb(243, 21, 6);"></i></span><span id="signup-name-error-text"></span>
+                                <span><i class="fa-solid fa-circle-exclamation"
+                                        style="color: rgb(243, 21, 6);"></i></span>
+                                <span id="signup-name-error-text"></span>
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label class="form-label">Phone Number</label>
                             <div class="input-wrapper">
-                                <input type="tel" class="form-input" id="signup-phone" placeholder="+91 98765 43210" maxlength="15">
+                                <input type="tel" class="form-input" id="signup-phone" placeholder="+91 98765 43210"
+                                    maxlength="15">
                             </div>
                             <div class="error-message" id="signup-phone-error" style="display: none;">
                                 <span>⚠️</span><span id="signup-phone-error-text"></span>
@@ -707,6 +786,7 @@
                             <div class="select-wrapper">
                                 <select class="form-select" id="signup-role">
                                     <option value="">Select your role</option>
+                                    <option value="Admin">Admin</option>
                                     <option value="Fisherman">Fisherman</option>
                                     <option value="Hotel">Hotel</option>
                                     <option value="Restaurant">Restaurant</option>
@@ -728,10 +808,18 @@
 
                     <button class="google-button" onclick="handleGoogleLogin()">
                         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                            <path d="M19.8 10.2273C19.8 9.51818 19.7364 8.83636 19.6182 8.18182H10V12.05H15.5818C15.3364 13.3 14.5909 14.3591 13.4727 15.0682V17.5773H16.7727C18.7091 15.8364 19.8 13.2727 19.8 10.2273Z" fill="#4285F4"/>
-                            <path d="M10 20C12.7 20 14.9636 19.1045 16.7727 17.5773L13.4727 15.0682C12.5227 15.6682 11.3182 16.0227 10 16.0227C7.39545 16.0227 5.19091 14.2636 4.35909 11.9H0.954545V14.4909C2.75455 18.0591 6.10909 20 10 20Z" fill="#34A853"/>
-                            <path d="M4.35909 11.9C4.15909 11.3 4.04545 10.6591 4.04545 10C4.04545 9.34091 4.15909 8.7 4.35909 8.1V5.50909H0.954545C0.281818 6.84545 -0.09091 8.38182 -0.09091 10C-0.09091 11.6182 0.281818 13.1545 0.954545 14.4909L4.35909 11.9Z" fill="#FBBC04"/>
-                            <path d="M10 3.97727C11.4409 3.97727 12.7273 4.48182 13.7364 5.43636L16.6545 2.51818C14.9545 0.909091 12.6909 0 10 0C6.10909 0 2.75455 1.94091 0.954545 5.50909L4.35909 8.1C5.19091 5.73636 7.39545 3.97727 10 3.97727Z" fill="#EA4335"/>
+                            <path
+                                d="M19.8 10.2273C19.8 9.51818 19.7364 8.83636 19.6182 8.18182H10V12.05H15.5818C15.3364 13.3 14.5909 14.3591 13.4727 15.0682V17.5773H16.7727C18.7091 15.8364 19.8 13.2727 19.8 10.2273Z"
+                                fill="#4285F4" />
+                            <path
+                                d="M10 20C12.7 20 14.9636 19.1045 16.7727 17.5773L13.4727 15.0682C12.5227 15.6682 11.3182 16.0227 10 16.0227C7.39545 16.0227 5.19091 14.2636 4.35909 11.9H0.954545V14.4909C2.75455 18.0591 6.10909 20 10 20Z"
+                                fill="#34A853" />
+                            <path
+                                d="M4.35909 11.9C4.15909 11.3 4.04545 10.6591 4.04545 10C4.04545 9.34091 4.15909 8.7 4.35909 8.1V5.50909H0.954545C0.281818 6.84545 -0.09091 8.38182 -0.09091 10C-0.09091 11.6182 0.281818 13.1545 0.954545 14.4909L4.35909 11.9Z"
+                                fill="#FBBC04" />
+                            <path
+                                d="M10 3.97727C11.4409 3.97727 12.7273 4.48182 13.7364 5.43636L16.6545 2.51818C14.9545 0.909091 12.6909 0 10 0C6.10909 0 2.75455 1.94091 0.954545 5.50909L4.35909 8.1C5.19091 5.73636 7.39545 3.97727 10 3.97727Z"
+                                fill="#EA4335" />
                         </svg>
                         Continue with Google
                     </button>
@@ -750,43 +838,57 @@
                     </div>
 
                     <div class="otp-inputs">
-                        <input type="text" class="otp-input" maxlength="1" id="otp1" onkeyup="moveToNext(this, 'otp2')" onkeydown="moveToPrev(event, this, null)">
-                        <input type="text" class="otp-input" maxlength="1" id="otp2" onkeyup="moveToNext(this, 'otp3')" onkeydown="moveToPrev(event, this, 'otp1')">
-                        <input type="text" class="otp-input" maxlength="1" id="otp3" onkeyup="moveToNext(this, 'otp4')" onkeydown="moveToPrev(event, this, 'otp2')">
-                        <input type="text" class="otp-input" maxlength="1" id="otp4" onkeyup="moveToNext(this, 'otp5')" onkeydown="moveToPrev(event, this, 'otp3')">
-                        <input type="text" class="otp-input" maxlength="1" id="otp5" onkeyup="moveToNext(this, 'otp6')" onkeydown="moveToPrev(event, this, 'otp4')">
-                        <input type="text" class="otp-input" maxlength="1" id="otp6" onkeyup="handleOTPComplete()" onkeydown="moveToPrev(event, this, 'otp5')">
+                        <input type="text" class="otp-input" maxlength="1" id="otp1" onkeyup="moveToNext(this, 'otp2')"
+                            onkeydown="moveToPrev(event, this, null)">
+                        <input type="text" class="otp-input" maxlength="1" id="otp2" onkeyup="moveToNext(this, 'otp3')"
+                            onkeydown="moveToPrev(event, this, 'otp1')">
+                        <input type="text" class="otp-input" maxlength="1" id="otp3" onkeyup="moveToNext(this, 'otp4')"
+                            onkeydown="moveToPrev(event, this, 'otp2')">
+                        <input type="text" class="otp-input" maxlength="1" id="otp4" onkeyup="moveToNext(this, 'otp5')"
+                            onkeydown="moveToPrev(event, this, 'otp3')">
+                        <input type="text" class="otp-input" maxlength="1" id="otp5" onkeyup="moveToNext(this, 'otp6')"
+                            onkeydown="moveToPrev(event, this, 'otp4')">
+                        <input type="text" class="otp-input" maxlength="1" id="otp6" onkeyup="handleOTPComplete()"
+                            onkeydown="moveToPrev(event, this, 'otp5')">
                     </div>
 
-                    <div class="error-message" id="otp-error" style="display: none; justify-content: center;">
+                    <div class="error-message" id="otp-error" style="display: none;">
                         <span>⚠️</span><span id="otp-error-text"></span>
                     </div>
 
-                    <button type="button" class="submit-button" id="verify-otp-btn" onclick="verifyOTP()">
+                    <button class="submit-button" id="verify-otp-btn" onclick="handleVerifyOTP()"
+                        style="margin-top: 8px;">
                         <span class="button-text">Verify OTP</span>
                         <div class="spinner"></div>
                     </button>
 
-                    <div style="text-align: center; margin-top: 16px;">
-                        <span style="color: var(--text-secondary); font-size: 13px;">Didn't receive code? </span>
-                        <a href="#" class="resend-link" id="resend-link" onclick="resendOTP(event)">Resend OTP</a>
-                        <span id="resend-timer" style="color: var(--text-secondary); font-size: 13px; display: none;"></span>
-                    </div>
-
-                    <div style="text-align: center; margin-top: 14px;">
-                        <a href="#" class="resend-link" onclick="backToForm(event)">← Back to form</a>
+                    <div style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--text-secondary);">
+                        <span id="resend-timer" style="display: none;">Resend in 30s</span>
+                        <a href="#" class="resend-link" id="resend-link" onclick="resendOTP(event)"
+                            style="display: none;">Resend OTP</a>
+                        <br><br>
+                        <a href="#" class="resend-link" onclick="backToForm(event)">← Change number</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- ✅ auth.js loaded at END of body so DOM is ready first -->
+    <script src="js/auth.js"></script>
+
     <script>
+        /* ─────────────────────────────────────────────
+           STATE
+        ───────────────────────────────────────────── */
         let currentMode = 'signin';
         let otpTimer = null;
         let otpCountdown = 30;
         let currentPhone = '';
 
+        /* ─────────────────────────────────────────────
+           TAB SWITCHING
+        ───────────────────────────────────────────── */
         function switchTab(tab) {
             const tabs = document.querySelectorAll('.tab');
             const signinForm = document.getElementById('signin-form');
@@ -810,65 +912,95 @@
             }
         }
 
-        function showAlert(message, type) {
+        /* ─────────────────────────────────────────────
+           ALERTS
+        ───────────────────────────────────────────── */
+        function showAlert(message, type = 'success') {
             const alertContainer = document.getElementById('alert-container');
             const alertClass = type === 'error' ? 'alert-error' : 'alert-success';
             const icon = type === 'error' ? '❌' : '✅';
-            alertContainer.innerHTML = `<div class="alert ${alertClass}"><span class="alert-icon">${icon}</span><span>${message}</span></div>`;
+            alertContainer.innerHTML = `
+                <div class="alert ${alertClass}">
+                    <span class="alert-icon">${icon}</span>
+                    <span>${message}</span>
+                </div>`;
             setTimeout(() => { alertContainer.innerHTML = ''; }, 5000);
         }
 
         function clearAlerts() { document.getElementById('alert-container').innerHTML = ''; }
 
+        /* ─────────────────────────────────────────────
+           FIELD ERRORS
+        ───────────────────────────────────────────── */
         function showError(fieldId, message) {
             const input = document.getElementById(fieldId);
             const errorDiv = document.getElementById(`${fieldId}-error`);
             const errorText = document.getElementById(`${fieldId}-error-text`);
-            input.classList.add('error');
-            errorDiv.style.display = 'flex';
-            errorText.textContent = message;
+            if (input) input.classList.add('error');
+            if (errorDiv) errorDiv.style.display = 'flex';
+            if (errorText) errorText.textContent = message;
         }
 
         function clearError(fieldId) {
             const input = document.getElementById(fieldId);
             const errorDiv = document.getElementById(`${fieldId}-error`);
-            input.classList.remove('error');
-            errorDiv.style.display = 'none';
+            if (input) input.classList.remove('error');
+            if (errorDiv) errorDiv.style.display = 'none';
         }
 
         function clearAllErrors() {
-            ['signin-phone','signup-name','signup-phone','signup-role'].forEach(field => {
-                const input = document.getElementById(field);
-                if (input) clearError(field);
-            });
+            ['signin-phone', 'signup-name', 'signup-phone', 'signup-role'].forEach(clearError);
         }
 
+        /* ─────────────────────────────────────────────
+           VALIDATION
+        ───────────────────────────────────────────── */
         function validatePhone(phone) {
             return /^[\+]?[0-9]{10,15}$/.test(phone.replace(/\s/g, ''));
         }
-
         function validateName(name) { return name && name.trim().length >= 2; }
 
+        /* ─────────────────────────────────────────────
+           SIGN IN  →  POST /login
+        ───────────────────────────────────────────── */
         async function handleSignIn(event) {
             event.preventDefault();
             clearAllErrors(); clearAlerts();
+
             const phone = document.getElementById('signin-phone').value.trim();
             const submitBtn = document.getElementById('signin-submit');
 
             if (!phone) { showError('signin-phone', 'Phone number is required'); return; }
             if (!validatePhone(phone)) { showError('signin-phone', 'Please enter a valid phone number'); return; }
 
-            submitBtn.classList.add('loading'); submitBtn.disabled = true;
-            setTimeout(() => {
-                submitBtn.classList.remove('loading'); submitBtn.disabled = false;
-                currentPhone = phone; showOTPScreen(phone);
-                showAlert('OTP sent successfully to your phone!', 'success');
-            }, 1500);
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+
+            try {
+                const { ok, data } = await loginUser(phone);
+                if (ok) {
+                    currentPhone = phone;
+                    showOTPScreen(phone);
+                    showAlert(data.message || 'OTP sent successfully to your phone!', 'success');
+                } else {
+                    showAlert(data.message || 'Login failed. Please try again.', 'error');
+                }
+            } catch (err) {
+                showAlert('Network error. Please check your connection and try again.', 'error');
+                console.error('Login error:', err);
+            } finally {
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+            }
         }
 
+        /* ─────────────────────────────────────────────
+           SIGN UP  →  POST /register
+        ───────────────────────────────────────────── */
         async function handleSignUp(event) {
             event.preventDefault();
             clearAllErrors(); clearAlerts();
+
             const name = document.getElementById('signup-name').value.trim();
             const phone = document.getElementById('signup-phone').value.trim();
             const role = document.getElementById('signup-role').value;
@@ -882,22 +1014,64 @@
             if (!role) { showError('signup-role', 'Please select your role'); hasError = true; }
             if (hasError) return;
 
-            submitBtn.classList.add('loading'); submitBtn.disabled = true;
-            setTimeout(() => {
-                submitBtn.classList.remove('loading'); submitBtn.disabled = false;
-                currentPhone = phone; showOTPScreen(phone);
-                showAlert('Account created! Please verify your phone number.', 'success');
-            }, 1500);
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+
+            try {
+                const { ok, data } = await registerUser({ phonenumber: phone, name, role });
+
+                if (ok) {
+                    currentPhone = phone;
+                    await loginUser(phone);
+                    showOTPScreen(phone);
+                    showAlert(data.message || 'Account created! Please verify your phone number.', 'success');
+                } else {
+                    if (data.message && data.message.toLowerCase().includes('phone')) {
+                        showError('signup-phone', data.message);
+                    } else {
+                        showAlert(data.message || 'Registration failed. Please try again.', 'error');
+                    }
+                }
+            } catch (err) {
+                showAlert('Network error. Please check your connection and try again.', 'error');
+                console.error('Register error:', err);
+            } finally {
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+            }
         }
 
-        function showOTPSection(event, mode) {
+        /* ─────────────────────────────────────────────
+           "Login with OTP" shortcut
+        ───────────────────────────────────────────── */
+        async function showOTPSection(event, mode) {
             event.preventDefault();
             const phone = document.getElementById(`${mode}-phone`).value.trim();
             if (!phone) { showError(`${mode}-phone`, 'Please enter phone number first'); return; }
             if (!validatePhone(phone)) { showError(`${mode}-phone`, 'Please enter a valid phone number'); return; }
-            currentPhone = phone; showOTPScreen(phone);
+
+            const btn = document.getElementById(`${mode}-submit`);
+            btn.classList.add('loading'); btn.disabled = true;
+
+            try {
+                const { ok, data } = await loginUser(phone);
+                if (ok) {
+                    currentPhone = phone;
+                    showOTPScreen(phone);
+                    showAlert(data.message || 'OTP sent to your phone!', 'success');
+                } else {
+                    showAlert(data.message || 'Could not send OTP. Please try again.', 'error');
+                }
+            } catch (err) {
+                showAlert('Network error. Please try again.', 'error');
+            } finally {
+                btn.classList.remove('loading'); btn.disabled = false;
+            }
         }
 
+        /* ─────────────────────────────────────────────
+           OTP SCREEN HELPERS
+        ───────────────────────────────────────────── */
         function showOTPScreen(phone) {
             document.getElementById('signin-form').style.display = 'none';
             document.getElementById('signup-form').style.display = 'none';
@@ -924,40 +1098,104 @@
                 document.getElementById(prevFieldId).focus();
         }
 
-        function handleOTPComplete() {}
+        function handleOTPComplete() { /* optional: auto-submit */ }
 
-        async function verifyOTP() {
+        /* ─────────────────────────────────────────────
+           VERIFY OTP  →  POST /verify
+        ───────────────────────────────────────────── */
+        async function handleVerifyOTP() {
             clearAlerts();
             document.getElementById('otp-error').style.display = 'none';
+
             let otp = '';
             for (let i = 1; i <= 6; i++) otp += document.getElementById(`otp${i}`).value;
+
             if (otp.length !== 6) {
                 document.getElementById('otp-error').style.display = 'flex';
-                document.getElementById('otp-error-text').textContent = 'Please enter complete OTP';
+                document.getElementById('otp-error-text').textContent = 'Please enter the complete 6-digit OTP';
                 return;
             }
+
             const verifyBtn = document.getElementById('verify-otp-btn');
             verifyBtn.classList.add('loading'); verifyBtn.disabled = true;
-            setTimeout(() => {
-                verifyBtn.classList.remove('loading'); verifyBtn.disabled = false;
-                if (otp === '123456') {
-                    showAlert('Phone verified successfully! Redirecting...', 'success');
-                    setTimeout(() => { console.log('Redirect to dashboard'); }, 1500);
+
+            try {
+                // verifyOTP() from auth.js handles saveTokens() + saveUserData() internally
+                const result = await verifyOTP(currentPhone, otp);
+
+                if (!result) throw new Error('verifyOTP returned undefined');
+
+                const { ok, data } = result;
+
+                if (ok) {
+                    // ✅ OTP Verified - tokens in HTTP-only cookies, user data saved
+                    console.log('✅ OTP VERIFIED!');
+                    console.log('User data saved:', {
+                        userId: localStorage.getItem('userId'),
+                        userName: localStorage.getItem('userName'),
+                        userRole: localStorage.getItem('userRole')
+                    });
+                    console.log('🔐 Authentication tokens stored in HTTP-only cookies');
+
+                    clearOTPTimer();
+                    showAlert(data.message || 'Phone verified successfully! Redirecting...', 'success');
+
+                    setTimeout(() => {
+                        const role = localStorage.getItem('userRole');
+                        console.log('🚀 Redirecting - User role:', role);
+                        const routes = {
+                            'Admin': 'admin.html',   // ✅ already exists, but wasn't reachable
+                            'Seller': 'map.html',
+                            'Fisherman': 'map.html',
+                            'Hotel': 'Hotel.html',
+                            'Restaurant': 'Hotel.html',
+                            'Resturant': 'Hotel.html',
+                            'Others': 'map.html',
+                        };
+                        const targetPage = routes[role] || 'map.html';
+                        console.log('🎯 Redirecting to:', targetPage);
+                        window.location.href = targetPage;
+                    }, 1000);
+
                 } else {
                     document.getElementById('otp-error').style.display = 'flex';
-                    document.getElementById('otp-error-text').textContent = 'Invalid OTP. Please try again.';
+                    document.getElementById('otp-error-text').textContent = data.message || 'Invalid OTP. Please try again.';
                 }
-            }, 1500);
+            } catch (err) {
+                showAlert('Network error. Please try again.', 'error');
+                console.error('Verify OTP error:', err);
+            } finally {
+                verifyBtn.classList.remove('loading'); verifyBtn.disabled = false;
+            }
         }
 
-        function resendOTP(event) {
+        /* ─────────────────────────────────────────────
+           RESEND OTP
+        ───────────────────────────────────────────── */
+        async function resendOTP(event) {
             event.preventDefault(); clearAlerts();
-            showAlert('OTP sent successfully!', 'success');
+
+            try {
+                const { ok, data } = await loginUser(currentPhone);
+                if (ok) {
+                    showAlert(data.message || 'OTP resent successfully!', 'success');
+                } else {
+                    showAlert(data.message || 'Could not resend OTP. Please try again.', 'error');
+                    return;
+                }
+            } catch (err) {
+                showAlert('Network error. Please try again.', 'error');
+                return;
+            }
+
             for (let i = 1; i <= 6; i++) document.getElementById(`otp${i}`).value = '';
             document.getElementById('otp1').focus();
             startResendTimer();
         }
 
+        /* ─────────────────────────────────────────────
+           TIMER
+        ───────────────────────────────────────────── */
         function startResendTimer() {
             clearOTPTimer(); otpCountdown = 30;
             const resendLink = document.getElementById('resend-link');
@@ -965,6 +1203,7 @@
             resendLink.classList.add('disabled');
             resendLink.style.display = 'none';
             resendTimer.style.display = 'inline';
+
             otpTimer = setInterval(() => {
                 otpCountdown--;
                 resendTimer.textContent = `Resend in ${otpCountdown}s`;
@@ -981,16 +1220,27 @@
             if (otpTimer) { clearInterval(otpTimer); otpTimer = null; }
         }
 
+        /* ─────────────────────────────────────────────
+           GOOGLE (placeholder)
+        ───────────────────────────────────────────── */
         function handleGoogleLogin() { showAlert('Google login integration coming soon!', 'success'); }
 
+        /* ─────────────────────────────────────────────
+           RESET FORMS
+        ───────────────────────────────────────────── */
         function resetForms() {
-            document.getElementById('signin-phone').value = '';
-            document.getElementById('signup-name').value = '';
-            document.getElementById('signup-phone').value = '';
-            document.getElementById('signup-role').value = '';
+            ['signin-phone', 'signup-name', 'signup-phone'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+            const role = document.getElementById('signup-role');
+            if (role) role.value = '';
             clearAllErrors();
         }
 
+        /* ─────────────────────────────────────────────
+           OTP INPUT SETUP
+        ───────────────────────────────────────────── */
         document.addEventListener('DOMContentLoaded', () => {
             const otpInputs = document.querySelectorAll('.otp-input');
             otpInputs.forEach(input => {
@@ -1010,4 +1260,5 @@
         });
     </script>
 </body>
+
 </html>

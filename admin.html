@@ -110,6 +110,7 @@ button { font-family: var(--ff-sans); cursor: pointer; border: none; outline: no
 .sb-logo-name {
   font-family: var(--ff-serif); font-size: 1.1rem; font-weight: 700;
   background: linear-gradient(120deg, var(--blue), var(--aqua));
+  background-clip: text;
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
 }
 .sb-logo-sub { font-size: 0.65rem; color: var(--sb-text); letter-spacing: 0.06em; text-transform: uppercase; }
@@ -547,6 +548,52 @@ tbody td.muted { color: var(--muted); }
 </style>
 </head>
 <body>
+    <!-- Auth guard: decoded from JWT cookie if present -->
+    <script>
+      (function() {
+        function normalizeRole(role) {
+          return String(role || '').toLowerCase().replace(/[\s_-]+/g, '');
+        }
+
+        // Try to parse JWT from cookie named 'token' or 'jwt'
+        function getCookieVal(name) {
+          const m = document.cookie.match(new RegExp('(?:^|;\\s*)' + name + '=([^;]*)'));
+          return m ? decodeURIComponent(m[1]) : null;
+        }
+        function parseJwt(token) {
+          try { return JSON.parse(atob(token.split('.')[1])); } catch(e) { return null; }
+        }
+
+        const storedId = localStorage.getItem('userId');
+        const storedName = localStorage.getItem('userName');
+        const storedRole = localStorage.getItem('userRole');
+        const token = getCookieVal('token') || getCookieVal('jwt') || localStorage.getItem('token');
+        let role = storedRole || '';
+        let name = storedName || 'Admin';
+
+        if (token) {
+          const payload = parseJwt(token);
+          if (payload) {
+            role = payload.role || payload.userRole || role;
+            name = payload.name || payload.username || name;
+            if (role && normalizeRole(role).indexOf('admin') === -1) {
+              alert('Access Denied — Admin only');
+              window.location.href = 'login.html';
+              return;
+            }
+          }
+        }
+
+        if (!storedId && !token) {
+          window.location.href = 'login.html';
+          return;
+        }
+
+        // Populate admin name placeholders once DOM loads
+        window._adminName = name;
+        window._adminRole = role || 'Admin';
+      })();
+    </script>
 
 <!-- ═══════════ SIDEBAR OVERLAY (mobile) ═══════════ -->
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
@@ -564,28 +611,29 @@ tbody td.muted { color: var(--muted); }
   <div class="sb-section">
     <div class="sb-section-label">Main</div>
     <div class="sb-link active" onclick="navigate('dashboard',this)"><i class="fa-solid fa-gauge-high"></i> Dashboard</div>
-    <div class="sb-link" onclick="navigate('fish-management',this)"><i class="fa-solid fa-fish-fins"></i> Fish Management <span class="sb-badge">24</span></div>
-    <div class="sb-link" onclick="navigate('upcoming-fish',this)"><i class="fa-solid fa-calendar-days"></i> Upcoming Fish <span class="sb-badge amber">6</span></div>
-    <div id="nav-orders-link" class="sb-link" onclick="navigate('orders',this)"><i class="fa-solid fa-box-open"></i> Orders <span class="sb-badge red">9</span></div>
+    <div class="sb-link" onclick="navigate('fish-management',this)"><i class="fa-solid fa-fish-fins"></i> Fish Management <span class="sb-badge" id="badge-fish" style="display:none"></span></div>
+    <div class="sb-link" onclick="navigate('upcoming-fish',this)"><i class="fa-solid fa-calendar-days"></i> Upcoming Fish <span class="sb-badge amber" id="badge-upcoming" style="display:none"></span></div>
+    <div id="nav-orders-link" class="sb-link" onclick="navigate('orders',this)"><i class="fa-solid fa-box-open"></i> Orders <span class="sb-badge red" id="badge-orders" style="display:none"></span></div>
   </div>
 
   <div class="sb-section">
     <div class="sb-section-label">Business</div>
     <div class="sb-link" onclick="navigate('buyers',this)"><i class="fa-solid fa-building-columns"></i> Buyers</div>
-    <div class="sb-link" onclick="navigate('payments',this)"><i class="fa-solid fa-credit-card"></i> Payments</div>
+    <div class="sb-link" onclick="navigate('payments',this)"><i class="fa-solid fa-credit-card"></i> Payments <span class="sb-badge amber" id="badge-payments" style="display:none"></span></div>
     <div class="sb-link" onclick="navigate('analytics',this)"><i class="fa-solid fa-chart-line"></i> Analytics</div>
   </div>
 
   <div class="sb-section">
     <div class="sb-section-label">System</div>
     <div class="sb-link" onclick="navigate('settings',this)"><i class="fa-solid fa-gear"></i> Settings</div>
+    <div class="sb-link" onclick="doLogout()" style="color:var(--red);"><i class="fa-solid fa-right-from-bracket" style="color:var(--red)"></i> Logout</div>
   </div>
 
   <div class="sb-bottom">
     <div class="sb-user">
-      <div class="sb-avatar">AR</div>
+      <div class="sb-avatar" id="sbAvatarEl">A</div>
       <div>
-        <div class="sb-user-name">Admin Ravi</div>
+        <div class="sb-user-name" id="sbNameEl">Admin</div>
         <div class="sb-user-role">Super Administrator</div>
       </div>
     </div>
@@ -606,13 +654,13 @@ tbody td.muted { color: var(--muted); }
     <button class="icon-btn theme-toggle" onclick="toggleTheme()" title="Toggle theme">
       <i class="fa-solid fa-moon" id="themeIcon"></i>
     </button>
-    <button class="icon-btn" onclick="toggleNotif()">
+    <button class="icon-btn" onclick="toggleNotif()" title="Notifications">
       <i class="fa-solid fa-bell"></i>
-      <span class="dot"></span>
+      <span class="dot" id="notifDot" style="display:none"></span>
     </button>
-    <div class="topbar-profile">
-      <div class="t-avatar">AR</div>
-      <span class="t-name">Admin Ravi</span>
+    <div class="topbar-profile" onclick="navigate('settings', document.querySelector('.sb-link:last-of-type'))">
+      <div class="t-avatar" id="topAvatarEl">A</div>
+      <span class="t-name" id="topNameEl">Admin</span>
       <i class="fa-solid fa-chevron-down" style="font-size:0.65rem;color:var(--subtle);margin-left:2px;"></i>
     </div>
   </div>
@@ -622,27 +670,13 @@ tbody td.muted { color: var(--muted); }
 <div class="notif-panel" id="notifPanel">
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
     <span style="font-weight:700;font-size:0.95rem;">Notifications</span>
-    <button class="btn btn-ghost btn-sm" onclick="toggleNotif()">Close</button>
+    <div style="display:flex;gap:6px;">
+      <button class="btn btn-ghost btn-sm" onclick="markAllNotifRead()">Mark all read</button>
+      <button class="btn btn-ghost btn-sm" onclick="toggleNotif()">Close</button>
+    </div>
   </div>
-  <div class="notif-item">
-    <div class="notif-icon" style="background:var(--blue-lt);color:var(--blue)"><i class="fa-solid fa-box"></i></div>
-    <div><div class="notif-text">New order from <strong>Sea Pearl Hotel</strong> — 25kg Pomfret</div><div class="notif-time">2 min ago</div></div>
-  </div>
-  <div class="notif-item">
-    <div class="notif-icon" style="background:var(--green-lt);color:var(--green)"><i class="fa-solid fa-check"></i></div>
-    <div><div class="notif-text">Order #ORD-0041 marked as <strong>Delivered</strong></div><div class="notif-time">18 min ago</div></div>
-  </div>
-  <div class="notif-item">
-    <div class="notif-icon" style="background:var(--amber-lt);color:var(--amber)"><i class="fa-solid fa-triangle-exclamation"></i></div>
-    <div><div class="notif-text"><strong>Rohu</strong> stock is running low — only 10kg left</div><div class="notif-time">45 min ago</div></div>
-  </div>
-  <div class="notif-item">
-    <div class="notif-icon" style="background:var(--purple-lt);color:var(--purple)"><i class="fa-solid fa-fish"></i></div>
-    <div><div class="notif-text">Upcoming arrival: <strong>Barramundi</strong> expected tomorrow</div><div class="notif-time">2 hrs ago</div></div>
-  </div>
-  <div class="notif-item">
-    <div class="notif-icon" style="background:var(--red-lt);color:var(--red)"><i class="fa-solid fa-xmark"></i></div>
-    <div><div class="notif-text">Order #ORD-0038 rejected by buyer <strong>Taj Residency</strong></div><div class="notif-time">3 hrs ago</div></div>
+  <div class="notif-items">
+    <div style="text-align:center;color:var(--subtle);padding:32px;font-size:0.82rem"><i class="fa-solid fa-spinner fa-spin"></i> Loading…</div>
   </div>
 </div>
 
@@ -655,12 +689,12 @@ tbody td.muted { color: var(--muted); }
 <div class="page active" id="page-dashboard">
   <div class="page-header">
     <div>
-      <h1>Good morning, Ravi 👋</h1>
+      <h1>Hellow  </h1>
       <p>Here's what's happening with Arowana today.</p>
     </div>
     <div style="display:flex;gap:10px;">
       <button class="btn btn-ghost"><i class="fa-solid fa-download"></i> Export</button>
-      <button class="btn btn-primary" onclick="openModal('addFishModal')"><i class="fa-solid fa-plus"></i> Add Fish</button>
+      <button class="btn btn-primary" onclick="openAddFishModal()"><i class="fa-solid fa-plus"></i> Add Fish</button>
     </div>
   </div>
 
@@ -669,25 +703,25 @@ tbody td.muted { color: var(--muted); }
     <div class="stat-card blue">
       <div class="stat-icon blue"><i class="fa-solid fa-indian-rupee-sign"></i></div>
       <div class="stat-label">Total Revenue</div>
-      <div class="stat-value">₹4,82,300</div>
-      <div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> +18.4% vs last week</div>
+      <div class="stat-value" id="stat-revenue"><i class="fa-solid fa-spinner fa-spin"></i></div>
+      <div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> This month</div>
     </div>
     <div class="stat-card aqua">
       <div class="stat-icon aqua"><i class="fa-solid fa-box-open"></i></div>
       <div class="stat-label">Total Orders</div>
-      <div class="stat-value">1,284</div>
-      <div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> +8.1% vs last week</div>
+      <div class="stat-value" id="stat-orders"><i class="fa-solid fa-spinner fa-spin"></i></div>
+      <div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> All time</div>
     </div>
     <div class="stat-card amber">
       <div class="stat-icon amber"><i class="fa-solid fa-building"></i></div>
       <div class="stat-label">Active Buyers</div>
-      <div class="stat-value">48</div>
-      <div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> +3 this month</div>
+      <div class="stat-value" id="stat-buyers"><i class="fa-solid fa-spinner fa-spin"></i></div>
+      <div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> Registered</div>
     </div>
     <div class="stat-card green">
       <div class="stat-icon green"><i class="fa-solid fa-clock-rotate-left"></i></div>
       <div class="stat-label">Pending Orders</div>
-      <div class="stat-value">9</div>
+      <div class="stat-value" id="stat-pending"><i class="fa-solid fa-spinner fa-spin"></i></div>
       <div class="stat-change down"><i class="fa-solid fa-arrow-trend-down"></i> needs action</div>
     </div>
   </div>
@@ -714,10 +748,10 @@ tbody td.muted { color: var(--muted); }
       <div class="card-body" style="display:flex;flex-direction:column;align-items:center;gap:16px;">
         <canvas id="statusChart" height="160" width="160"></canvas>
         <div style="display:flex;flex-direction:column;gap:8px;width:100%;">
-          <div style="display:flex;align-items:center;justify-content:space-between;font-size:0.78rem;"><span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;background:var(--green);display:inline-block;"></span>Delivered</span><strong>842</strong></div>
-          <div style="display:flex;align-items:center;justify-content:space-between;font-size:0.78rem;"><span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;background:var(--blue);display:inline-block;"></span>Confirmed</span><strong>243</strong></div>
-          <div style="display:flex;align-items:center;justify-content:space-between;font-size:0.78rem;"><span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;background:var(--amber);display:inline-block;"></span>Pending</span><strong>190</strong></div>
-          <div style="display:flex;align-items:center;justify-content:space-between;font-size:0.78rem;"><span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;background:var(--red);display:inline-block;"></span>Rejected</span><strong>9</strong></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;font-size:0.78rem;"><span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;background:var(--green);display:inline-block;"></span>Delivered</span><strong id="legend-delivered">—</strong></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;font-size:0.78rem;"><span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;background:var(--blue);display:inline-block;"></span>Confirmed</span><strong id="legend-confirmed">—</strong></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;font-size:0.78rem;"><span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;background:var(--amber);display:inline-block;"></span>Pending</span><strong id="legend-pending">—</strong></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;font-size:0.78rem;"><span style="display:flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;border-radius:50%;background:var(--red);display:inline-block;"></span>Rejected</span><strong id="legend-rejected">—</strong></div>
         </div>
       </div>
     </div>
@@ -746,7 +780,7 @@ tbody td.muted { color: var(--muted); }
 <div class="page" id="page-fish-management">
   <div class="page-header">
     <div><h1>Fish Management</h1><p>Manage available fish inventory</p></div>
-    <button class="btn btn-primary" onclick="openModal('addFishModal')"><i class="fa-solid fa-plus"></i> Add Fish</button>
+    <button class="btn btn-primary" onclick="openAddFishModal()"><i class="fa-solid fa-plus"></i> Add Fish</button>
   </div>
 
   <div class="card">
@@ -851,19 +885,19 @@ tbody td.muted { color: var(--muted); }
     <div class="stat-card green">
       <div class="stat-icon green"><i class="fa-solid fa-circle-check"></i></div>
       <div class="stat-label">Collected</div>
-      <div class="stat-value">₹3,64,800</div>
-      <div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> 76% of total</div>
+      <div class="stat-value" id="pay-collected"><i class="fa-solid fa-spinner fa-spin"></i></div>
+      <div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> Paid</div>
     </div>
     <div class="stat-card amber">
       <div class="stat-icon amber"><i class="fa-solid fa-clock"></i></div>
       <div class="stat-label">Pending</div>
-      <div class="stat-value">₹1,17,500</div>
-      <div class="stat-change down"><i class="fa-solid fa-arrow-trend-up"></i> 24% of total</div>
+      <div class="stat-value" id="pay-pending"><i class="fa-solid fa-spinner fa-spin"></i></div>
+      <div class="stat-change down"><i class="fa-solid fa-arrow-trend-up"></i> Awaiting</div>
     </div>
     <div class="stat-card blue">
       <div class="stat-icon blue"><i class="fa-solid fa-wallet"></i></div>
       <div class="stat-label">Total Billed</div>
-      <div class="stat-value">₹4,82,300</div>
+      <div class="stat-value" id="pay-total"><i class="fa-solid fa-spinner fa-spin"></i></div>
       <div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> This month</div>
     </div>
   </div>
@@ -899,10 +933,10 @@ tbody td.muted { color: var(--muted); }
   </div>
 
   <div class="stats-grid">
-    <div class="stat-card blue"><div class="stat-icon blue"><i class="fa-solid fa-chart-line"></i></div><div class="stat-label">Monthly Revenue</div><div class="stat-value">₹4,82,300</div><div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> +18.4%</div></div>
-    <div class="stat-card green"><div class="stat-icon green"><i class="fa-solid fa-weight-hanging"></i></div><div class="stat-label">Total Fish Sold</div><div class="stat-value">8,240 kg</div><div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> +12.1%</div></div>
-    <div class="stat-card amber"><div class="stat-icon amber"><i class="fa-solid fa-repeat"></i></div><div class="stat-label">Repeat Buyers</div><div class="stat-value">82%</div><div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> +5% vs last month</div></div>
-    <div class="stat-card aqua"><div class="stat-icon aqua"><i class="fa-solid fa-handshake"></i></div><div class="stat-label">Avg Order Value</div><div class="stat-value">₹3,758</div><div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> +9.2%</div></div>
+    <div class="stat-card blue"><div class="stat-icon blue"><i class="fa-solid fa-chart-line"></i></div><div class="stat-label">Monthly Revenue</div><div class="stat-value" id="an-revenue"><i class="fa-solid fa-spinner fa-spin"></i></div><div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> This month</div></div>
+    <div class="stat-card green"><div class="stat-icon green"><i class="fa-solid fa-weight-hanging"></i></div><div class="stat-label">Total Fish Sold</div><div class="stat-value" id="an-kg"><i class="fa-solid fa-spinner fa-spin"></i></div><div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> kg this month</div></div>
+    <div class="stat-card amber"><div class="stat-icon amber"><i class="fa-solid fa-repeat"></i></div><div class="stat-label">Total Orders</div><div class="stat-value" id="an-orders"><i class="fa-solid fa-spinner fa-spin"></i></div><div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> All time</div></div>
+    <div class="stat-card aqua"><div class="stat-icon aqua"><i class="fa-solid fa-handshake"></i></div><div class="stat-label">Avg Order Value</div><div class="stat-value" id="an-avg"><i class="fa-solid fa-spinner fa-spin"></i></div><div class="stat-change up"><i class="fa-solid fa-arrow-trend-up"></i> Per order</div></div>
   </div>
 
   <div class="charts-grid" style="margin-bottom:24px;">
@@ -934,9 +968,9 @@ tbody td.muted { color: var(--muted); }
   <div class="card" style="max-width:600px;">
     <div class="card-header"><div class="card-title">Profile Settings</div></div>
     <div class="card-body">
-      <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" value="Admin Ravi" /></div>
-      <div class="form-group"><label class="form-label">Email</label><input class="form-input" value="admin@arowana.in" /></div>
-      <div class="form-group"><label class="form-label">Phone</label><input class="form-input" value="+91 98765 43210" /></div>
+      <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" id="settingsName" placeholder="Admin name" /></div>
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="settingsEmail" placeholder="admin@arowana.in" /></div>
+      <div class="form-group"><label class="form-label">Phone</label><input class="form-input" id="settingsPhone" placeholder="+91 …" /></div>
       <div class="form-group">
         <label class="form-label">Theme</label>
         <div style="display:flex;gap:10px;">
@@ -944,7 +978,7 @@ tbody td.muted { color: var(--muted); }
           <button class="btn btn-ghost btn-sm" onclick="setTheme('dark')"><i class="fa-solid fa-moon"></i> Dark</button>
         </div>
       </div>
-      <button class="btn btn-primary">Save Changes</button>
+      <button class="btn btn-primary" onclick="saveSettings()"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
     </div>
   </div>
 </div>
@@ -959,37 +993,31 @@ tbody td.muted { color: var(--muted); }
 <div class="modal-overlay" id="addFishModal">
   <div class="modal">
     <div class="modal-header">
-      <span class="modal-title">Add New Fish</span>
+      <span class="modal-title" id="fishModalTitle">Add New Fish</span>
       <button class="icon-btn" onclick="closeModal('addFishModal')"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div class="modal-body">
-      <div class="form-group">
-        <label class="form-label">Fish Image</label>
-        <div class="upload-box">
-          <i class="fa-solid fa-cloud-arrow-up"></i>
-          <span>Click or drag to upload image</span>
-        </div>
+      <input type="hidden" id="fishFormId" />
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Fish Name *</label><input class="form-input" id="fishName" placeholder="e.g. Pomfret" /></div>
+        <div class="form-group"><label class="form-label">Category *</label><select class="form-select" id="fishCategory"><option>Saltwater</option><option>Freshwater</option><option>Premium</option></select></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Fish Name</label><input class="form-input" placeholder="e.g. Pomfret" /></div>
-        <div class="form-group"><label class="form-label">Category</label><select class="form-select"><option>Saltwater</option><option>Freshwater</option><option>Premium</option></select></div>
+        <div class="form-group"><label class="form-label">Price per kg (₹) *</label><input class="form-input" id="fishPrice" type="number" placeholder="450" /></div>
+        <div class="form-group"><label class="form-label">Available Quantity (kg) *</label><input class="form-input" id="fishQty" type="number" placeholder="100" /></div>
       </div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">Price per kg (₹)</label><input class="form-input" type="number" placeholder="450" /></div>
-        <div class="form-group"><label class="form-label">Available Quantity (kg)</label><input class="form-input" type="number" placeholder="100" /></div>
-      </div>
-      <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" placeholder="Brief description of the fish…"></textarea></div>
+      <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="fishDesc" placeholder="Brief description of the fish…"></textarea></div>
       <div class="form-group">
         <label class="form-label">Availability</label>
         <label class="toggle-wrap">
-          <label class="toggle"><input type="checkbox" checked /><span class="toggle-slider"></span></label>
+          <label class="toggle"><input type="checkbox" id="fishInStock" checked /><span class="toggle-slider"></span></label>
           In Stock
         </label>
       </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('addFishModal')">Cancel</button>
-      <button class="btn btn-primary" onclick="closeModal('addFishModal')"><i class="fa-solid fa-plus"></i> Add Fish</button>
+      <button class="btn btn-primary" onclick="submitFishForm()"><i class="fa-solid fa-check"></i> Save Fish</button>
     </div>
   </div>
 </div>
@@ -1003,18 +1031,18 @@ tbody td.muted { color: var(--muted); }
     </div>
     <div class="modal-body">
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Fish Name</label><input class="form-input" placeholder="e.g. Barramundi" /></div>
-        <div class="form-group"><label class="form-label">Expected Quantity (kg)</label><input class="form-input" type="number" placeholder="200" /></div>
+        <div class="form-group"><label class="form-label">Fish Name *</label><input class="form-input" id="upcomingName" placeholder="e.g. Barramundi" /></div>
+        <div class="form-group"><label class="form-label">Expected Quantity (kg) *</label><input class="form-input" id="upcomingQty" type="number" placeholder="200" /></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Expected Arrival Date</label><input class="form-input" type="date" /></div>
-        <div class="form-group"><label class="form-label">Price per kg (₹)</label><input class="form-input" type="number" placeholder="580" /></div>
+        <div class="form-group"><label class="form-label">Expected Arrival Date *</label><input class="form-input" id="upcomingDate" type="date" /></div>
+        <div class="form-group"><label class="form-label">Price per kg (₹) *</label><input class="form-input" id="upcomingPrice" type="number" placeholder="580" /></div>
       </div>
-      <div class="form-group"><label class="form-label">Source / Fisherman</label><input class="form-input" placeholder="Fisherman name or region" /></div>
+      <div class="form-group"><label class="form-label">Source / Fisherman</label><input class="form-input" id="upcomingSource" placeholder="Fisherman name or region" /></div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('addUpcomingModal')">Cancel</button>
-      <button class="btn btn-primary" onclick="closeModal('addUpcomingModal')">Add Upcoming</button>
+      <button class="btn btn-primary" onclick="submitUpcomingForm()">Add Upcoming</button>
     </div>
   </div>
 </div>
@@ -1028,19 +1056,19 @@ tbody td.muted { color: var(--muted); }
     </div>
     <div class="modal-body">
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Business Name</label><input class="form-input" placeholder="e.g. Sea Pearl Hotel" /></div>
-        <div class="form-group"><label class="form-label">Type</label><select class="form-select"><option>Restaurant</option><option>Hotel</option><option>Catering</option><option>Other</option></select></div>
+        <div class="form-group"><label class="form-label">Business Name *</label><input class="form-input" id="buyerName" placeholder="e.g. Sea Pearl Hotel" /></div>
+        <div class="form-group"><label class="form-label">Type</label><select class="form-select" id="buyerType"><option>Restaurant</option><option>Hotel</option><option>Catering</option><option>Other</option></select></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Contact Person</label><input class="form-input" placeholder="Name" /></div>
-        <div class="form-group"><label class="form-label">Phone</label><input class="form-input" placeholder="+91 …" /></div>
+        <div class="form-group"><label class="form-label">Contact Person</label><input class="form-input" id="buyerContact" placeholder="Name" /></div>
+        <div class="form-group"><label class="form-label">Phone *</label><input class="form-input" id="buyerPhone" placeholder="+91 …" /></div>
       </div>
-      <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" placeholder="info@…" /></div>
-      <div class="form-group"><label class="form-label">Location / City</label><input class="form-input" placeholder="e.g. Bengaluru" /></div>
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="buyerEmail" type="email" placeholder="info@…" /></div>
+      <div class="form-group"><label class="form-label">Location / City</label><input class="form-input" id="buyerLocation" placeholder="e.g. Bengaluru" /></div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('addBuyerModal')">Cancel</button>
-      <button class="btn btn-primary" onclick="closeModal('addBuyerModal')">Add Buyer</button>
+      <button class="btn btn-primary" onclick="submitBuyerForm()">Add Buyer</button>
     </div>
   </div>
 </div>
@@ -1048,144 +1076,196 @@ tbody td.muted { color: var(--muted); }
 <!-- ═══════════════════════════════
      JAVASCRIPT
 ═══════════════════════════════ -->
+<script src="js/admin.js"></script>
 <script>
-/* ────────── DATA ────────── */
-const fishData = [
-  { id:1, emoji:'🐟', name:'Pomfret', price:520, qty:80,  inStock:true,  cat:'Saltwater' },
-  { id:2, emoji:'🐠', name:'Surmai',  price:680, qty:45,  inStock:true,  cat:'Premium'   },
-  { id:3, emoji:'🐡', name:'Rohu',    price:180, qty:10,  inStock:true,  cat:'Freshwater'},
-  { id:4, emoji:'🦈', name:'Shark',   price:420, qty:0,   inStock:false, cat:'Saltwater' },
-  { id:5, emoji:'🐟', name:'Hilsa',   price:850, qty:30,  inStock:true,  cat:'Premium'   },
-  { id:6, emoji:'🐠', name:'Tilapia', price:150, qty:120, inStock:true,  cat:'Freshwater'},
-  { id:7, emoji:'🐡', name:'Catla',   price:200, qty:60,  inStock:true,  cat:'Freshwater'},
-  { id:8, emoji:'🦑', name:'Squid',   price:310, qty:0,   inStock:false, cat:'Saltwater' },
-];
+/* ══════════════════════════════════════════════════════════════
+   AROWANA ADMIN — FULL API INTEGRATION
+  Base URL: https://techforgeinnovators.onrender.com
+   All routes require admin JWT cookie (credentials: 'include')
+══════════════════════════════════════════════════════════════ */
 
-const orderData = [
-  { id:'ORD-0048', buyer:'Sea Pearl Hotel',    fish:'Pomfret',  qty:25, total:13000, status:'Pending',   date:'05 Apr 2026' },
-  { id:'ORD-0047', buyer:'Taj Residency',      fish:'Surmai',   qty:10, total: 6800, status:'Confirmed', date:'05 Apr 2026' },
-  { id:'ORD-0046', buyer:'Spice Garden Rest.', fish:'Hilsa',    qty:8,  total: 6800, status:'Delivered', date:'04 Apr 2026' },
-  { id:'ORD-0045', buyer:'The Blue Lagoon',    fish:'Rohu',     qty:50, total: 9000, status:'Delivered', date:'04 Apr 2026' },
-  { id:'ORD-0044', buyer:'Hotel Ashoka',       fish:'Tilapia',  qty:30, total: 4500, status:'Pending',   date:'03 Apr 2026' },
-  { id:'ORD-0043', buyer:'Fisherman\'s Wharf', fish:'Catla',    qty:20, total: 4000, status:'Confirmed', date:'03 Apr 2026' },
-  { id:'ORD-0042', buyer:'Marina Bay Hotel',   fish:'Squid',    qty:15, total: 4650, status:'Rejected',  date:'02 Apr 2026' },
-  { id:'ORD-0041', buyer:'Coastal Kitchen',    fish:'Pomfret',  qty:40, total:20800, status:'Delivered', date:'02 Apr 2026' },
-];
+const API_BASE = (window.AdminAPI && window.AdminAPI.baseUrl) || 'https://techforgeinnovators.onrender.com/v1/api';
+const HEADERS = { 'Content-Type': 'application/json' };
 
-const buyersData = [
-  { name:'Sea Pearl Hotel',    type:'Hotel',      contact:'Rajesh M.',   phone:'+91 98410 11223', location:'Bengaluru', orders:84, spent:240000, active:true },
-  { name:'Taj Residency',      type:'Hotel',      contact:'Priya K.',    phone:'+91 98765 09876', location:'Mysuru',    orders:61, spent:187000, active:true },
-  { name:'Spice Garden Rest.', type:'Restaurant', contact:'Suresh B.',   phone:'+91 99001 23456', location:'Bengaluru', orders:48, spent:124000, active:true },
-  { name:'The Blue Lagoon',    type:'Restaurant', contact:'Anita S.',    phone:'+91 97654 32101', location:'Mangaluru', orders:37, spent: 92000, active:true },
-  { name:'Hotel Ashoka',       type:'Hotel',      contact:'Vikram P.',   phone:'+91 96543 21098', location:'Hubballi',  orders:29, spent: 68000, active:false},
-  { name:'Fisherman\'s Wharf', type:'Restaurant', contact:'Deepa R.',    phone:'+91 95432 10987', location:'Udupi',     orders:52, spent:138000, active:true },
-];
-
-const upcomingData = [
-  { emoji:'🐬', name:'Barramundi', qty:200, price:620, date:'06 Apr 2026', source:'Karwar Fisheries' },
-  { emoji:'🦐', name:'Tiger Prawn',qty:80,  price:980, date:'07 Apr 2026', source:'Coastal Exports' },
-  { emoji:'🐟', name:'Red Snapper',qty:150, price:490, date:'08 Apr 2026', source:'Mangalore Port'   },
-  { emoji:'🦀', name:'Crab',       qty:60,  price:750, date:'09 Apr 2026', source:'Udupi Fishers'    },
-  { emoji:'🐡', name:'Mackerel',   qty:300, price:220, date:'10 Apr 2026', source:'Malpe Harbour'    },
-  { emoji:'🦑', name:'Cuttlefish', qty:90,  price:360, date:'11 Apr 2026', source:'Coastal Exports'  },
-];
-
-/* ────────── STATUS BADGE ────────── */
-const statusBadge = s => {
-  const m = { Pending:'amber', Confirmed:'blue', Delivered:'green', Rejected:'red' };
-  return `<span class="badge badge-${m[s]||'blue'}">${s}</span>`;
-};
-
-/* ────────── RENDER RECENT ORDERS ────────── */
-function renderRecentOrders() {
-  const tbody = document.getElementById('recentOrdersBody');
-  tbody.innerHTML = orderData.slice(0,8).map(o => `
-    <tr>
-      <td><span style="font-family:monospace;font-size:0.8rem;color:var(--blue)">${o.id}</span></td>
-      <td>${o.buyer}</td>
-      <td>${o.fish}</td>
-      <td class="muted">${o.qty} kg</td>
-      <td><strong>₹${o.total.toLocaleString()}</strong></td>
-      <td>${statusBadge(o.status)}</td>
-      <td class="muted">${o.date}</td>
-      <td><button class="btn btn-ghost btn-sm" onclick="viewOrder('${o.id}')">View</button></td>
-    </tr>`).join('');
+/* ── Generic fetcher with error toast ── */
+async function apiFetch(path, opts = {}) {
+  try {
+    const res = await fetch(API_BASE + path, {
+      credentials: 'include',
+      headers: HEADERS,
+      ...opts,
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.message || `HTTP ${res.status}`);
+    return data;
+  } catch (err) {
+    showToast(err.message || 'Network error', 'error');
+    throw err;
+  }
 }
 
-/* ────────── RENDER ORDERS TABLE ────────── */
-function renderOrdersTable() {
-  const tbody = document.getElementById('ordersTableBody');
-  tbody.innerHTML = orderData.map(o => `
-    <tr>
-      <td><input type="checkbox" /></td>
-      <td><span style="font-family:monospace;font-size:0.8rem;color:var(--blue)">${o.id}</span></td>
-      <td>${o.buyer}</td>
-      <td>${o.fish}</td>
-      <td class="muted">${o.qty}</td>
-      <td><strong>₹${o.total.toLocaleString()}</strong></td>
-      <td>${statusBadge(o.status)}</td>
-      <td class="muted">${o.date}</td>
-      <td>
-        <div style="display:flex;gap:5px;flex-wrap:wrap;">
-          ${o.status==='Pending' ? `<button class="btn btn-success btn-sm" onclick="updateOrderStatus('${o.id}','Confirmed')">Confirm</button><button class="btn btn-danger btn-sm" onclick="updateOrderStatus('${o.id}','Rejected')">Reject</button>` : ''}
-          ${o.status==='Confirmed' ? `<button class="btn btn-primary btn-sm" onclick="updateOrderStatus('${o.id}','Delivered')">Deliver</button>` : ''}
-          <button class="btn btn-ghost btn-sm" onclick="viewOrder('${o.id}')"><i class="fa-solid fa-eye"></i></button>
-        </div>
-      </td>
-    </tr>`).join('');
+/* ── Toast notification ── */
+function showToast(msg, type = 'success') {
+  const existing = document.getElementById('apiToast');
+  if (existing) existing.remove();
+  const t = document.createElement('div');
+  t.id = 'apiToast';
+  t.style.cssText = `
+    position:fixed;bottom:24px;right:24px;z-index:9999;
+    padding:12px 20px;border-radius:12px;font-size:0.82rem;font-weight:600;
+    background:${type==='error'?'var(--red)':type==='warn'?'var(--amber)':'var(--green)'};
+    color:#fff;box-shadow:0 8px 32px rgba(0,0,0,0.2);
+    animation:slideUp 0.3s ease;max-width:320px;
+  `;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 4000);
 }
 
-function viewOrder(id) {
-  const o = orderData.find(x => x.id === id);
-  if (!o) return;
-  const sec = document.getElementById('orderDetailSection');
-  document.getElementById('orderDetailBody').innerHTML = `
-    <div class="order-detail">
-      <div class="detail-row"><span class="detail-label">Order ID</span><span class="detail-value" style="font-family:monospace;color:var(--blue)">${o.id}</span></div>
-      <div class="detail-row"><span class="detail-label">Buyer</span><span class="detail-value">${o.buyer}</span></div>
-      <div class="detail-row"><span class="detail-label">Fish Type</span><span class="detail-value">${o.fish}</span></div>
-      <div class="detail-row"><span class="detail-label">Quantity</span><span class="detail-value">${o.qty} kg</span></div>
-      <div class="detail-row"><span class="detail-label">Unit Price</span><span class="detail-value">₹${Math.round(o.total/o.qty)}/kg</span></div>
-      <div class="detail-row"><span class="detail-label">Total Amount</span><span class="detail-value" style="color:var(--blue);font-size:1rem;">₹${o.total.toLocaleString()}</span></div>
-      <div class="detail-row"><span class="detail-label">Status</span><span class="detail-value">${statusBadge(o.status)}</span></div>
-      <div class="detail-row"><span class="detail-label">Date</span><span class="detail-value">${o.date}</span></div>
-    </div>
-    <div style="display:flex;gap:10px;margin-top:16px;">
-      ${o.status==='Pending'?`<button class="btn btn-primary" onclick="updateOrderStatus('${o.id}','Confirmed')">Confirm Order</button><button class="btn btn-danger" onclick="updateOrderStatus('${o.id}','Rejected')">Reject</button>`:''}
-      ${o.status==='Confirmed'?`<button class="btn btn-primary" onclick="updateOrderStatus('${o.id}','Delivered')">Mark Delivered</button>`:''}
+/* ── Loading skeleton helper ── */
+function setLoading(id, cols = 5) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const tag = el.tagName === 'TBODY' ? 'tr' : 'div';
+  if (tag === 'tr') {
+    el.innerHTML = Array(4).fill(`<tr>${Array(cols).fill(`<td><div style="height:14px;background:var(--border);border-radius:4px;animation:pulse 1.2s infinite"></div></td>`).join('')}</tr>`).join('');
+  } else {
+    el.innerHTML = `<div style="padding:32px;text-align:center;color:var(--subtle)"><i class="fa-solid fa-spinner fa-spin" style="font-size:1.5rem"></i><div style="margin-top:8px;font-size:0.8rem">Loading…</div></div>`;
+  }
+}
+
+/* ── State store ── */
+let fishData = [];
+let orderData = [];
+let buyersData = [];
+let upcomingData = [];
+let paymentsData = [];
+let dashStats = {};
+let notificationsData = [];
+let settingsData = {};
+
+/* ────────── DASHBOARD ────────── */
+async function loadDashboard() {
+  try {
+    const data = await apiFetch('/analytics/dashboard');
+    const s = data.data || data;
+    dashStats = s;
+
+    // Stat cards
+    const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    setEl('stat-revenue',  s.totalRevenue  != null ? '₹' + Number(s.totalRevenue).toLocaleString('en-IN') : '—');
+    setEl('stat-orders',   s.totalOrders   != null ? s.totalOrders.toLocaleString() : '—');
+    setEl('stat-buyers',   s.activeBuyers  != null ? s.activeBuyers : '—');
+    setEl('stat-pending',  s.pendingOrders != null ? s.pendingOrders : '—');
+  } catch (_) {}
+}
+
+/* ────────── NOTIFICATIONS ────────── */
+async function loadNotifications() {
+  try {
+    const data = await apiFetch('/notifications');
+    notificationsData = data.data || data.notifications || [];
+    renderNotifications();
+    // Badge
+    const unread = notificationsData.filter(n => !n.isRead).length;
+    const dot = document.getElementById('notifDot');
+    if (dot) dot.style.display = unread > 0 ? 'block' : 'none';
+  } catch (_) {}
+}
+
+function renderNotifications() {
+  const panel = document.getElementById('notifPanel');
+  const listEl = panel.querySelector('.notif-items') || (() => {
+    const d = document.createElement('div');
+    d.className = 'notif-items';
+    panel.appendChild(d);
+    return d;
+  })();
+
+  const iconMap = {
+    new_order: { bg:'var(--blue-lt)', color:'var(--blue)', icon:'fa-box' },
+    order_delivered: { bg:'var(--green-lt)', color:'var(--green)', icon:'fa-check' },
+    low_stock: { bg:'var(--amber-lt)', color:'var(--amber)', icon:'fa-triangle-exclamation' },
+    upcoming_arrival: { bg:'var(--purple-lt)', color:'var(--purple)', icon:'fa-fish' },
+    order_rejected: { bg:'var(--red-lt)', color:'var(--red)', icon:'fa-xmark' },
+    payment_received: { bg:'var(--green-lt)', color:'var(--green)', icon:'fa-coins' },
+  };
+
+  if (!notificationsData.length) {
+    listEl.innerHTML = `<div style="text-align:center;color:var(--subtle);padding:32px;font-size:0.82rem">No notifications</div>`;
+    return;
+  }
+  listEl.innerHTML = notificationsData.slice(0,20).map(n => {
+    const ic = iconMap[n.type] || iconMap.new_order;
+    const ago = timeAgo(n.createdAt);
+    return `
+    <div class="notif-item" style="${!n.isRead?'background:var(--blue-lt);border-radius:8px;':''}">
+      <div class="notif-icon" style="background:${ic.bg};color:${ic.color}"><i class="fa-solid ${ic.icon}"></i></div>
+      <div>
+        <div class="notif-text">${n.title ? `<strong>${n.title}</strong> — ` : ''}${n.message}</div>
+        <div class="notif-time">${ago}</div>
+      </div>
     </div>`;
-  sec.style.display = 'block';
-  sec.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }).join('');
 }
 
-function updateOrderStatus(id, newStatus) {
-  const o = orderData.find(x => x.id === id);
-  if (o) { o.status = newStatus; renderOrdersTable(); renderRecentOrders(); viewOrder(id); }
+async function markAllNotifRead() {
+  try {
+    await apiFetch('/notifications/mark-read', { method: 'PATCH' });
+    notificationsData = notificationsData.map(n => ({ ...n, isRead: true }));
+    renderNotifications();
+    showToast('All notifications marked as read');
+  } catch (_) {}
 }
 
-/* ────────── RENDER FISH GRID ────────── */
+function timeAgo(dateStr) {
+  if (!dateStr) return '';
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 1) return 'just now';
+  if (m < 60) return m + ' min ago';
+  const h = Math.floor(m / 60);
+  if (h < 24) return h + ' hr ago';
+  return Math.floor(h / 24) + 'd ago';
+}
+
+/* ────────── FISH MANAGEMENT ────────── */
+async function loadFish() {
+  setLoading('fishGrid');
+  try {
+    const data = await apiFetch('/fish');
+    fishData = data.data || data.fish || data || [];
+    renderFishGrid();
+  } catch (_) { document.getElementById('fishGrid').innerHTML = `<div style="padding:32px;color:var(--red);text-align:center">Failed to load fish data</div>`; }
+}
+
 let fishFilter = '';
 let stockFilter = 'all';
 
 function renderFishGrid() {
   const grid = document.getElementById('fishGrid');
-  let data = fishData.filter(f => f.name.toLowerCase().includes(fishFilter));
+  let data = fishData.filter(f => (f.name||'').toLowerCase().includes(fishFilter));
   if (stockFilter === 'in')  data = data.filter(f => f.inStock);
   if (stockFilter === 'out') data = data.filter(f => !f.inStock);
+
+  if (!data.length) {
+    grid.innerHTML = `<div style="padding:40px;text-align:center;color:var(--subtle);grid-column:1/-1">No fish found</div>`;
+    return;
+  }
   grid.innerHTML = data.map(f => `
     <div class="fish-card">
       <div class="fish-img">
-        ${f.emoji}
+        ${f.emoji || '🐟'}
         <span class="fish-stock-badge"><span class="badge ${f.inStock?'badge-green':'badge-red'}">${f.inStock?'In Stock':'Out of Stock'}</span></span>
       </div>
       <div class="fish-body">
         <div class="fish-name">${f.name}</div>
-        <div class="fish-qty">${f.qty} kg available · ${f.cat}</div>
-        <div class="fish-price">₹${f.price}<span style="font-size:0.7rem;color:var(--muted);font-weight:400">/kg</span></div>
+        <div class="fish-qty">${f.availableQty ?? f.qty ?? 0} kg available · ${f.category || f.cat || ''}</div>
+        <div class="fish-price">₹${f.pricePerKg ?? f.price ?? 0}<span style="font-size:0.7rem;color:var(--muted);font-weight:400">/kg</span></div>
         <div class="fish-actions">
-          <button class="btn btn-ghost btn-sm" style="flex:1" onclick="editFish(${f.id})"><i class="fa-solid fa-pen"></i></button>
-          <label class="toggle"><input type="checkbox" ${f.inStock?'checked':''} onchange="toggleFishStock(${f.id},this.checked)" /><span class="toggle-slider"></span></label>
-          <button class="btn btn-danger btn-sm" onclick="deleteFish(${f.id})"><i class="fa-solid fa-trash"></i></button>
+          <button class="btn btn-ghost btn-sm" style="flex:1" onclick="editFish('${f._id}')"><i class="fa-solid fa-pen"></i></button>
+          <label class="toggle"><input type="checkbox" ${f.inStock?'checked':''} onchange="toggleFishStock('${f._id}',this.checked)" /><span class="toggle-slider"></span></label>
+          <button class="btn btn-danger btn-sm" onclick="deleteFish('${f._id}')"><i class="fa-solid fa-trash"></i></button>
         </div>
       </div>
     </div>`).join('');
@@ -1198,97 +1278,510 @@ function filterFishByStock(v, el) {
   el.classList.add('active');
   renderFishGrid();
 }
-function toggleFishStock(id, val) { const f = fishData.find(x => x.id===id); if(f){ f.inStock=val; renderFishGrid(); } }
-function deleteFish(id) { const i = fishData.findIndex(x=>x.id===id); if(i>-1){ fishData.splice(i,1); renderFishGrid(); } }
-function editFish(id) { openModal('addFishModal'); }
 
-/* ────────── RENDER UPCOMING ────────── */
+async function toggleFishStock(id, val) {
+  try {
+    await apiFetch(`/fish/${id}/toggle-stock`, { method: 'PATCH' });
+    const f = fishData.find(x => x._id === id);
+    if (f) { f.inStock = val; renderFishGrid(); }
+    showToast('Stock status updated');
+  } catch (_) {}
+}
+
+async function deleteFish(id) {
+  if (!confirm('Delete this fish?')) return;
+  try {
+    await apiFetch(`/fish/${id}`, { method: 'DELETE' });
+    fishData = fishData.filter(x => x._id !== id);
+    renderFishGrid();
+    showToast('Fish deleted');
+  } catch (_) {}
+}
+
+function editFish(id) {
+  const f = fishData.find(x => x._id === id);
+  if (!f) return;
+  // Populate modal for editing
+  document.getElementById('fishModalTitle').textContent = 'Edit Fish';
+  document.getElementById('fishFormId').value = id;
+  document.getElementById('fishName').value = f.name || '';
+  document.getElementById('fishCategory').value = f.category || 'Saltwater';
+  document.getElementById('fishPrice').value = f.pricePerKg || f.price || '';
+  document.getElementById('fishQty').value = f.availableQty ?? f.qty ?? '';
+  document.getElementById('fishDesc').value = f.description || '';
+  document.getElementById('fishInStock').checked = f.inStock !== false;
+  openModal('addFishModal');
+}
+
+async function submitFishForm() {
+  const id = document.getElementById('fishFormId').value;
+  const body = {
+    name:         document.getElementById('fishName').value.trim(),
+    category:     document.getElementById('fishCategory').value,
+    pricePerKg:   Number(document.getElementById('fishPrice').value),
+    availableQty: Number(document.getElementById('fishQty').value),
+    description:  document.getElementById('fishDesc').value.trim(),
+    inStock:      document.getElementById('fishInStock').checked,
+  };
+  if (!body.name || !body.pricePerKg) { showToast('Name and price are required', 'warn'); return; }
+
+  try {
+    if (id) {
+      await apiFetch(`/fish/${id}`, { method: 'PUT', body: JSON.stringify(body) });
+      showToast('Fish updated');
+    } else {
+      await apiFetch('/fish', { method: 'POST', body: JSON.stringify(body) });
+      showToast('Fish added');
+    }
+    closeModal('addFishModal');
+    await loadFish();
+  } catch (_) {}
+}
+
+function openAddFishModal() {
+  document.getElementById('fishModalTitle').textContent = 'Add New Fish';
+  document.getElementById('fishFormId').value = '';
+  document.getElementById('fishName').value = '';
+  document.getElementById('fishCategory').value = 'Saltwater';
+  document.getElementById('fishPrice').value = '';
+  document.getElementById('fishQty').value = '';
+  document.getElementById('fishDesc').value = '';
+  document.getElementById('fishInStock').checked = true;
+  openModal('addFishModal');
+}
+
+/* ────────── UPCOMING FISH ────────── */
+async function loadUpcoming() {
+  setLoading('upcomingList');
+  try {
+    const data = await apiFetch('/upcoming-fish');
+    upcomingData = data.data || data.upcomingFish || data || [];
+    renderUpcoming();
+  } catch (_) {}
+}
+
 function renderUpcoming() {
-  document.getElementById('upcomingList').innerHTML = upcomingData.map((u,i) => `
+  const el = document.getElementById('upcomingList');
+  if (!upcomingData.length) {
+    el.innerHTML = `<div style="padding:32px;text-align:center;color:var(--subtle)">No upcoming arrivals</div>`;
+    return;
+  }
+  el.innerHTML = upcomingData.filter(u => u.status !== 'arrived').map(u => `
     <div class="upcoming-item">
-      <div class="upcoming-emoji">${u.emoji}</div>
+      <div class="upcoming-emoji">${u.emoji || '🐟'}</div>
       <div class="upcoming-info">
         <div class="upcoming-name">${u.name}</div>
-        <div class="upcoming-date"><i class="fa-solid fa-calendar-day" style="color:var(--blue);margin-right:4px;"></i>${u.date} &nbsp;·&nbsp; ${u.qty} kg &nbsp;·&nbsp; ₹${u.price}/kg</div>
-        <div class="upcoming-date" style="margin-top:2px;"><i class="fa-solid fa-anchor" style="color:var(--muted);margin-right:4px;"></i>${u.source}</div>
+        <div class="upcoming-date">
+          <i class="fa-solid fa-calendar-day" style="color:var(--blue);margin-right:4px;"></i>
+          ${new Date(u.expectedArrivalDate).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}
+          &nbsp;·&nbsp; ${u.expectedQty} kg &nbsp;·&nbsp; ₹${u.pricePerKg}/kg
+        </div>
+        ${u.source ? `<div class="upcoming-date" style="margin-top:2px;"><i class="fa-solid fa-anchor" style="color:var(--muted);margin-right:4px;"></i>${u.source}</div>` : ''}
       </div>
-      <button class="btn btn-amber btn-sm" onclick="moveToAvailable(${i})"><i class="fa-solid fa-arrow-right"></i> Move to Available</button>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span class="badge ${u.status==='pending'?'badge-amber':'badge-blue'}">${u.status}</span>
+        ${u.status==='pending' ? `<button class="btn btn-amber btn-sm" onclick="moveToAvailable('${u._id}')"><i class="fa-solid fa-arrow-right"></i> Move</button>` : ''}
+        <button class="btn btn-danger btn-sm" onclick="deleteUpcoming('${u._id}')"><i class="fa-solid fa-trash"></i></button>
+      </div>
     </div>`).join('');
 }
 
-function moveToAvailable(i) {
-  const u = upcomingData[i];
-  fishData.push({ id: fishData.length+1, emoji: u.emoji, name: u.name, price: u.price, qty: u.qty, inStock: true, cat:'Saltwater' });
-  upcomingData.splice(i, 1);
-  renderUpcoming();
-  renderFishGrid();
+async function moveToAvailable(id) {
+  if (!confirm('Move this fish to available inventory?')) return;
+  try {
+    await apiFetch(`/upcoming-fish/${id}/move-to-available`, { method: 'POST' });
+    showToast('Fish moved to inventory!');
+    await loadUpcoming();
+    await loadFish();
+  } catch (_) {}
 }
 
-/* ────────── RENDER BUYERS ────────── */
+async function deleteUpcoming(id) {
+  if (!confirm('Delete this upcoming fish entry?')) return;
+  try {
+    await apiFetch(`/upcoming-fish/${id}`, { method: 'DELETE' });
+    showToast('Deleted');
+    await loadUpcoming();
+  } catch (_) {}
+}
+
+async function submitUpcomingForm() {
+  const body = {
+    name:                document.getElementById('upcomingName').value.trim(),
+    expectedQty:         Number(document.getElementById('upcomingQty').value),
+    expectedArrivalDate: document.getElementById('upcomingDate').value,
+    pricePerKg:          Number(document.getElementById('upcomingPrice').value),
+    source:              document.getElementById('upcomingSource').value.trim(),
+  };
+  if (!body.name || !body.expectedQty || !body.expectedArrivalDate) {
+    showToast('Fill in all required fields', 'warn'); return;
+  }
+  try {
+    await apiFetch('/upcoming-fish', { method: 'POST', body: JSON.stringify(body) });
+    showToast('Upcoming fish added');
+    closeModal('addUpcomingModal');
+    await loadUpcoming();
+  } catch (_) {}
+}
+
+/* ────────── ORDERS ────────── */
+async function loadOrders() {
+  setLoading('ordersTableBody', 9);
+  setLoading('recentOrdersBody', 8);
+  try {
+    const data = await apiFetch('/orders');
+    orderData = data.data || data.orders || data || [];
+    renderOrdersTable();
+    renderRecentOrders();
+    // Update status donut + sidebar badge
+    updateStatusDonut(orderData);
+    const pending = orderData.filter(o => o.status === 'Pending').length;
+    updateBadge('badge-orders', pending);
+  } catch (_) {}
+}
+
+const statusBadge = s => {
+  const m = { Pending:'amber', Confirmed:'blue', Delivered:'green', Rejected:'red' };
+  return `<span class="badge badge-${m[s]||'blue'}">${s}</span>`;
+};
+
+function renderRecentOrders() {
+  const tbody = document.getElementById('recentOrdersBody');
+  const slice = orderData.slice(0, 8);
+  if (!slice.length) { tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--subtle);padding:32px">No orders yet</td></tr>`; return; }
+  tbody.innerHTML = slice.map(o => {
+    const buyer = o.buyer?.name || o.buyerName || '—';
+    const fish  = o.items?.[0]?.fish?.name || o.fish || '—';
+    const qty   = o.items?.[0]?.quantity || o.qty || '—';
+    const total = o.totalAmount || o.total || 0;
+    const date  = o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : o.date || '—';
+    return `<tr>
+      <td><span style="font-family:monospace;font-size:0.8rem;color:var(--blue)">${o._id?.slice(-8).toUpperCase() || o.id}</span></td>
+      <td>${buyer}</td><td>${fish}</td>
+      <td class="muted">${qty} kg</td>
+      <td><strong>₹${Number(total).toLocaleString()}</strong></td>
+      <td>${statusBadge(o.status)}</td>
+      <td class="muted">${date}</td>
+      <td><button class="btn btn-ghost btn-sm" onclick="viewOrder('${o._id || o.id}')">View</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function renderOrdersTable() {
+  const tbody = document.getElementById('ordersTableBody');
+  if (!orderData.length) { tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:var(--subtle);padding:32px">No orders found</td></tr>`; return; }
+  tbody.innerHTML = orderData.map(o => {
+    const buyer = o.buyer?.name || o.buyerName || '—';
+    const fish  = o.items?.[0]?.fish?.name || o.fish || '—';
+    const qty   = o.items?.[0]?.quantity || o.qty || '—';
+    const total = o.totalAmount || o.total || 0;
+    const date  = o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : o.date || '—';
+    const id    = o._id || o.id;
+    return `<tr>
+      <td><input type="checkbox" /></td>
+      <td><span style="font-family:monospace;font-size:0.8rem;color:var(--blue)">${id?.slice(-8).toUpperCase()}</span></td>
+      <td>${buyer}</td><td>${fish}</td>
+      <td class="muted">${qty}</td>
+      <td><strong>₹${Number(total).toLocaleString()}</strong></td>
+      <td>${statusBadge(o.status)}</td>
+      <td class="muted">${date}</td>
+      <td>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;">
+          ${o.status==='Pending' ? `<button class="btn btn-success btn-sm" onclick="updateOrderStatus('${id}','Confirmed')">Confirm</button><button class="btn btn-danger btn-sm" onclick="updateOrderStatus('${id}','Rejected')">Reject</button>` : ''}
+          ${o.status==='Confirmed' ? `<button class="btn btn-primary btn-sm" onclick="updateOrderStatus('${id}','Delivered')">Deliver</button>` : ''}
+          <button class="btn btn-ghost btn-sm" onclick="viewOrder('${id}')"><i class="fa-solid fa-eye"></i></button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function viewOrder(id) {
+  const o = orderData.find(x => (x._id || x.id) === id);
+  if (!o) return;
+  const buyer = o.buyer?.name || o.buyerName || '—';
+  const fish  = o.items?.[0]?.fish?.name || o.fish || '—';
+  const qty   = o.items?.[0]?.quantity || o.qty || '—';
+  const total = o.totalAmount || o.total || 0;
+  const date  = o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : o.date || '—';
+  const sec = document.getElementById('orderDetailSection');
+  document.getElementById('orderDetailBody').innerHTML = `
+    <div class="order-detail">
+      <div class="detail-row"><span class="detail-label">Order ID</span><span class="detail-value" style="font-family:monospace;color:var(--blue)">${id?.slice(-8).toUpperCase()}</span></div>
+      <div class="detail-row"><span class="detail-label">Buyer</span><span class="detail-value">${buyer}</span></div>
+      <div class="detail-row"><span class="detail-label">Fish Type</span><span class="detail-value">${fish}</span></div>
+      <div class="detail-row"><span class="detail-label">Quantity</span><span class="detail-value">${qty} kg</span></div>
+      <div class="detail-row"><span class="detail-label">Total Amount</span><span class="detail-value" style="color:var(--blue);font-size:1rem;">₹${Number(total).toLocaleString()}</span></div>
+      <div class="detail-row"><span class="detail-label">Status</span><span class="detail-value">${statusBadge(o.status)}</span></div>
+      <div class="detail-row"><span class="detail-label">Date</span><span class="detail-value">${date}</span></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:16px;">
+      ${o.status==='Pending'?`<button class="btn btn-primary" onclick="updateOrderStatus('${id}','Confirmed')">Confirm Order</button><button class="btn btn-danger" onclick="updateOrderStatus('${id}','Rejected')">Reject</button>`:''}
+      ${o.status==='Confirmed'?`<button class="btn btn-primary" onclick="updateOrderStatus('${id}','Delivered')">Mark Delivered</button>`:''}
+    </div>`;
+  sec.style.display = 'block';
+  sec.scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+async function updateOrderStatus(id, newStatus) {
+  try {
+    await apiFetch(`/orders/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status: newStatus }) });
+    const o = orderData.find(x => (x._id || x.id) === id);
+    if (o) o.status = newStatus;
+    renderOrdersTable();
+    renderRecentOrders();
+    viewOrder(id);
+    updateStatusDonut(orderData);
+    updateBadge('badge-orders', orderData.filter(o => o.status === 'Pending').length);
+    showToast(`Order ${newStatus.toLowerCase()}`);
+  } catch (_) {}
+}
+
+/* ────────── BUYERS ────────── */
+async function loadBuyers() {
+  setLoading('buyersTableBody', 8);
+  try {
+    const data = await apiFetch('/buyers');
+    buyersData = data.data || data.buyers || data || [];
+    renderBuyers();
+  } catch (_) {}
+}
+
 function renderBuyers() {
   const colors = ['blue','amber','green','purple','blue','green'];
-  document.getElementById('buyersTableBody').innerHTML = buyersData.map((b,i) => `
-    <tr>
-      <td><div style="display:flex;align-items:center;gap:10px;"><div class="avatar ${colors[i]}">${b.name.charAt(0)}</div><div><div style="font-weight:600;font-size:0.85rem;">${b.name}</div><div style="font-size:0.72rem;color:var(--muted)">${b.contact}</div></div></div></td>
-      <td><span class="badge badge-blue">${b.type}</span></td>
-      <td><div style="font-size:0.8rem;">${b.phone}</div></td>
-      <td class="muted">${b.location}</td>
-      <td><strong>${b.orders}</strong></td>
-      <td><strong style="color:var(--blue)">₹${b.spent.toLocaleString()}</strong></td>
-      <td><span class="badge ${b.active?'badge-green':'badge-red'}">${b.active?'Active':'Inactive'}</span></td>
-      <td><button class="btn btn-ghost btn-sm">View History</button></td>
-    </tr>`).join('');
+  const tbody = document.getElementById('buyersTableBody');
+  if (!buyersData.length) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--subtle);padding:32px">No buyers found</td></tr>`; return;
+  }
+  tbody.innerHTML = buyersData.map((b, i) => {
+    const name = b.name || b.businessName || '—';
+    const contact = b.contact || b.contactPerson || '—';
+    const phone = b.phone || b.phonenumber || '—';
+    const location = b.location || b.city || '—';
+    const type = b.type || b.role || '—';
+    const orders = b.orders || b.totalOrders || 0;
+    const spent = b.spent || b.totalSpent || 0;
+    return `<tr>
+      <td><div style="display:flex;align-items:center;gap:10px;">
+        <div class="avatar ${colors[i % colors.length]}">${name.charAt(0)}</div>
+        <div><div style="font-weight:600;font-size:0.85rem;">${name}</div><div style="font-size:0.72rem;color:var(--muted)">${contact}</div></div>
+      </div></td>
+      <td><span class="badge badge-blue">${type}</span></td>
+      <td><div style="font-size:0.8rem;">${phone}</div></td>
+      <td class="muted">${location}</td>
+      <td><strong>${orders}</strong></td>
+      <td><strong style="color:var(--blue)">₹${Number(spent).toLocaleString()}</strong></td>
+      <td><span class="badge ${b.isActive!==false?'badge-green':'badge-red'}">${b.isActive!==false?'Active':'Inactive'}</span></td>
+      <td>
+        <div style="display:flex;gap:5px;">
+          <button class="btn btn-ghost btn-sm" onclick="viewBuyerOrders('${b._id}')">History</button>
+          <button class="btn btn-${b.isActive!==false?'danger':'success'} btn-sm" onclick="toggleBuyer('${b._id}',${b.isActive!==false})">${b.isActive!==false?'Disable':'Enable'}</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
 }
 
-/* ────────── RENDER PAYMENTS ────────── */
+async function toggleBuyer(id, currentActive) {
+  try {
+    await apiFetch(`/buyers/${id}/toggle-status`, { method: 'PATCH' });
+    const b = buyersData.find(x => x._id === id);
+    if (b) b.isActive = !currentActive;
+    renderBuyers();
+    showToast('Buyer status updated');
+  } catch (_) {}
+}
+
+async function viewBuyerOrders(buyerId) {
+  navigate('orders', document.getElementById('nav-orders-link'));
+}
+
+async function submitBuyerForm() {
+  const body = {
+    name:     document.getElementById('buyerName').value.trim(),
+    type:     document.getElementById('buyerType').value,
+    contact:  document.getElementById('buyerContact').value.trim(),
+    phone:    document.getElementById('buyerPhone').value.trim(),
+    email:    document.getElementById('buyerEmail').value.trim(),
+    location: document.getElementById('buyerLocation').value.trim(),
+  };
+  if (!body.name || !body.phone) { showToast('Name and phone are required', 'warn'); return; }
+  try {
+    await apiFetch('/buyers', { method: 'POST', body: JSON.stringify(body) });
+    showToast('Buyer added');
+    closeModal('addBuyerModal');
+    await loadBuyers();
+  } catch (_) {}
+}
+
+/* ────────── PAYMENTS ────────── */
+async function loadPayments() {
+  setLoading('paymentsTableBody', 7);
+  try {
+    const [paymentsRes, summaryRes] = await Promise.allSettled([
+      apiFetch('/payments'),
+      apiFetch('/payments/summary'),
+    ]);
+
+    if (paymentsRes.status === 'fulfilled') {
+      paymentsData = paymentsRes.value.data || paymentsRes.value.payments || paymentsRes.value || [];
+      renderPayments();
+    }
+    if (summaryRes.status === 'fulfilled') {
+      const s = summaryRes.value.data || summaryRes.value;
+      const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+      setEl('pay-collected', s.collected != null ? '₹' + Number(s.collected).toLocaleString('en-IN') : '—');
+      setEl('pay-pending',   s.pending   != null ? '₹' + Number(s.pending).toLocaleString('en-IN')   : '—');
+      setEl('pay-total',     s.total     != null ? '₹' + Number(s.total).toLocaleString('en-IN')     : '—');
+    }
+  } catch (_) {}
+}
+
 function renderPayments() {
-  const paid = [true,false,true,true,false,true,false,true];
-  document.getElementById('paymentsTableBody').innerHTML = orderData.map((o,i) => `
-    <tr>
-      <td><span style="font-family:monospace;font-size:0.8rem;color:var(--blue)">${o.id}</span></td>
-      <td>${o.buyer}</td>
-      <td>${o.fish}</td>
-      <td><strong class="pay-amount">₹${o.total.toLocaleString()}</strong></td>
-      <td><span class="badge ${paid[i]?'badge-green':'badge-amber'}">${paid[i]?'Paid':'Pending'}</span></td>
-      <td class="muted">${o.date}</td>
-      <td>${paid[i]?`<span style="color:var(--subtle);font-size:0.75rem;">Collected</span>`:`<button class="btn btn-success btn-sm" onclick="this.closest('td').innerHTML='<span style=\\'color:var(--subtle);font-size:0.75rem;\\'>Collected</span>'; this.closest('tr').querySelector('.badge').className='badge badge-green'; this.closest('tr').querySelector('.badge').textContent='Paid'">Mark Paid</button>`}</td>
-    </tr>`).join('');
+  const tbody = document.getElementById('paymentsTableBody');
+  if (!paymentsData.length) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--subtle);padding:32px">No payments found</td></tr>`; return;
+  }
+  tbody.innerHTML = paymentsData.map(p => {
+    const orderId  = p.order?._id?.slice(-8).toUpperCase() || p.orderId || '—';
+    const buyer    = p.buyer?.name || p.buyerName || '—';
+    const fish     = p.order?.items?.[0]?.fish?.name || p.fish || '—';
+    const amount   = p.amount || 0;
+    const isPaid   = p.status === 'Paid';
+    const date     = p.paidAt || p.createdAt;
+    const dateStr  = date ? new Date(date).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : '—';
+    return `<tr>
+      <td><span style="font-family:monospace;font-size:0.8rem;color:var(--blue)">${orderId}</span></td>
+      <td>${buyer}</td><td>${fish}</td>
+      <td><strong class="pay-amount">₹${Number(amount).toLocaleString()}</strong></td>
+      <td><span class="badge ${isPaid?'badge-green':'badge-amber'}">${p.status}</span></td>
+      <td class="muted">${dateStr}</td>
+      <td>${!isPaid
+        ? `<button class="btn btn-success btn-sm" onclick="markPaid('${p._id}')">Mark Paid</button>`
+        : `<span style="color:var(--subtle);font-size:0.75rem;">Collected</span>`
+      }</td>
+    </tr>`;
+  }).join('');
 }
 
-/* ────────── TOP FISH & BUYERS (Analytics) ────────── */
-function renderTopFish() {
-  const data = [
-    { name:'Pomfret',  kg:1840, amount:956800 },
-    { name:'Surmai',   kg:1200, amount:816000 },
-    { name:'Hilsa',    kg: 980, amount:833000 },
-    { name:'Rohu',     kg:1600, amount:288000 },
-    { name:'Tilapia',  kg:1620, amount:243000 },
-  ];
-  document.getElementById('topFishList').innerHTML = data.map((f,i)=>`
+async function markPaid(id) {
+  try {
+    await apiFetch(`/payments/${id}/mark-paid`, { method: 'PATCH' });
+    const p = paymentsData.find(x => x._id === id);
+    if (p) p.status = 'Paid';
+    renderPayments();
+    showToast('Payment marked as paid');
+  } catch (_) {}
+}
+
+/* ────────── ANALYTICS ────────── */
+async function loadAnalytics(period = 'daily') {
+  try {
+    const [revenueRes, topFishRes, topBuyersRes, catRes, dashRes] = await Promise.allSettled([
+      apiFetch(`/analytics/revenue?period=${period}`),
+      apiFetch('/analytics/top-fish'),
+      apiFetch('/analytics/top-buyers'),
+      apiFetch('/analytics/category-mix'),
+      apiFetch('/analytics/dashboard'),
+    ]);
+
+    if (revenueRes.status === 'fulfilled') {
+      const rev = revenueRes.value.data || revenueRes.value || [];
+      updateRevenueChart(rev, period);
+    }
+    if (topFishRes.status === 'fulfilled') {
+      const tf = topFishRes.value.data || topFishRes.value || [];
+      renderTopFish(tf);
+    }
+    if (topBuyersRes.status === 'fulfilled') {
+      const tb = topBuyersRes.value.data || topBuyersRes.value || [];
+      renderTopBuyers(tb);
+    }
+    if (catRes.status === 'fulfilled') {
+      const cat = catRes.value.data || catRes.value || [];
+      updateCategoryChart(cat);
+    }
+    // Analytics stat cards from dashboard endpoint
+    if (dashRes.status === 'fulfilled') {
+      const s = dashRes.value.data || dashRes.value || {};
+      const setEl = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
+      setEl('an-revenue', s.totalRevenue != null ? '₹' + Number(s.totalRevenue).toLocaleString('en-IN') : '—');
+      setEl('an-orders',  s.totalOrders  != null ? s.totalOrders.toLocaleString() : '—');
+      const avgVal = s.totalOrders && s.totalRevenue ? Math.round(s.totalRevenue / s.totalOrders) : null;
+      setEl('an-avg',     avgVal != null ? '₹' + avgVal.toLocaleString('en-IN') : '—');
+      // kg sold: sum from top fish if available
+      if (topFishRes.status === 'fulfilled') {
+        const tf = topFishRes.value.data || topFishRes.value || [];
+        const totalKg = tf.reduce((sum, f) => sum + (f.totalKg || f.kg || 0), 0);
+        setEl('an-kg', totalKg ? totalKg.toLocaleString() + ' kg' : '—');
+      }
+    }
+  } catch (_) {}
+}
+
+function renderTopFish(data) {
+  if (!data.length) return;
+  const maxKg = Math.max(...data.map(f => f.totalKg || f.kg || 1));
+  document.getElementById('topFishList').innerHTML = data.slice(0,5).map((f, i) => {
+    const kg  = f.totalKg || f.kg || 0;
+    const amt = f.totalRevenue || f.amount || 0;
+    const name = f.name || f._id || '—';
+    return `
     <div class="top-fish-item">
       <div class="top-fish-rank">${i+1}</div>
       <div class="top-fish-info">
-        <div class="top-fish-name">${f.name}</div>
-        <div style="margin-top:4px;"><div class="progress-bar"><div class="progress-fill" style="width:${Math.round(f.kg/18.4)}%"></div></div></div>
-        <div class="top-fish-kg">${f.kg.toLocaleString()} kg sold</div>
+        <div class="top-fish-name">${name}</div>
+        <div style="margin-top:4px;"><div class="progress-bar"><div class="progress-fill" style="width:${Math.round(kg/maxKg*100)}%"></div></div></div>
+        <div class="top-fish-kg">${Number(kg).toLocaleString()} kg sold</div>
       </div>
-      <div class="top-fish-amount">₹${(f.amount/1000).toFixed(0)}k</div>
-    </div>`).join('');
+      <div class="top-fish-amount">₹${(amt/1000).toFixed(0)}k</div>
+    </div>`;
+  }).join('');
 }
 
-function renderTopBuyers() {
+function renderTopBuyers(data) {
+  if (!data.length) return;
   const cols = ['blue','amber','green','purple','aqua'];
-  const sorted = [...buyersData].sort((a,b)=>b.spent-a.spent).slice(0,5);
-  document.getElementById('topBuyersList').innerHTML = sorted.map((b,i)=>`
+  const maxSpent = Math.max(...data.map(b => b.totalSpent || b.spent || 1));
+  document.getElementById('topBuyersList').innerHTML = data.slice(0,5).map((b, i) => {
+    const name   = b.name || b._id || '—';
+    const spent  = b.totalSpent || b.spent || 0;
+    const orders = b.totalOrders || b.orders || 0;
+    return `
     <div class="top-fish-item">
-      <div class="avatar ${cols[i]}">${b.name.charAt(0)}</div>
+      <div class="avatar ${cols[i]}">${name.charAt(0)}</div>
       <div class="top-fish-info">
-        <div class="top-fish-name">${b.name}</div>
-        <div style="margin-top:4px;"><div class="progress-bar"><div class="progress-fill" style="width:${Math.round(b.spent/2400)}%"></div></div></div>
-        <div class="top-fish-kg">${b.orders} orders</div>
+        <div class="top-fish-name">${name}</div>
+        <div style="margin-top:4px;"><div class="progress-bar"><div class="progress-fill" style="width:${Math.round(spent/maxSpent*100)}%"></div></div></div>
+        <div class="top-fish-kg">${orders} orders</div>
       </div>
-      <div class="top-fish-amount">₹${(b.spent/1000).toFixed(0)}k</div>
-    </div>`).join('');
+      <div class="top-fish-amount">₹${(spent/1000).toFixed(0)}k</div>
+    </div>`;
+  }).join('');
+}
+
+/* ────────── SETTINGS ────────── */
+async function loadSettings() {
+  try {
+    const data = await apiFetch('/settings');
+    settingsData = data.data || data || {};
+    const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+    setVal('settingsName',  settingsData.name);
+    setVal('settingsEmail', settingsData.email);
+    setVal('settingsPhone', settingsData.phone || settingsData.phonenumber);
+  } catch (_) {}
+}
+
+async function saveSettings() {
+  const body = {
+    name:  document.getElementById('settingsName')?.value.trim(),
+    email: document.getElementById('settingsEmail')?.value.trim(),
+    phone: document.getElementById('settingsPhone')?.value.trim(),
+  };
+  try {
+    await apiFetch('/settings', { method: 'PUT', body: JSON.stringify(body) });
+    showToast('Settings saved!');
+  } catch (_) {}
 }
 
 /* ────────── CHARTS ────────── */
@@ -1304,9 +1797,10 @@ function getChartColors() {
 
 function initCharts() {
   const colors = getChartColors();
-  const labels = ['Mar 7','Mar 9','Mar 11','Mar 13','Mar 15','Mar 17','Mar 19','Mar 21','Mar 23','Mar 25','Mar 27','Mar 29','Apr 1','Apr 3','Apr 5'];
-  const daily  = [8400,12000,9800,15000,11000,18000,14000,21000,17000,24000,19000,28000,22000,31000,26000];
 
+  // Revenue chart placeholder — will be replaced by API data when analytics loads
+  const labels = ['Loading…'];
+  const daily  = [0];
   if (revenueChartInstance) revenueChartInstance.destroy();
   revenueChartInstance = new Chart(document.getElementById('revenueChart'), {
     type:'line',
@@ -1331,12 +1825,13 @@ function initCharts() {
     }
   });
 
+  // Status doughnut — refreshed by dashboard stats
   if (statusChartInstance) statusChartInstance.destroy();
   statusChartInstance = new Chart(document.getElementById('statusChart'), {
     type:'doughnut',
     data:{
       labels:['Delivered','Confirmed','Pending','Rejected'],
-      datasets:[{ data:[842,243,190,9], backgroundColor:['#10B981','#1E90FF','#EF9F27','#EF4444'], borderWidth:0, hoverOffset:6 }]
+      datasets:[{ data:[0,0,0,0], backgroundColor:['#10B981','#1E90FF','#EF9F27','#EF4444'], borderWidth:0, hoverOffset:6 }]
     },
     options:{ responsive:false, plugins:{legend:{display:false}}, cutout:'72%' }
   });
@@ -1348,12 +1843,7 @@ function initCharts() {
       type:'bar',
       data:{
         labels:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
-        datasets:[{
-          label:'Revenue',
-          data:[180000,210000,190000,240000,220000,280000,260000,310000,290000,340000,380000,420000],
-          backgroundColor:'rgba(30,144,255,0.20)',
-          borderColor:'#1E90FF', borderWidth:2, borderRadius:6,
-        }]
+        datasets:[{ label:'Revenue', data:Array(12).fill(0), backgroundColor:'rgba(30,144,255,0.20)', borderColor:'#1E90FF', borderWidth:2, borderRadius:6 }]
       },
       options:{
         responsive:true, maintainAspectRatio:true,
@@ -1373,36 +1863,212 @@ function initCharts() {
       type:'pie',
       data:{
         labels:['Saltwater','Freshwater','Premium'],
-        datasets:[{ data:[48,32,20], backgroundColor:['#1E90FF','#10B981','#EF9F27'], borderWidth:0 }]
+        datasets:[{ data:[33,33,34], backgroundColor:['#1E90FF','#10B981','#EF9F27'], borderWidth:0 }]
       },
       options:{ responsive:false, plugins:{legend:{position:'bottom',labels:{color:colors.label,font:{size:11}}}} }
     });
   }
+  // Load real analytics data
+  loadAnalytics();
 }
 
+function updateRevenueChart(data, period) {
+  if (!revenueChartInstance || !data.length) return;
+  const labels = data.map(d => d._id || d.label || '');
+  const values = data.map(d => d.total || d.revenue || 0);
+  revenueChartInstance.data.labels = labels;
+  revenueChartInstance.data.datasets[0].data = values;
+  revenueChartInstance.update();
+}
+
+function updateCategoryChart(data) {
+  if (!categoryChartInstance || !data.length) return;
+  categoryChartInstance.data.labels = data.map(d => d._id || d.category || '');
+  categoryChartInstance.data.datasets[0].data = data.map(d => d.count || d.percentage || 0);
+  categoryChartInstance.update();
+}
+
+let currentPeriod = 'daily';
 function switchChart(mode, btn) {
-  document.querySelectorAll('[onclick^="switchChart"]').forEach(b=>{ b.style.background='transparent'; b.style.borderColor='var(--blue-bd)'; b.style.color='var(--blue)'; });
+  currentPeriod = mode;
+  document.querySelectorAll('[onclick^="switchChart"]').forEach(b => {
+    b.style.background='transparent'; b.style.borderColor='var(--blue-bd)'; b.style.color='var(--blue)';
+  });
   btn.style.background='var(--blue-lt)'; btn.style.borderColor='var(--blue)';
-  // chart update would go here
+  loadAnalytics(mode);
+}
+
+/* ────────── BADGE UPDATERS ────────── */
+function updateBadge(id, count, hide0 = true) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (hide0 && !count) { el.style.display = 'none'; return; }
+  el.textContent = count;
+  el.style.display = 'inline-flex';
+}
+
+/* ────────── LOGOUT ────────── */
+function doLogout() {
+  if (!confirm('Log out of Arowana Admin?')) return;
+  // Clear cookie by expiring it; also clear localStorage
+  document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+  document.cookie = 'jwt=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+  localStorage.removeItem('token');
+  // Hit logout endpoint if your backend has one (fire-and-forget)
+  fetch(`${API_BASE}/auth/logout`, { method:'POST', credentials:'include' }).catch(()=>{});
+  showToast('Logged out', 'warn');
+  setTimeout(() => { window.location.href = '/login.html'; }, 1200);
+}
+
+/* ────────── ADMIN NAME POPULATION ────────── */
+function populateAdminUI(name) {
+  if (!name) return;
+  const initials = name.split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase();
+  const setText = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
+  setText('sbNameEl', name);
+  setText('topNameEl', name);
+  setText('sbAvatarEl', initials);
+  setText('topAvatarEl', initials);
+}
+
+/* ────────── SEARCH / FILTER ────────── */
+// Global search in topbar
+document.addEventListener('DOMContentLoaded', () => {
+  const searchInput = document.querySelector('.topbar-search input');
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      const v = e.target.value.toLowerCase().trim();
+      // Find which page is active and delegate
+      const active = document.querySelector('.page.active');
+      if (!active) return;
+      const id = active.id.replace('page-', '');
+      if (id === 'fish-management') filterFish(v);
+      if (id === 'orders') filterOrdersTable(v);
+      if (id === 'buyers') filterBuyersTable(v);
+      if (id === 'payments') filterPaymentsTable(v);
+    });
+  }
+
+  // Order status filter
+  const orderStatusSel = document.querySelector('#page-orders .filter-select');
+  if (orderStatusSel) {
+    orderStatusSel.addEventListener('change', (e) => {
+      filterOrdersTable('', e.target.value);
+    });
+  }
+});
+
+let _orderStatusFilter = 'all';
+function filterOrdersTable(search = '', status = null) {
+  if (status !== null) _orderStatusFilter = status;
+  const tbody = document.getElementById('ordersTableBody');
+  let data = orderData.filter(o => {
+    const buyer = (o.buyer?.name || o.buyerName || '').toLowerCase();
+    const fish  = (o.items?.[0]?.fish?.name || o.fish || '').toLowerCase();
+    const id    = (o._id || o.id || '').toLowerCase();
+    const matchSearch = !search || buyer.includes(search) || fish.includes(search) || id.includes(search);
+    const matchStatus = _orderStatusFilter === 'all' || !_orderStatusFilter || o.status === _orderStatusFilter;
+    return matchSearch && matchStatus;
+  });
+  if (!data.length) {
+    tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:var(--subtle);padding:24px">No matching orders</td></tr>`;
+    return;
+  }
+  // Reuse existing render logic on filtered slice
+  const saved = orderData;
+  orderData = data;
+  renderOrdersTable();
+  orderData = saved;
+}
+
+function filterBuyersTable(search) {
+  const tbody = document.getElementById('buyersTableBody');
+  const colors = ['blue','amber','green','purple','blue','green'];
+  const data = buyersData.filter(b => {
+    const name = (b.name || b.businessName || '').toLowerCase();
+    const loc  = (b.location || '').toLowerCase();
+    const ph   = (b.phone || b.phonenumber || '').toLowerCase();
+    return !search || name.includes(search) || loc.includes(search) || ph.includes(search);
+  });
+  if (!data.length) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--subtle);padding:24px">No matching buyers</td></tr>`;
+    return;
+  }
+  const saved = buyersData;
+  buyersData = data;
+  renderBuyers();
+  buyersData = saved;
+}
+
+function filterPaymentsTable(search) {
+  const tbody = document.getElementById('paymentsTableBody');
+  const data = paymentsData.filter(p => {
+    const buyer = (p.buyer?.name || p.buyerName || '').toLowerCase();
+    const id    = (p.order?._id || p.orderId || '').toLowerCase();
+    return !search || buyer.includes(search) || id.includes(search);
+  });
+  if (!data.length) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--subtle);padding:24px">No matching payments</td></tr>`;
+    return;
+  }
+  const saved = paymentsData;
+  paymentsData = data;
+  renderPayments();
+  paymentsData = saved;
+}
+
+/* ────────── STATUS DONUT UPDATE ────────── */
+function updateStatusDonut(orders) {
+  if (!statusChartInstance || !orders.length) return;
+  const counts = { Delivered:0, Confirmed:0, Pending:0, Rejected:0 };
+  orders.forEach(o => { if (counts[o.status] !== undefined) counts[o.status]++; });
+  statusChartInstance.data.datasets[0].data = Object.values(counts);
+  statusChartInstance.update();
+  // update legend
+  const labels = ['Delivered','Confirmed','Pending','Rejected'];
+  const ids    = ['legend-delivered','legend-confirmed','legend-pending','legend-rejected'];
+  labels.forEach((l,i) => {
+    const el = document.getElementById(ids[i]);
+    if (el) el.textContent = Object.values(counts)[i];
+  });
 }
 
 /* ────────── NAVIGATION ────────── */
-const titles = { dashboard:'Dashboard', 'fish-management':'Fish Management', 'upcoming-fish':'Upcoming Fish', orders:'Orders', buyers:'Buyers', payments:'Payments', analytics:'Analytics', settings:'Settings' };
+const titles = {
+  dashboard:'Dashboard', 'fish-management':'Fish Management',
+  'upcoming-fish':'Upcoming Fish', orders:'Orders',
+  buyers:'Buyers', payments:'Payments', analytics:'Analytics', settings:'Settings'
+};
+
+const pageLoaders = {
+  dashboard:         () => loadDashboard(),
+  'fish-management': () => loadFish(),
+  'upcoming-fish':   () => loadUpcoming(),
+  orders:            () => loadOrders(),
+  buyers:            () => loadBuyers(),
+  payments:          () => loadPayments(),
+  analytics:         () => { setTimeout(initCharts, 100); },
+  settings:          () => loadSettings(),
+};
 
 function navigate(id, el) {
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.sb-link').forEach(l=>l.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sb-link').forEach(l => l.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
-  if(el) el.classList.add('active');
-  document.getElementById('topbarTitle').textContent = titles[id]||'';
-  if(id==='analytics') setTimeout(initCharts, 100);
+  if (el) el.classList.add('active');
+  document.getElementById('topbarTitle').textContent = titles[id] || '';
+  if (pageLoaders[id]) pageLoaders[id]();
   closeSidebar();
 }
 
 /* ────────── MODALS ────────── */
 function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-document.querySelectorAll('.modal-overlay').forEach(el => el.addEventListener('click', e => { if(e.target===el) el.classList.remove('open'); }));
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.modal-overlay').forEach(el =>
+    el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); })
+  );
+});
 
 /* ────────── SIDEBAR MOBILE ────────── */
 function toggleSidebar() {
@@ -1414,8 +2080,10 @@ function closeSidebar() {
   document.getElementById('sidebarOverlay').classList.remove('open');
 }
 
-/* ────────── NOTIFICATIONS ────────── */
-function toggleNotif() { document.getElementById('notifPanel').classList.toggle('open'); }
+/* ────────── NOTIFICATIONS PANEL ────────── */
+function toggleNotif() {
+  document.getElementById('notifPanel').classList.toggle('open');
+}
 
 /* ────────── THEME ────────── */
 function toggleTheme() {
@@ -1428,21 +2096,54 @@ function setTheme(t) {
   if (revenueChartInstance || statusChartInstance) initCharts();
 }
 
+/* ────────── PULSE ANIMATION ────────── */
+const pulseStyle = document.createElement('style');
+pulseStyle.textContent = `
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  @keyframes slideUp { from{transform:translateY(12px);opacity:0} to{transform:none;opacity:1} }
+`;
+document.head.appendChild(pulseStyle);
+
 /* ────────── INIT ────────── */
-function initDashboard() {
-  renderRecentOrders();
-  renderOrdersTable();
-  renderFishGrid();
-  renderUpcoming();
-  renderBuyers();
-  renderPayments();
-  renderTopFish();
-  renderTopBuyers();
-  initCharts();
+async function initDashboard() {
   setTheme(document.documentElement.getAttribute('data-theme') || 'light');
+
+  // Populate admin name from JWT if available
+  if (window._adminName) populateAdminUI(window._adminName);
+
+  // Load settings to get real admin name from API
+  try {
+    const sd = await apiFetch('/settings');
+    const s = sd.data || sd;
+    if (s.name) populateAdminUI(s.name);
+  } catch(_) {}
+
+  initCharts();
+
+  // Parallel initial loads
+  await Promise.allSettled([
+    loadDashboard(),
+    loadOrders(),
+    loadNotifications(),
+  ]);
+
+  // After orders loaded, update donut + badge
+  updateStatusDonut(orderData);
+  const pending = orderData.filter(o => o.status === 'Pending').length;
+  updateBadge('badge-orders', pending);
+
+  // Background pre-fetches
+  Promise.allSettled([loadFish(), loadUpcoming(), loadPayments()]).then(() => {
+    updateBadge('badge-fish', fishData.length, false);
+    const upcomingCount = upcomingData.filter(u => u.status === 'pending').length;
+    updateBadge('badge-upcoming', upcomingCount);
+    const pendingPay = paymentsData.filter(p => p.status === 'Pending').length;
+    updateBadge('badge-payments', pendingPay);
+  });
 }
 
 document.addEventListener('DOMContentLoaded', initDashboard);
+
 </script>
 </body>
 </html>

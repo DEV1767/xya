@@ -1618,6 +1618,26 @@
 </head>
 
 <body>
+    <!-- Authentication Scripts -->
+    <script src="js/auth.js"></script>
+    <script>
+        // DEBUG: Check authentication status before running requireAuth
+        console.log('📍 map.html loaded - checking authentication status:', {
+            userId: localStorage.getItem('userId') || '❌ NOT SET',
+            userRole: localStorage.getItem('userRole') || '❌ NOT SET',
+            httpOnlyCookies: '🔒 Managed by server',
+            allLocalStorageKeys: Object.keys(localStorage)
+        });
+
+        // Require authentication to access this page
+        console.log('📍 Calling requireAuth()...');
+        if (!requireAuth()) {
+            // Redirect will happen in requireAuth()
+            console.log('📍 requireAuth() returned false - redirect should happen');
+        } else {
+            console.log('📍 requireAuth() returned true - authentication successful');
+        }
+    </script>
 
   <!-- SKELETON -->
   <div id="skelView">
