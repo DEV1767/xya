@@ -1621,22 +1621,8 @@
     <!-- Authentication Scripts -->
     <script src="js/auth.js"></script>
     <script>
-        // DEBUG: Check authentication status before running requireAuth
-        console.log('📍 map.html loaded - checking authentication status:', {
-            userId: localStorage.getItem('userId') || '❌ NOT SET',
-            userRole: localStorage.getItem('userRole') || '❌ NOT SET',
-            httpOnlyCookies: '🔒 Managed by server',
-            allLocalStorageKeys: Object.keys(localStorage)
-        });
-
-        // Require authentication to access this page
-        console.log('📍 Calling requireAuth()...');
-        if (!requireAuth()) {
-            // Redirect will happen in requireAuth()
-            console.log('📍 requireAuth() returned false - redirect should happen');
-        } else {
-            console.log('📍 requireAuth() returned true - authentication successful');
-        }
+      // Guest users can open explore/map; login is only required for protected actions.
+      console.log('map.html loaded - guest access enabled');
     </script>
 
   <!-- SKELETON -->
@@ -1664,8 +1650,8 @@
       <!-- SIDEBAR -->
       <aside class="sidebar">
         <div class="sb-logo">
-          <div class="sb-logo-icon">🐟</div>
-          <div><span class="brand">Arowana</span><span class="brand-sub">Direct</span></div>
+          <div class="sb-logo-icon">A</div>
+          <div><span class="brand">AROWANA</span></div>
         </div>
         <div class="sb-search">
           <svg class="sb-si" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
