@@ -307,7 +307,7 @@
                 <a class="nav-link" href="#contact">Contact</a>
             </div>
             <div class="nav-actions">
-                <button class="cart-btn" onclick="openCart()"><span class="cart-icon">🛒</span><span class="cart-label">Cart</span><span class="cart-count" id="cartCount">0</span></button>
+                <button class="cart-btn" onclick="openCart()"><span class="cart-icon"><i class="fa-solid fa-cart-shopping" style="color: rgb(134, 129, 129);"></i></span><span class="cart-label">Cart</span><span class="cart-count" id="cartCount">0</span></button>
                 <a href="profile.html" class="nav-profile-btn" title="My Profile">👤</a>
                 <button class="hamburger" onclick="toggleDrawer()"><span></span><span></span><span></span></button>
             </div>
@@ -674,7 +674,7 @@ function fishCardHTML(fish){
                 <button class="qty-btn" onclick="changeQty('${safe}',-1)" ${(qty-5)<fish.minOrder?'disabled':''}>−</button>
                 <input class="qty-input" type="number" min="${fish.minOrder}" max="${fish.availableQuantity}" value="${qty}" oninput="setQty('${safe}',this.value)" data-qty-input="true">
                 <button class="qty-btn" onclick="changeQty('${safe}',1)" ${(qty+5)>fish.availableQuantity?'disabled':''}>+</button>
-                <button class="add-btn" onclick="addToCart('${safe}')">Add 🛒</button>
+                <button class="add-btn" onclick="addToCart('${safe}')"><i class="fa-solid fa-cart-shopping" style="color: #fff;"></i></button>
             </div>`:`<button class="add-btn" disabled style="margin-top:12px;width:100%">Out of Stock</button>`}
         </div>
     </div>`;

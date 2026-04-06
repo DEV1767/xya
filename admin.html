@@ -1180,6 +1180,27 @@ let dashStats = {};
 let notificationsData = [];
 let settingsData = {};
 
+const normalizeStatus = (status) => {
+  const s = String(status || '').trim().toLowerCase();
+  if (!s) return 'Pending';
+  if (s === 'pending') return 'Pending';
+  if (s === 'confirmed') return 'Confirmed';
+  if (s === 'delivered') return 'Delivered';
+  if (s === 'rejected' || s === 'cancelled' || s === 'canceled') return 'Rejected';
+  return s.charAt(0).toUpperCase() + s.slice(1);
+};
+
+const countPendingOrders = (orders) => (Array.isArray(orders) ? orders.filter(o => normalizeStatus(o.status) === 'Pending').length : 0);
+const countActiveBuyers = (buyers) => (Array.isArray(buyers) ? buyers.filter(b => b.isActive !== false && String(b.status || '').toLowerCase() !== 'inactive').length : 0);
+
+function updateDashboardFallbackStats() {
+  const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  const pending = countPendingOrders(orderData);
+  const activeBuyers = countActiveBuyers(buyersData);
+  if (pending || dashStats.pendingOrders == null) setEl('stat-pending', pending.toLocaleString());
+  if (activeBuyers || dashStats.activeBuyers == null) setEl('stat-buyers', activeBuyers.toLocaleString());
+}
+
 /* ────────── DASHBOARD ────────── */
 async function loadDashboard() {
   try {
@@ -1189,10 +1210,17 @@ async function loadDashboard() {
 
     // Stat cards
     const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-    setEl('stat-revenue',  s.totalRevenue  != null ? '₹' + Number(s.totalRevenue).toLocaleString('en-IN') : '—');
-    setEl('stat-orders',   s.totalOrders   != null ? s.totalOrders.toLocaleString() : '—');
-    setEl('stat-buyers',   s.activeBuyers  != null ? s.activeBuyers : '—');
-    setEl('stat-pending',  s.pendingOrders != null ? s.pendingOrders : '—');
+    const totalRevenue = s.totalRevenue ?? s.revenue ?? s.total_amount ?? s.total_revenue;
+    const totalOrders = s.totalOrders ?? s.orders ?? s.orderCount ?? s.total_orders;
+    const activeBuyers = s.activeBuyers ?? s.totalBuyers ?? s.buyers ?? s.buyerCount ?? s.active_buyers ?? s.total_buyers;
+    const pendingOrders = s.pendingOrders ?? s.pending ?? s.pendingCount ?? s.pending_orders ?? s.ordersPending;
+
+    setEl('stat-revenue', totalRevenue != null ? '₹' + Number(totalRevenue).toLocaleString('en-IN') : '—');
+    setEl('stat-orders', totalOrders != null ? Number(totalOrders).toLocaleString('en-IN') : '—');
+    setEl('stat-buyers', activeBuyers != null ? Number(activeBuyers).toLocaleString('en-IN') : '—');
+    setEl('stat-pending', pendingOrders != null ? Number(pendingOrders).toLocaleString('en-IN') : '—');
+
+    updateDashboardFallbackStats();
   } catch (_) {}
 }
 
@@ -1530,13 +1558,14 @@ async function loadOrders() {
   setLoading('recentOrdersBody', 8);
   try {
     const data = await apiFetch('/orders');
-    orderData = data.data || data.orders || data || [];
+    orderData = (data.data || data.orders || data || []).map(o => ({ ...o, status: normalizeStatus(o.status) }));
     renderOrdersTable();
     renderRecentOrders();
     // Update status donut + sidebar badge
     updateStatusDonut(orderData);
-    const pending = orderData.filter(o => o.status === 'Pending').length;
+    const pending = countPendingOrders(orderData);
     updateBadge('badge-orders', pending);
+    updateDashboardFallbackStats();
   } catch (_) {}
 }
 
@@ -1644,6 +1673,7 @@ async function loadBuyers() {
     const data = await apiFetch('/buyers');
     buyersData = data.data || data.buyers || data || [];
     renderBuyers();
+    updateDashboardFallbackStats();
   } catch (_) {}
 }
 
