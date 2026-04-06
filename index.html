@@ -494,10 +494,14 @@ const ROUTES = {
 };
 
 function resolveBackendImageUrl(src){
-    if(!src)return 'https://images.unsplash.com/photo-1544943910-4c1dc44aab44?w=800&q=80';
-    if(/^https?:\/\//i.test(src))return src;
-    if(src.startsWith('/'))return `${BACKEND_BASE}${src}`;
-    return src;
+    const fallback='https://images.unsplash.com/photo-1544943910-4c1dc44aab44?w=800&q=80';
+    if(!src)return fallback;
+    const clean=String(src).trim();
+    if(!clean)return fallback;
+    if(/^https?:\/\//i.test(clean)||/^data:/i.test(clean))return clean;
+    if(clean.startsWith('/'))return `${BACKEND_BASE}${clean}`;
+    if(clean.startsWith('./'))return `${BACKEND_BASE}/${clean.slice(2)}`;
+    return `${BACKEND_BASE}/${clean.replace(/^\/+/,'')}`;
 }
 
 async function apiFetch(path,method='GET',body=null,didRetry=false){
@@ -653,7 +657,7 @@ function fishCardHTML(fish){
     const badgeText=fish.inStock?fish.category:'Out of Stock';
     return`<div class="fish-card" data-fish-id="${htmlId}">
         <div class="fish-img-wrap">
-            <img src="${fish.image}" alt="${fish.name}" loading="lazy">
+            <img src="${fish.image}" alt="${fish.name}" loading="lazy" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1544943910-4c1dc44aab44?w=800&q=80';this.alt='Fish image';">
             <div class="fish-badge ${badgeCls}">${badgeText}</div>
             <div class="fish-veg-dot"></div>
         </div>
