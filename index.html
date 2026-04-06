@@ -96,18 +96,6 @@
         .hero-inner h1 em{font-style:italic;color:var(--amber);}
         .hero-inner .lead{max-width:540px;margin:0 auto 44px;}
 
-        /* Pincode checker */
-        .pincode-card{background:var(--white);border:2px solid var(--sand-bd);border-radius:28px;padding:28px 32px;max-width:580px;margin:0 auto 48px;box-shadow:0 20px 70px rgba(10,92,138,.13);}
-        .pincode-card-label{font-size:0.78rem;font-weight:700;color:var(--ocean);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;}
-        .pincode-input-row{display:flex;gap:10px;align-items:center;}
-        .pincode-input{flex:1;padding:14px 20px;border:1.5px solid var(--s200);border-radius:var(--radius-pill);font-size:1.05rem;font-weight:600;color:var(--s800);outline:none;background:var(--s50);letter-spacing:.08em;transition:all var(--ease);}
-        .pincode-input:focus{border-color:var(--ocean);box-shadow:0 0 0 3px var(--ocean-lt);background:white;}
-        .pincode-btn{background:var(--ocean);color:white;border:none;border-radius:var(--radius-pill);padding:14px 28px;font-size:.9rem;font-weight:700;cursor:pointer;transition:all var(--ease);white-space:nowrap;}
-        .pincode-btn:hover{background:var(--ocean-dk);}
-        .pincode-result{margin-top:14px;padding:12px 18px;border-radius:var(--radius-sm);font-size:.9rem;font-weight:600;display:none;}
-        .pincode-result.success{background:var(--green-lt);color:var(--green);display:block;}
-        .pincode-result.error{background:var(--red-lt);color:var(--red);display:block;}
-        .pincode-result.loading{background:var(--ocean-lt);color:var(--ocean);display:block;}
 
         /* Hero horizontal fish search */
         .hero-fish-scroll{display:flex;gap:12px;overflow-x:auto;padding:4px 2px 12px;scrollbar-width:none;-ms-overflow-style:none;justify-content:center;flex-wrap:wrap;}
@@ -127,14 +115,14 @@
         .browse-filter-row::-webkit-scrollbar{display:none;}
         .cat-chip{padding:10px 20px;border-radius:var(--radius-pill);border:1.5px solid var(--s200);background:var(--white);font-size:.85rem;font-weight:600;color:var(--s600);cursor:pointer;transition:all var(--ease);white-space:nowrap;}
         .cat-chip:hover,.cat-chip.active{background:var(--ocean);color:white;border-color:var(--ocean);}
-        .fish-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:20px;}
+        .fish-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;}
         .fish-card{background:var(--white);border:1.5px solid var(--s100);border-radius:var(--radius);overflow:hidden;transition:all .3s var(--ease);opacity:0;transform:translateX(-50px);}
         .fish-card.slide-in-left{animation:slideL .5s cubic-bezier(.22,1,.36,1) forwards;}
         .fish-card.slide-in-right{animation:slideR .5s cubic-bezier(.22,1,.36,1) forwards;}
         @keyframes slideL{to{opacity:1;transform:translateX(0);}}
         @keyframes slideR{from{opacity:0;transform:translateX(50px);}to{opacity:1;transform:translateX(0);}}
         .fish-card:hover{box-shadow:0 16px 50px rgba(10,92,138,.13);transform:translateY(-3px);}
-        .fish-img-wrap{position:relative;height:200px;overflow:hidden;}
+        .fish-img-wrap{position:relative;height:160px;overflow:hidden;}
         .fish-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .4s ease;}
         .fish-card:hover .fish-img-wrap img{transform:scale(1.06);}
         .fish-badge{position:absolute;top:12px;left:12px;padding:5px 12px;border-radius:var(--radius-pill);font-size:.72rem;font-weight:700;letter-spacing:.04em;}
@@ -167,7 +155,7 @@
 
         /* ── CONTACT ── */
         #contact{background:var(--white);}
-        .contact-clean-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;max-width:900px;margin:0 auto;}
+        .contact-clean-grid{display:grid;grid-template-columns:1fr;gap:28px;max-width:900px;margin:0 auto;}
         .contact-info-block{background:var(--sand-lt);border:1.5px solid var(--sand-bd);border-radius:var(--radius);padding:32px;display:flex;flex-direction:column;gap:24px;}
         .contact-row{display:flex;gap:16px;align-items:flex-start;}
         .c-icon{width:46px;height:46px;border-radius:14px;background:var(--ocean-lt);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
@@ -178,7 +166,6 @@
         .contact-row a{color:var(--ocean);font-weight:600;}
         .whatsapp-btn{display:flex;align-items:center;justify-content:center;gap:10px;background:#25D366;color:white;border:none;border-radius:var(--radius-pill);padding:15px 28px;font-size:1rem;font-weight:700;cursor:pointer;transition:all var(--ease);text-decoration:none;}
         .whatsapp-btn:hover{background:#1ebe58;transform:translateY(-2px);}
-        .map-block{border-radius:var(--radius);overflow:hidden;background:linear-gradient(135deg,var(--ocean-lt),var(--sand));display:flex;align-items:center;justify-content:center;min-height:280px;font-size:.95rem;color:var(--s400);font-weight:500;border:1.5px solid var(--sand-bd);}
         .hours-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;}
         .hours-row{background:var(--white);border-radius:10px;padding:8px 12px;}
         .hours-day{font-size:.75rem;font-weight:700;color:var(--s600);text-transform:uppercase;letter-spacing:.05em;}
@@ -262,9 +249,6 @@
             .fish-grid{grid-template-columns:1fr;}
             .fish-qty-row{flex-wrap:wrap;}
             .add-btn{flex:1 0 100%;}
-            .pincode-input-row{flex-direction:column;}
-            .pincode-card{padding:22px 20px;}
-            .pincode-btn{width:100%;}
             .chatbot-panel{width:calc(100vw - 40px);right:20px;}
             .hours-grid{grid-template-columns:1fr;}
         }
@@ -321,19 +305,9 @@
 <section id="home">
     <div class="container">
         <div class="hero-inner">
-            <div class="hero-tag">🐟 Premium B2B Seafood</div>
+            <div class="hero-tag"> Premium B2B Seafood</div>
             <h1>Fresh Fish Delivered<br>to Your <em>Kitchen</em></h1>
             <p class="lead" style="max-width:520px;margin:0 auto 40px;">Direct supply from trusted fishermen. Quality guaranteed, competitive wholesale prices, delivered within 24 hours.</p>
-
-            <!-- Pincode Checker -->
-            <div class="pincode-card">
-                <div class="pincode-card-label">📍 Check Delivery Availability</div>
-                <div class="pincode-input-row">
-                    <input class="pincode-input" type="text" id="pincodeInput" maxlength="6" placeholder="Enter 6-digit PIN code" onkeyup="this.value=this.value.replace(/\D/g,'')">
-                    <button class="pincode-btn" onclick="checkPincode()">Check →</button>
-                </div>
-                <div class="pincode-result" id="pincodeResult"></div>
-            </div>
 
             <!-- Horizontal quick-search fish chips -->
             <div style="margin-bottom:8px;font-size:.8rem;font-weight:700;color:var(--s400);text-transform:uppercase;letter-spacing:.07em;">Quick Search</div>
@@ -420,7 +394,6 @@
                 </div>
                 <a href="https://wa.me/912245678901" target="_blank" class="whatsapp-btn">💬 Chat on WhatsApp</a>
             </div>
-            <div class="map-block">🗺 Sassoon Docks, Mumbai</div>
         </div>
     </div>
 </section>
@@ -570,26 +543,6 @@ async function loadFish(){
         resetFishQty();
     }catch(_){fishData=[];}
 }
-
-/* ── PINCODE CHECKER ── */
-const SERVICEABLE_PINCODES=['400001','400002','400003','400004','400005','400006','400007','400008','400009','400010','400011','400012','400013','400014','400015','400016','400017','400018','400019','400020','400021','400022','400023','400024','400025','400026','400027','400028','400029','400030','400031','400032','400033','400034','400035','400050','400051','400052','400053','400054','400055','400056','400057','400058','400059','400060','400061','400062','400063','400064','400065','400066','400067','400068','400069','400070','400071','400072','400076','400077','400078','400079','400080','400081','400082','400083','400084','400085','400086','400087','400088','400089','400090','400091','400092','400093','400094','400095','400096','400097','400098','400099','400100','411001','411002','411003','411004','411005','411006','411007','411008','411009','411010','422001','422002','422003'];
-
-async function checkPincode(){
-    const pin=document.getElementById('pincodeInput').value.trim();
-    const resultEl=document.getElementById('pincodeResult');
-    if(pin.length!==6){resultEl.className='pincode-result error';resultEl.textContent='⚠️ Please enter a valid 6-digit PIN code.';return;}
-    resultEl.className='pincode-result loading';
-    resultEl.textContent='🔍 Checking delivery availability...';
-    await new Promise(r=>setTimeout(r,700));
-    if(SERVICEABLE_PINCODES.includes(pin)){
-        resultEl.className='pincode-result success';
-        resultEl.textContent='✅ Great news! We deliver to '+pin+'. Order now for next-day delivery!';
-    } else {
-        resultEl.className='pincode-result error';
-        resultEl.textContent='❌ Sorry, we don\'t deliver to '+pin+' yet. We\'re expanding soon!';
-    }
-}
-document.getElementById('pincodeInput').addEventListener('keydown',e=>{if(e.key==='Enter')checkPincode();});
 
 /* ── FISH GRID ── */
 function setCat(cat,btn){

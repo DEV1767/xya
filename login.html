@@ -116,25 +116,29 @@
         .logo-icon {
             width: 68px;
             height: 68px;
-            background: rgba(255, 255, 255, 0.15);
+            background: linear-gradient(135deg, #0A5C8A, #00B4D8);
             border-radius: var(--radius-card);
             display: flex;
             align-items: center;
             justify-content: center;
+            color: #fff;
+            font-family: 'Playfair Display', serif;
             font-size: 34px;
+            font-weight: 900;
             margin-bottom: 22px;
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: var(--shadow-md);
+            box-shadow: 0 10px 26px rgba(10, 92, 138, 0.35);
         }
 
         .logo-text {
             font-family: 'Playfair Display', serif;
             font-size: 38px;
-            font-weight: 700;
-            color: white;
+            font-weight: 900;
             margin-bottom: 10px;
             letter-spacing: -0.5px;
+            background: linear-gradient(120deg, #084A72, #00B4D8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .logo-text .highlight {
