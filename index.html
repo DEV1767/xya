@@ -492,20 +492,33 @@ const ROUTES = {
     profile:'/profile', contact:'/contact'
 };
 
+function resolveBackendImageUrl(src){
+    if(!src)return 'https://images.unsplash.com/photo-1544943910-4c1dc44aab44?w=800&q=80';
+    if(/^https?:\/\//i.test(src))return src;
+    if(src.startsWith('/'))return `${BACKEND_BASE}${src}`;
+    return src;
+}
+
 async function apiFetch(path,method='GET',body=null,didRetry=false){
-    const options={method,credentials:'include',headers:{'Content-Type':'application/json'}};
-    if(body!==null) options.body=JSON.stringify(body);
-    const res=await fetch(`${HOTEL_API_BASE}${path}`,options);
-    if(res.status===401&&!didRetry&&typeof refreshAccessToken==='function'){
-        const refreshed=await refreshAccessToken();
-        if(refreshed) return apiFetch(path,method,body,true);
+    const request=async()=>{
+        const options={method,credentials:'include',headers:{'Content-Type':'application/json'}};
+        if(body!==null) options.body=JSON.stringify(body);
+        const res=await fetch(`${HOTEL_API_BASE}${path}`,options);
+        if(res.status===401&&!didRetry&&typeof refreshAccessToken==='function'){
+            const refreshed=await refreshAccessToken();
+            if(refreshed) return apiFetch(path,method,body,true);
+        }
+        const data=await res.json().catch(()=>({}));
+        if(!res.ok){
+            if(res.status===401){if(typeof clearTokens==='function')clearTokens();window.location.href='login.html';}
+            throw new Error(data.message||`HTTP ${res.status}`);
+        }
+        return data;
+    };
+    if(window.PaymentBuffer&&window.PaymentBuffer.withBuffer&&!window.PaymentBuffer.isActive()){
+        return window.PaymentBuffer.withBuffer(request,{message:'Loading fish data...',minDuration:500});
     }
-    const data=await res.json().catch(()=>({}));
-    if(!res.ok){
-        if(res.status===401){if(typeof clearTokens==='function')clearTokens();window.location.href='login.html';}
-        throw new Error(data.message||`HTTP ${res.status}`);
-    }
-    return data;
+    return request();
 }
 
 function normalizeFish(raw){
@@ -518,7 +531,7 @@ function normalizeFish(raw){
         pricePerKg:Number(raw.pricePerKg??raw.price??0),
         availableQuantity,inStock,
         source:raw.source||raw.location||'Arowana Supply',
-        image:raw.image||raw.imageUrl||'https://images.unsplash.com/photo-1544943910-4c1dc44aab44?w=800&q=80',
+        image:resolveBackendImageUrl(raw.image||raw.imageUrl||raw.photo||raw.thumbnail),
         category:raw.category||'Popular',
         minOrder:Number.isFinite(minOrder)&&minOrder>0?minOrder:10
     };
@@ -535,7 +548,7 @@ function normalizeOrder(raw){
             name:item.name||item.fishName||'Fish Item',
             pricePerKg:Number(item.pricePerKg??item.price??0),
             quantity:Number(item.quantityKg??item.quantity??0),
-            image:item.image||item.imageUrl||'https://images.unsplash.com/photo-1544943910-4c1dc44aab44?w=800&q=80'
+            image:resolveBackendImageUrl(item.image||item.imageUrl||item.photo||item.thumbnail)
         }))
     };
 }

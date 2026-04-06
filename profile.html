@@ -206,13 +206,19 @@ const ROUTES={profile:'/profile',orders:'/orders'};
 let isEditing=false;
 
 async function apiFetch(path,method='GET',body=null,didRetry=false){
-    const options={method,credentials:'include',headers:{'Content-Type':'application/json'}};
-    if(body!==null)options.body=JSON.stringify(body);
-    const res=await fetch(`${HOTEL_API_BASE}${path}`,options);
-    if(res.status===401&&!didRetry&&typeof refreshAccessToken==='function'){const ref=await refreshAccessToken();if(ref)return apiFetch(path,method,body,true);}
-    const data=await res.json().catch(()=>({}));
-    if(!res.ok){if(res.status===401){if(typeof clearTokens==='function')clearTokens();window.location.href='login.html';}throw new Error(data.message||`HTTP ${res.status}`);}
-    return data;
+    const request=async()=>{
+        const options={method,credentials:'include',headers:{'Content-Type':'application/json'}};
+        if(body!==null)options.body=JSON.stringify(body);
+        const res=await fetch(`${HOTEL_API_BASE}${path}`,options);
+        if(res.status===401&&!didRetry&&typeof refreshAccessToken==='function'){const ref=await refreshAccessToken();if(ref)return apiFetch(path,method,body,true);}
+        const data=await res.json().catch(()=>({}));
+        if(!res.ok){if(res.status===401){if(typeof clearTokens==='function')clearTokens();window.location.href='login.html';}throw new Error(data.message||`HTTP ${res.status}`);}
+        return data;
+    };
+    if(window.PaymentBuffer&&window.PaymentBuffer.withBuffer&&!window.PaymentBuffer.isActive()){
+        return window.PaymentBuffer.withBuffer(request,{message:'Loading profile...',minDuration:500});
+    }
+    return request();
 }
 
 function normalizeOrder(raw){

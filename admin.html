@@ -1119,7 +1119,7 @@ const HEADERS = { 'Content-Type': 'application/json' };
 
 /* ── Generic fetcher with error toast ── */
 async function apiFetch(path, opts = {}) {
-  try {
+  const request = async () => {
     const res = await fetch(API_BASE + path, {
       credentials: 'include',
       headers: HEADERS,
@@ -1128,6 +1128,13 @@ async function apiFetch(path, opts = {}) {
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.message || `HTTP ${res.status}`);
     return data;
+  };
+
+  try {
+    if (window.PaymentBuffer && window.PaymentBuffer.withBuffer && !window.PaymentBuffer.isActive()) {
+      return await window.PaymentBuffer.withBuffer(request, { message: 'Loading admin data...', minDuration: 400 });
+    }
+    return await request();
   } catch (err) {
     showToast(err.message || 'Network error', 'error');
     throw err;

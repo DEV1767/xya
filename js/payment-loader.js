@@ -116,7 +116,10 @@
   window.PaymentBuffer = {
     show: show,
     hide: hide,
-    withBuffer: withBuffer
+    withBuffer: withBuffer,
+    isActive: function () {
+      return activeCount > 0;
+    }
   };
 
   if (document.readyState === 'loading') {
