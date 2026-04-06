@@ -7,7 +7,7 @@
     <link rel="icon" href="data:,">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,800;0,900;1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,800;0,900;1,700&family=DM+Sans:wght@300;400;500;600;700&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --sand: #F5E6C8; --sand-dk: #E8D0A0; --sand-lt: #FDF8F0; --sand-bd: #EDD9A3;
@@ -55,7 +55,9 @@
         .nav-wrap{display:flex;align-items:center;justify-content:space-between;height:var(--nav-h);padding:0 28px;}
         .logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
         .logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--ocean),var(--aqua));border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:15px;font-family:var(--ff-display);}
+        .logo-copy{display:flex;flex-direction:column;align-items:center;line-height:1;text-align:center;}
         .logo-name{font-family:var(--ff-display);font-size:1.4rem;font-weight:900;background:linear-gradient(120deg,var(--ocean-dk),var(--aqua));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+        .logo-tagline{font-family:'Dancing Script', cursive;font-size:.72rem;font-style:italic;font-weight:700;letter-spacing:.04em;color:var(--s600);margin-top:3px;white-space:nowrap;}
         .nav-links{display:flex;align-items:center;gap:2px;}
         .nav-link{font-size:0.87rem;font-weight:500;color:var(--s600);padding:8px 16px;border-radius:var(--radius-pill);transition:all var(--ease);border:none;background:transparent;text-decoration:none;display:inline-block;cursor:pointer;}
         .nav-link:hover,.nav-link.active{color:var(--ocean);background:var(--ocean-lt);}
@@ -174,19 +176,19 @@
         /* ── CART MODAL ── */
         .modal-overlay{position:fixed;inset:0;background:rgba(10,24,50,.55);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:opacity var(--ease);padding:20px;}
         .modal-overlay.open{opacity:1;pointer-events:all;}
-        .modal-content{background:var(--white);border-radius:var(--radius-lg);max-width:560px;width:100%;max-height:90vh;overflow:hidden;box-shadow:0 30px 100px rgba(0,0,0,.22);transform:scale(.95) translateY(20px);transition:transform .3s cubic-bezier(.22,1,.36,1);}
+        .modal-content{background:var(--white);border-radius:var(--radius-lg);max-width:640px;width:min(640px,100%);max-height:90vh;overflow:hidden;box-shadow:0 30px 100px rgba(0,0,0,.22);transform:scale(.95) translateY(20px);transition:transform .3s cubic-bezier(.22,1,.36,1);display:flex;flex-direction:column;}
         .modal-overlay.open .modal-content{transform:scale(1) translateY(0);}
         .modal-header{display:flex;align-items:center;justify-content:space-between;padding:22px 28px;border-bottom:1px solid var(--s100);}
         .modal-header h2{font-size:1.4rem;}
         .close-modal{background:transparent;border:none;font-size:1.6rem;color:var(--s400);width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:10px;cursor:pointer;}
         .close-modal:hover{background:var(--s100);}
-        .modal-body{padding:22px 28px;max-height:calc(90vh - 200px);overflow-y:auto;}
+        .modal-body{padding:22px 28px;max-height:calc(90vh - 200px);overflow-y:auto;flex:1;}
         .modal-footer{padding:18px 28px;border-top:1px solid var(--s100);background:var(--sand-lt);}
-        .cart-item-row{display:flex;gap:14px;padding:14px;background:var(--sand-lt);border-radius:var(--radius-sm);margin-bottom:12px;border:1px solid var(--sand-bd);}
-        .ci-img{width:72px;height:72px;border-radius:10px;object-fit:cover;}
+        .cart-item-row{display:flex;gap:14px;padding:14px;background:var(--sand-lt);border-radius:var(--radius-sm);margin-bottom:12px;border:1px solid var(--sand-bd);align-items:flex-start;}
+        .ci-img{width:72px;height:72px;border-radius:10px;object-fit:cover;flex-shrink:0;}
         .ci-details{flex:1;}
         .ci-name{font-weight:700;margin-bottom:4px;font-size:.95rem;}
-        .ci-meta{display:flex;justify-content:space-between;align-items:center;margin-top:6px;}
+        .ci-meta{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:6px;}
         .ci-qty{font-size:.85rem;color:var(--s600);}
         .ci-price{font-weight:700;color:var(--ocean);font-family:var(--ff-display);}
         .rm-btn{background:transparent;border:none;color:var(--red);padding:4px 8px;border-radius:6px;cursor:pointer;font-size:1rem;}
@@ -194,6 +196,16 @@
         .cart-empty-msg{text-align:center;padding:40px;color:var(--s400);}
         .cart-total-row{display:flex;justify-content:space-between;align-items:center;font-size:1.2rem;font-weight:700;margin-bottom:14px;font-family:var(--ff-display);}
         .cart-total-amt{color:var(--ocean);}
+        .cart-actions{display:flex;gap:10px;flex-wrap:wrap;}
+        .cart-actions .btn{flex:1;min-width:160px;}
+        .cart-address-panel{margin-top:18px;border:1.5px solid var(--sand-bd);border-radius:var(--radius);background:var(--white);padding:18px;display:none;box-shadow:0 8px 24px rgba(10,92,138,.08);}
+        .cart-address-panel.open{display:block;}
+        .panel-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;}
+        .panel-title{font-family:var(--ff-display);font-size:1.1rem;font-weight:900;color:var(--ocean-dk);}
+        .panel-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:var(--radius-pill);background:var(--ocean-lt);border:1px solid var(--ocean-bd);color:var(--ocean);font-size:.75rem;font-weight:700;white-space:nowrap;}
+        .address-lines{display:grid;gap:6px;color:var(--s600);font-size:.92rem;line-height:1.5;}
+        .address-line strong{color:var(--s800);}
+        .address-note{margin-top:12px;padding:10px 12px;border-radius:12px;background:var(--sand-lt);color:var(--s600);font-size:.86rem;}
         .payment-opt{display:block;margin-bottom:10px;cursor:pointer;}
         .payment-opt input{display:none;}
         .pay-card{display:flex;align-items:center;gap:12px;padding:14px;border:2px solid var(--s200);border-radius:var(--radius-sm);transition:all var(--ease);}
@@ -249,11 +261,18 @@
             .fish-grid{grid-template-columns:1fr;}
             .fish-qty-row{flex-wrap:wrap;}
             .add-btn{flex:1 0 100%;}
+            .modal-overlay{padding:12px;}
+            .modal-content{width:100%;max-width:100%;max-height:calc(100vh - 24px);border-radius:24px;}
+            .modal-header,.modal-body,.modal-footer{padding-left:18px;padding-right:18px;}
+            .cart-item-row{flex-direction:column;}
+            .ci-img{width:100%;height:170px;}
+            .cart-actions .btn{min-width:0;width:100%;}
+            .pay-card{padding:12px;}
             .chatbot-panel{width:calc(100vw - 40px);right:20px;}
             .hours-grid{grid-template-columns:1fr;}
         }
         @media(max-width:420px){
-            .logo-name{display:none;}
+            .logo-name,.logo-tagline{display:none;}
             #home{padding-top:calc(var(--nav-h) + 104px);}
             .container{padding:0 16px;}
             .chat-bubble-btn{right:16px;bottom:20px;}
@@ -271,11 +290,15 @@
         <div class="nav-wrap">
             <a href="#home" class="logo">
                 <div class="logo-icon">A</div>
-                <span class="logo-name">AROWANA</span>
+                <div class="logo-copy">
+                    <span class="logo-name">AROWANA</span>
+                    <span class="logo-tagline">What do you meen ??</span>
+                </div>
             </a>
             <div class="nav-links">
                 <a class="nav-link" href="#home">Home</a>
                 <a class="nav-link" href="#browse">Browse Fish</a>
+                <a class="nav-link" href="pickle.html">Explore Pickle</a>
                 <a class="nav-link" href="orders.html">My Orders</a>
                 <a class="nav-link" href="#contact">Contact</a>
             </div>
@@ -295,6 +318,7 @@
     <div class="drawer-links">
         <a class="drawer-link" href="#home" onclick="toggleDrawer()">Home</a>
         <a class="drawer-link" href="#browse" onclick="toggleDrawer()">Browse Fish</a>
+        <a class="drawer-link" href="pickle.html">Explore Pickle</a>
         <a class="drawer-link" href="orders.html">My Orders</a>
         <a class="drawer-link" href="#contact" onclick="toggleDrawer()">Contact</a>
         <a class="drawer-link" href="profile.html">My Profile</a>
@@ -405,7 +429,11 @@
         <div class="modal-body" id="cartBody"></div>
         <div class="modal-footer">
             <div class="cart-total-row"><span>Total:</span><span class="cart-total-amt" id="cartTotal">₹0</span></div>
-            <button class="btn btn-primary" style="width:100%" onclick="placeOrder()" id="placeOrderBtn" disabled>Place Order →</button>
+            <div class="cart-actions">
+                <button class="btn btn-ghost" onclick="closeCart()">Continue Shopping</button>
+                <button class="btn btn-primary" onclick="checkoutFromCart()" id="checkoutBtn" disabled>Checkout →</button>
+                <button class="btn btn-primary" onclick="proceedToPayment()" id="proceedBtn" style="display:none;">Proceed to Pay →</button>
+            </div>
         </div>
     </div>
 </div>
@@ -512,6 +540,16 @@ function normalizeOrder(raw){
 /* ── STATE ── */
 let fishData=[],cart=[],orders=[],fishQuantities={};
 let currentCat='all',currentSearch='';
+let checkoutStep='cart';
+
+const DUMMY_ADDRESS={
+    name:'Shivam Kumar',
+    phone:'+91 98765 43210',
+    line1:'Flat 204, Sea View Residency',
+    line2:'Near Colaba Causeway, South Mumbai',
+    city:'Mumbai, Maharashtra 400005',
+    landmark:'Opp. Sassoon Dock Gate 2'
+};
 
 function resetFishQty(){
     fishQuantities={};
@@ -644,14 +682,18 @@ function addToCart(id){
     saveCart();updateCartCount();
     showToast('Added '+qty+'kg '+fish.name+' to cart 🛒');
 }
-function openCart(){document.getElementById('cartModal').classList.add('open');renderCart();document.body.style.overflow='hidden';}
-function closeCart(e){if(e&&e.target!==e.currentTarget)return;document.getElementById('cartModal').classList.remove('open');document.body.style.overflow='';}
+function openCart(){checkoutStep='cart';document.getElementById('cartModal').classList.add('open');renderCart();document.body.style.overflow='hidden';}
+function closeCart(e){if(e&&e.target!==e.currentTarget)return;document.getElementById('cartModal').classList.remove('open');checkoutStep='cart';document.body.style.overflow='';}
 function renderCart(){
     const body=document.getElementById('cartBody');
     const totalEl=document.getElementById('cartTotal');
-    const btn=document.getElementById('placeOrderBtn');
-    if(!cart.length){body.innerHTML='<div class="cart-empty-msg"><p style="font-size:2.5rem">🛒</p><p>Your cart is empty</p></div>';btn.disabled=true;totalEl.textContent='₹0';return;}
-    btn.disabled=false;
+    const checkoutBtn=document.getElementById('checkoutBtn');
+    const proceedBtn=document.getElementById('proceedBtn');
+    if(!cart.length){body.innerHTML='<div class="cart-empty-msg"><p style="font-size:2.5rem">🛒</p><p>Your cart is empty</p></div>';checkoutBtn.disabled=true;checkoutBtn.style.display='inline-flex';proceedBtn.style.display='none';totalEl.textContent='₹0';return;}
+    checkoutBtn.disabled=false;
+    const addressOpen=checkoutStep!=='cart';
+    checkoutBtn.style.display=addressOpen?'none':'inline-flex';
+    proceedBtn.style.display=addressOpen?'inline-flex':'none';
     body.innerHTML=cart.map((item,i)=>`
         <div class="cart-item-row">
             <img src="${item.image}" alt="${item.name}" class="ci-img">
@@ -664,6 +706,20 @@ function renderCart(){
             </div>
             <button class="rm-btn" onclick="removeFromCart(${i})">✕</button>
         </div>`).join('');
+    body.innerHTML+=`<div class="cart-address-panel ${addressOpen?'open':''}" id="cartAddressPanel">
+        <div class="panel-head">
+            <div class="panel-title">Delivery Address</div>
+            <div class="panel-badge">📍 Dummy address</div>
+        </div>
+        <div class="address-lines">
+            <div class="address-line"><strong>${DUMMY_ADDRESS.name}</strong> · ${DUMMY_ADDRESS.phone}</div>
+            <div class="address-line">${DUMMY_ADDRESS.line1}</div>
+            <div class="address-line">${DUMMY_ADDRESS.line2}</div>
+            <div class="address-line">${DUMMY_ADDRESS.city}</div>
+            <div class="address-line"><strong>Landmark:</strong> ${DUMMY_ADDRESS.landmark}</div>
+        </div>
+        <div class="address-note">This is a sample delivery address shown after checkout. You can replace it with your actual address later.</div>
+    </div>`;
     const total=cart.reduce((s,i)=>s+(i.quantity*i.pricePerKg),0);
     totalEl.textContent='₹'+total.toLocaleString('en-IN');
 }
@@ -674,29 +730,50 @@ function updateCartCount(){
     el.textContent=t;el.style.display=t>0?'inline-block':'none';
 }
 
-async function placeOrder(){
+function checkoutFromCart(){
+    if(!cart.length)return;
+    checkoutStep='address';
+    renderCart();
+    const panel=document.getElementById('cartAddressPanel');
+    if(panel) panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function proceedToPayment(){
     if(!cart.length)return;
     const totalAmount=cart.reduce((s,i)=>s+(i.quantity*i.pricePerKg),0);
-    try{
-        const payload={items:cart.map(item=>({fishId:item.id,quantityKg:item.quantity,pricePerKg:item.pricePerKg})),totalAmount};
-        const created=await apiFetch(ROUTES.orders,'POST',payload);
-        const normalized=normalizeOrder(created.data||created.order||created);
-        if(!normalized||!normalized.id){showToast('Order created but response incomplete');return;}
-    }catch(err){showToast(err.message||'Could not place order');return;}
-    cart=[];saveCart();updateCartCount();closeCart();
-    showToast('Order placed! 🎉');
-    setTimeout(()=>window.location.href='orders.html',1200);
+    const summary=document.getElementById('paymentSummary');
+    summary.innerHTML=`
+        <div style="display:grid;gap:6px;">
+            <div><strong>Deliver to:</strong> ${DUMMY_ADDRESS.name}</div>
+            <div>${DUMMY_ADDRESS.line1}, ${DUMMY_ADDRESS.line2}</div>
+            <div>${DUMMY_ADDRESS.city}</div>
+            <div><strong>Total:</strong> ₹${totalAmount.toLocaleString('en-IN')}</div>
+        </div>`;
+    document.getElementById('cartModal').classList.remove('open');
+    document.getElementById('paymentModal').classList.add('open');
+    document.body.style.overflow='hidden';
 }
 
 function closePayment(e){if(e&&e.target!==e.currentTarget)return;document.getElementById('paymentModal').classList.remove('open');document.body.style.overflow='';}
 async function processPayment(){
-    const modal=document.getElementById('paymentModal');
-    const id=modal.dataset.orderId;
     const method=document.querySelector('input[name="pm"]:checked').value;
+    const totalAmount=cart.reduce((s,i)=>s+(i.quantity*i.pricePerKg),0);
+    const paymentLabel={upi:'UPI / QR Code',card:'Credit / Debit Card',netbanking:'Net Banking'}[method]||method;
     try{
-        await apiFetch(ROUTES.orderStatus(id),'PATCH',{status:'delivered',paymentMethod:method});
-        closePayment();showToast('Payment successful! ✅');
-    }catch(err){showToast(err.message||'Payment failed');}
+        await apiFetch(ROUTES.orders,'POST',{
+            items:cart.map(item=>({fishId:item.id,quantityKg:item.quantity,pricePerKg:item.pricePerKg})),
+            totalAmount,
+            paymentMethod:method,
+            shippingAddress:DUMMY_ADDRESS,
+            status:'Confirmed'
+        });
+    }catch(_){/* demo flow still confirms locally */}
+    cart=[];
+    saveCart();
+    updateCartCount();
+    checkoutStep='cart';
+    closePayment();
+    showToast('Order confirmed! Paid with '+paymentLabel+' ✅');
 }
 
 /* ── STORAGE ── */

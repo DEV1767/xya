@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Arowana Admin — Fish Supply Dashboard</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -113,6 +114,8 @@ button { font-family: var(--ff-sans); cursor: pointer; border: none; outline: no
   background-clip: text;
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
 }
+.sb-logo-copy { display:flex; flex-direction:column; align-items:center; line-height:1; text-align:center; }
+.sb-logo-tagline { margin-top:3px; font-size:0.56rem; font-style:italic; font-weight:500; letter-spacing:0.07em; color:var(--sb-text); white-space:nowrap; }
 .sb-logo-sub { font-size: 0.65rem; color: var(--sb-text); letter-spacing: 0.06em; text-transform: uppercase; }
 
 .sb-section { padding: 18px 14px 6px; }
@@ -602,8 +605,9 @@ tbody td.muted { color: var(--muted); }
 <aside class="sidebar" id="sidebar">
   <div class="sb-logo">
     <div class="sb-logo-icon">A</div>
-    <div>
+    <div class="sb-logo-copy">
       <div class="sb-logo-name">AROWANA</div>
+      <div class="sb-logo-tagline">What do you meen ??</div>
       <div class="sb-logo-sub">Admin Portal</div>
     </div>
   </div>

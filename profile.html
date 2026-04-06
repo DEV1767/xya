@@ -7,7 +7,8 @@
     <link rel="icon" href="data:,">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,800;0,900;1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,800;0,900;1,700&family=DM+Sans:wght@300;400;500;600;700&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root{
             --sand:#F5E6C8;--sand-dk:#E8D0A0;--sand-lt:#FDF8F0;--sand-bd:#EDD9A3;
@@ -42,7 +43,9 @@
         .nav-wrap{display:flex;align-items:center;justify-content:space-between;height:var(--nav-h);padding:0 28px;}
         .logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
         .logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--ocean),var(--aqua));border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:15px;font-family:var(--ff-display);}
+        .logo-copy{display:flex;flex-direction:column;align-items:center;line-height:1;text-align:center;}
         .logo-name{font-family:var(--ff-display);font-size:1.4rem;font-weight:900;background:linear-gradient(120deg,var(--ocean-dk),var(--aqua));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+        .logo-tagline{margin-top:3px;font-family:'Dancing Script', cursive;font-size:.72rem;font-style:italic;font-weight:700;letter-spacing:.04em;color:var(--s600);white-space:nowrap;}
         .nav-links{display:flex;align-items:center;gap:2px;}
         .nav-link{font-size:.87rem;font-weight:500;color:var(--s600);padding:8px 16px;border-radius:var(--radius-pill);transition:all var(--ease);border:none;background:transparent;text-decoration:none;display:inline-block;}
         .nav-link:hover,.nav-link.active{color:var(--ocean);background:var(--ocean-lt);}
@@ -118,7 +121,7 @@
 <div class="navbar-wrap">
     <nav class="navbar">
         <div class="nav-wrap">
-            <a href="index.html" class="logo"><div class="logo-icon">A</div><span class="logo-name">AROWANA</span></a>
+            <a href="index.html" class="logo"><div class="logo-icon">A</div><div class="logo-copy"><span class="logo-name">AROWANA</span><span class="logo-tagline">What do you meen ??</span></div></a>
             <div class="nav-links">
                 <a class="nav-link" href="index.html">Home</a>
                 <a class="nav-link" href="index.html#browse">Browse Fish</a>

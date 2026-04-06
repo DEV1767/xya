@@ -7,32 +7,32 @@
   <title>Fishermen Direct</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link
-    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@700;800&family=Dancing+Script:wght@400;700&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
 
   <style>
     :root {
-      --blue: #0A6EBD;
-      --blue-light: #2E9EE0;
-      --blue-dark: #084C83;
-      --yellow: #F7C948;
-      --teal: #0D9488;
-      --orange: #EA580C;
-      --g900: #0F172A;
-      --g700: #334155;
-      --g600: #475569;
-      --g300: #CBD5E1;
-      --g200: #E2E8F0;
-      --g100: #F1F5F9;
-      --g50: #F8FAFC;
+      --blue: #0A5C8A;
+      --blue-light: #00B4D8;
+      --blue-dark: #084A72;
+      --yellow: #F4A261;
+      --teal: #2D9B6F;
+      --orange: #E88F3D;
+      --g900: #2D2518;
+      --g700: #4A3D2E;
+      --g600: #6B5B45;
+      --g300: #E8E0D0;
+      --g200: #F5F0E8;
+      --g100: #FDF8F0;
+      --g50: #FAFAF8;
       --white: #FFFFFF;
       --rc: 20px;
       --rs: 10px;
       --rp: 50px;
-      --shsm: 0 2px 8px rgba(10, 110, 189, 0.08);
-      --shmd: 0 4px 20px rgba(10, 110, 189, 0.13);
-      --shlg: 0 8px 40px rgba(10, 110, 189, 0.2);
+      --shsm: 0 2px 8px rgba(10, 92, 138, 0.08);
+      --shmd: 0 4px 20px rgba(10, 92, 138, 0.13);
+      --shlg: 0 8px 40px rgba(10, 92, 138, 0.2);
       --sw: 240px;
       --pw: 380px;
     }
@@ -85,7 +85,7 @@
 
     /* SKELETON */
     .sk {
-      background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+      background: linear-gradient(90deg, var(--g200) 25%, var(--g100) 50%, var(--g200) 75%);
       background-size: 200% 100%;
       animation: sh 1.4s infinite;
       border-radius: 8px
@@ -133,7 +133,7 @@
 
     .sk-map {
       flex: 1;
-      background: #d4e8d4
+      background: #E8F4FB
     }
 
     .sk-panel {
@@ -161,7 +161,7 @@
 
     /* SIDEBAR */
     .sidebar {
-      background: linear-gradient(175deg, var(--blue-dark) 0%, #0a5a9e 60%, var(--blue) 100%);
+      background: linear-gradient(175deg, var(--blue-dark) 0%, #09608F 60%, var(--blue) 100%);
       display: flex;
       flex-direction: column;
       height: 100vh;
@@ -193,6 +193,14 @@
       flex-shrink: 0
     }
 
+    .brand-copy {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      line-height: 1.05;
+      text-align: center;
+    }
+
     .brand {
       font-family: 'Playfair Display', serif;
       font-size: 17px;
@@ -203,6 +211,17 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text
+    }
+
+    .brand-tagline {
+      margin-top: 3px;
+      font-family: 'Dancing Script', cursive;
+      font-size: 10px;
+      font-style: italic;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.78);
+      letter-spacing: 0.03em;
+      white-space: nowrap
     }
 
     .brand-sub {
@@ -815,7 +834,7 @@
     }
 
     .cat-hero {
-      background: linear-gradient(135deg, var(--blue-dark), #1565C0);
+      background: linear-gradient(135deg, var(--blue-dark), var(--blue));
       padding: 16px 22px;
       color: #fff;
       flex-shrink: 0
@@ -1657,7 +1676,7 @@
       <aside class="sidebar">
         <div class="sb-logo">
           <div class="sb-logo-icon">A</div>
-          <div><span class="brand">AROWANA</span></div>
+          <div class="brand-copy"><span class="brand">AROWANA</span><span class="brand-tagline">What do you meen ??</span></div>
         </div>
         <div class="sb-search">
           <svg class="sb-si" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -2145,22 +2164,22 @@
       if (z >= 0.65) { const wp = ws(0.54, 0.82); ctx.fillStyle = S.mapMode === 'satellite' ? 'rgba(255,255,255,0.55)' : 'rgba(60,150,190,0.8)'; ctx.font = `500 ${8 * z}px Poppins,sans-serif`; ctx.textAlign = 'center'; ctx.fillText('Iblur Lake', wp.x, wp.y); }
       // User pin + pulse
       const up = ws(0.45, 0.45); const t = Date.now() / 1000;
-      [0, 0.4, 0.8].forEach(ph => { const p = ((t * 0.55 + ph) % 1); ctx.beginPath(); ctx.arc(up.x, up.y, (10 + p * 22) * z, 0, Math.PI * 2); ctx.fillStyle = `rgba(10,110,189,${(1 - p) * 0.16})`; ctx.fill(); });
+      [0, 0.4, 0.8].forEach(ph => { const p = ((t * 0.55 + ph) % 1); ctx.beginPath(); ctx.arc(up.x, up.y, (10 + p * 22) * z, 0, Math.PI * 2); ctx.fillStyle = `rgba(10,92,138,${(1 - p) * 0.16})`; ctx.fill(); });
       ctx.beginPath(); ctx.arc(up.x, up.y, 9 * z, 0, Math.PI * 2); ctx.fillStyle = '#fff'; ctx.fill();
-      ctx.beginPath(); ctx.arc(up.x, up.y, 6.5 * z, 0, Math.PI * 2); ctx.fillStyle = '#0A6EBD'; ctx.fill();
-      ctx.fillStyle = '#0A6EBD'; ctx.font = `700 ${8 * z}px Poppins,sans-serif`; ctx.textAlign = 'center'; ctx.fillText('YOU', up.x, up.y - 14 * z);
+      ctx.beginPath(); ctx.arc(up.x, up.y, 6.5 * z, 0, Math.PI * 2); ctx.fillStyle = '#0A5C8A'; ctx.fill();
+      ctx.fillStyle = '#0A5C8A'; ctx.font = `700 ${8 * z}px Poppins,sans-serif`; ctx.textAlign = 'center'; ctx.fillText('YOU', up.x, up.y - 14 * z);
       // Shop pins
       shops.forEach(sh => {
         const pos = ws(sh.mapX, sh.mapY), active = S.shop === sh.id, pr = (active ? 16 : 13) * z;
         ctx.beginPath(); ctx.arc(pos.x, pos.y, pr + 2, 0, Math.PI * 2); ctx.fillStyle = 'rgba(0,0,0,0.18)'; ctx.fill();
-        ctx.beginPath(); ctx.arc(pos.x, pos.y, pr, 0, Math.PI * 2); ctx.fillStyle = active ? '#084C83' : sh.open ? '#0A6EBD' : '#94a3b8'; ctx.fill();
+        ctx.beginPath(); ctx.arc(pos.x, pos.y, pr, 0, Math.PI * 2); ctx.fillStyle = active ? '#084A72' : sh.open ? '#0A5C8A' : '#A89880'; ctx.fill();
         ctx.strokeStyle = '#fff'; ctx.lineWidth = 2.5 * z; ctx.stroke();
         ctx.font = `${pr * 1.1}px Arial`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(sh.emoji, pos.x, pos.y + 1); ctx.textBaseline = 'alphabetic';
         if (z >= 0.5) {
           ctx.font = `600 ${9 * z}px Poppins,sans-serif`; const tw = ctx.measureText(sh.short).width; const pw = tw + 10 * z, ph = 14 * z, lx = pos.x - pw / 2, ly = pos.y + pr + 4 * z;
           ctx.fillStyle = 'rgba(255,255,255,0.95)'; rr(lx, ly, pw, ph, 4 * z); ctx.fill();
           ctx.strokeStyle = 'rgba(0,0,0,0.07)'; ctx.lineWidth = 0.5; ctx.stroke();
-          ctx.fillStyle = active ? '#084C83' : '#0F172A'; ctx.textAlign = 'center'; ctx.fillText(sh.short, pos.x, ly + ph * 0.76);
+          ctx.fillStyle = active ? '#084A72' : '#2D2518'; ctx.textAlign = 'center'; ctx.fillText(sh.short, pos.x, ly + ph * 0.76);
         }
       });
       cancelAnimationFrame(raf); raf = requestAnimationFrame(draw);

@@ -1,7 +1,7 @@
 /**
  * Authentication & Authorization Helper
  * Manages tokens, user sessions, and protected routes
- * Works with FishMandi Backend API
+ * Works with AROWANA Backend API
  */
 
 const API_BASE = 'https://techforgeinnovators.onrender.com/v1/api';
