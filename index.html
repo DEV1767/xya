@@ -6,6 +6,7 @@
     <title>AROWANA — Premium B2B Seafood</title>
     <link rel="icon" href="data:,">
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,800;0,900;1,700&family=DM+Sans:wght@300;400;500;600;700&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -73,9 +74,9 @@
         .hamburger span{display:block;width:22px;height:2px;background:var(--s600);border-radius:2px;transition:all var(--ease);}
 
         /* ── DRAWER ── */
-        .overlay{position:fixed;inset:0;background:rgba(10,24,50,.4);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity var(--ease);z-index:998;}
+        .overlay{position:fixed;inset:0;background:rgba(10,24,50,.4);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity var(--ease);z-index:1100;}
         .overlay.open{opacity:1;pointer-events:all;}
-        .drawer{position:fixed;top:0;right:0;bottom:0;width:min(300px,86vw);background:var(--white);transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);z-index:999;box-shadow:-4px 0 24px rgba(0,0,0,.1);}
+        .drawer{position:fixed;top:0;right:0;bottom:0;width:min(300px,86vw);background:var(--white);transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);z-index:1101;box-shadow:-4px 0 24px rgba(0,0,0,.1);overflow-y:auto;-webkit-overflow-scrolling:touch;}
         .drawer.open{transform:translateX(0);}
         .drawer-header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px;border-bottom:1px solid var(--s100);}
         .close-drawer{background:transparent;border:none;font-size:1.8rem;color:var(--s600);width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;}
@@ -246,6 +247,7 @@
             .navbar-wrap{top:10px;width:calc(100% - 24px);}
             .nav-links{display:none;}
             .hamburger{display:flex;}
+            .logo-tagline{display:none;}
             #home{padding-top:calc(var(--nav-h) + 92px);align-items:flex-start;}
             .nav-wrap{padding:0 14px;}
             .logo-icon{width:32px;height:32px;font-size:14px;}
@@ -282,6 +284,7 @@
 </head>
 <body>
     <script src="js/auth.js"></script>
+    <script src="js/payment-loader.js"></script>
     <script>if(!requireAuth()){}</script>
 
 <!-- ── PILL NAVBAR ── -->
@@ -386,21 +389,21 @@
         <div class="contact-clean-grid">
             <div class="contact-info-block">
                 <div class="contact-row">
-                    <div class="c-icon">📞</div>
+                    <div class="c-icon"><i class="fa-solid fa-phone" style="color: rgb(99, 230, 190);"></i></div>
                     <div>
                         <h4>Phone</h4>
                         <p>+91 22 4567 8900<br>+91 22 4567 8901</p>
                     </div>
                 </div>
                 <div class="contact-row">
-                    <div class="c-icon green">✉️</div>
+                    <div class="c-icon green"><i class="fa-solid fa-envelope" style="color: rgb(116, 192, 252);"></i></div>
                     <div>
                         <h4>Email</h4>
                         <p><a href="mailto:orders@arowana.in">orders@arowana.in</a><br><a href="mailto:support@arowana.in">support@arowana.in</a></p>
                     </div>
                 </div>
                 <div class="contact-row">
-                    <div class="c-icon amber">⏰</div>
+                    <div class="c-icon amber"><i class="fa-solid fa-alarm-clock" style="color: rgb(116, 192, 252);"></i></div>
                     <div>
                         <h4>Business Hours</h4>
                         <div class="hours-grid">
@@ -410,13 +413,13 @@
                     </div>
                 </div>
                 <div class="contact-row">
-                    <div class="c-icon">📍</div>
+                    <div class="c-icon"><i class="fa-solid fa-location-dot" style="color: rgb(99, 230, 190);"></i></div>
                     <div>
                         <h4>Warehouse</h4>
                         <p>Plot 47, Sassoon Docks Complex,<br>Colaba, Mumbai – 400005, Maharashtra</p>
                     </div>
                 </div>
-                <a href="https://wa.me/912245678901" target="_blank" class="whatsapp-btn">💬 Chat on WhatsApp</a>
+                <a href="https://wa.me/912245678901" target="_blank" class="whatsapp-btn"><i class="fa-brands fa-whatsapp" style="color: rgb(88, 123, 113);"></i> Chat on WhatsApp</a>
             </div>
         </div>
     </div>
@@ -425,7 +428,7 @@
 <!-- ── CART MODAL ── -->
 <div class="modal-overlay" id="cartModal" onclick="closeCart(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
-        <div class="modal-header"><h2>Your Cart 🛒</h2><button class="close-modal" onclick="closeCart()">✕</button></div>
+        <div class="modal-header"><h2>Your Cart</h2><button class="close-modal" onclick="closeCart()">✕</button></div>
         <div class="modal-body" id="cartBody"></div>
         <div class="modal-footer">
             <div class="cart-total-row"><span>Total:</span><span class="cart-total-amt" id="cartTotal">₹0</span></div>
@@ -441,13 +444,13 @@
 <!-- ── PAYMENT MODAL ── -->
 <div class="modal-overlay" id="paymentModal" onclick="closePayment(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
-        <div class="modal-header"><h2>Payment 💳</h2><button class="close-modal" onclick="closePayment()">✕</button></div>
+        <div class="modal-header"><h2>Payment</h2><button class="close-modal" onclick="closePayment()">✕</button></div>
         <div class="modal-body">
             <div id="paymentSummary" style="background:var(--sand-lt);border:1.5px solid var(--sand-bd);border-radius:var(--radius-sm);padding:16px;margin-bottom:20px;"></div>
             <h3 style="font-family:var(--ff-sans);font-size:1rem;margin-bottom:14px;">Select Payment Method</h3>
-            <label class="payment-opt"><input type="radio" name="pm" value="upi" checked><div class="pay-card"><span>📱</span><span>UPI / QR Code</span></div></label>
-            <label class="payment-opt"><input type="radio" name="pm" value="card"><div class="pay-card"><span>💳</span><span>Credit / Debit Card</span></div></label>
-            <label class="payment-opt"><input type="radio" name="pm" value="netbanking"><div class="pay-card"><span>🏦</span><span>Net Banking</span></div></label>
+            <label class="payment-opt"><input type="radio" name="pm" value="upi" checked><div class="pay-card"><span><i class="fa-solid fa-mobile-screen" style="color: rgb(19, 19, 19);"></i></span><span>UPI / QR Code</span></div></label>
+            <label class="payment-opt"><input type="radio" name="pm" value="card"><div class="pay-card"><span><i class="fa-solid fa-credit-card" style="color: rgb(238, 18, 18);"></i></span><span>Credit / Debit Card</span></div></label>
+            <label class="payment-opt"><input type="radio" name="pm" value="netbanking"><div class="pay-card"><span><i class="fa-solid fa-building-columns" style="color: rgb(19, 19, 19);"></i></span><span>Net Banking</span></div></label>
         </div>
         <div class="modal-footer"><button class="btn btn-primary" style="width:100%" onclick="processPayment()">Pay Now →</button></div>
     </div>
@@ -455,7 +458,7 @@
 
 <!-- ── CHATBOT ── -->
 <button class="chat-bubble-btn" onclick="toggleChat()" id="chatBubble">
-    💬 <div class="chat-badge">?</div>
+    <i class="fa-solid fa-robot" style="color: rgb(12, 13, 13);"></i> <div class="chat-badge">?</div>
 </button>
 <div class="chatbot-panel" id="chatPanel">
     <div class="chat-header">
@@ -759,21 +762,28 @@ async function processPayment(){
     const method=document.querySelector('input[name="pm"]:checked').value;
     const totalAmount=cart.reduce((s,i)=>s+(i.quantity*i.pricePerKg),0);
     const paymentLabel={upi:'UPI / QR Code',card:'Credit / Debit Card',netbanking:'Net Banking'}[method]||method;
-    try{
-        await apiFetch(ROUTES.orders,'POST',{
-            items:cart.map(item=>({fishId:item.id,quantityKg:item.quantity,pricePerKg:item.pricePerKg})),
-            totalAmount,
-            paymentMethod:method,
-            shippingAddress:DUMMY_ADDRESS,
-            status:'Confirmed'
-        });
-    }catch(_){/* demo flow still confirms locally */}
-    cart=[];
-    saveCart();
-    updateCartCount();
-    checkoutStep='cart';
-    closePayment();
-    showToast('Order confirmed! Paid with '+paymentLabel+' ✅');
+    const runPayment=async()=>{
+        try{
+            await apiFetch(ROUTES.orders,'POST',{
+                items:cart.map(item=>({fishId:item.id,quantityKg:item.quantity,pricePerKg:item.pricePerKg})),
+                totalAmount,
+                paymentMethod:method,
+                shippingAddress:DUMMY_ADDRESS,
+                status:'Confirmed'
+            });
+        }catch(_){/* demo flow still confirms locally */}
+        cart=[];
+        saveCart();
+        updateCartCount();
+        checkoutStep='cart';
+        closePayment();
+    };
+    if(window.PaymentBuffer&&window.PaymentBuffer.withBuffer){
+        await window.PaymentBuffer.withBuffer(runPayment,{message:'Processing your payment...',minDuration:1400});
+    }else{
+        await runPayment();
+    }
+    showToast('Order confirmed! Paid with '+paymentLabel);
 }
 
 /* ── STORAGE ── */
@@ -794,6 +804,14 @@ function toggleDrawer(){
     document.getElementById('drawer').classList.toggle('open');
     document.body.style.overflow=open?'hidden':'';
 }
+
+window.addEventListener('resize',()=>{
+    if(window.innerWidth>720){
+        document.getElementById('overlay').classList.remove('open');
+        document.getElementById('drawer').classList.remove('open');
+        document.body.style.overflow='';
+    }
+});
 
 /* ── CHATBOT ── */
 const chatAnswers={

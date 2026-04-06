@@ -970,7 +970,7 @@ footer { background: var(--navy2); color: var(--cream2); padding: 4rem 0 1.4rem;
     </div>
     <div class="ft-bottom">
       <span>FSSAI: 12345678901234 &nbsp;|&nbsp; hello@arowana.in</span>
-      <span>&copy; 2024 AROWANA. All rights reserved.</span>
+      <span>&copy; 2026 AROWANA. All rights reserved.</span>
     </div>
   </div>
 </footer>
@@ -978,6 +978,7 @@ footer { background: var(--navy2); color: var(--cream2); padding: 4rem 0 1.4rem;
 <!-- TOAST -->
 <div id="toast"><i class="fa-solid fa-circle-check"></i><span id="toast-txt">Done!</span></div>
 
+<script src="js/payment-loader.js"></script>
 <script>
 // ── state
 var cart = [];
@@ -1235,6 +1236,9 @@ function placeOrder() {
   var btn = document.getElementById('place-btn');
   btn.disabled = true;
   btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing\u2026';
+  if (window.PaymentBuffer && window.PaymentBuffer.show) {
+    window.PaymentBuffer.show('Placing your order...');
+  }
   setTimeout(function() {
     document.getElementById('checkout-sec').classList.remove('show');
     var oid = 'ARW-' + Math.floor(100000 + Math.random() * 900000);
@@ -1246,6 +1250,9 @@ function placeOrder() {
     updBadge();
     btn.disabled = false;
     btn.innerHTML = '<i class="fa-solid fa-bag-shopping"></i> Place Order';
+    if (window.PaymentBuffer && window.PaymentBuffer.hide) {
+      window.PaymentBuffer.hide();
+    }
   }, 2200);
 }
 

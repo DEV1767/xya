@@ -140,6 +140,7 @@
 </head>
 <body>
     <script src="js/auth.js"></script>
+    <script src="js/payment-loader.js"></script>
     <script>if(!requireAuth()){}</script>
 
 <!-- NAVBAR -->
@@ -335,9 +336,19 @@ async function processPayment(){
     const modal=document.getElementById('paymentModal');
     const id=modal.dataset.orderId;
     const method=document.querySelector('input[name="pm"]:checked').value;
-    try{
+    const runPayment=async()=>{
         await apiFetch(ROUTES.orderStatus(id),'PATCH',{status:'delivered',paymentMethod:method});
-        await loadOrders();renderStats();renderOrders();closePayment();
+        await loadOrders();
+        renderStats();
+        renderOrders();
+        closePayment();
+    };
+    try{
+        if(window.PaymentBuffer&&window.PaymentBuffer.withBuffer){
+            await window.PaymentBuffer.withBuffer(runPayment,{message:'Completing your payment...',minDuration:1200});
+        }else{
+            await runPayment();
+        }
         showToast('Payment successful via '+method.toUpperCase()+'! ✅');
     }catch(err){showToast(err.message||'Payment failed');}
 }
