@@ -385,6 +385,7 @@ tbody td.muted { color: var(--muted); }
   position: relative;
 }
 .fish-stock-badge { position: absolute; top: 10px; right: 10px; }
+.fish-img-photo { width: 100%; height: 100%; object-fit: cover; }
 .fish-body { padding: 14px; }
 .fish-name { font-weight: 700; font-size: 0.9rem; margin-bottom: 4px; }
 .fish-qty { font-size: 0.75rem; color: var(--muted); margin-bottom: 10px; }
@@ -446,6 +447,7 @@ tbody td.muted { color: var(--muted); }
 .form-textarea { resize: vertical; min-height: 90px; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .upload-box {
+  display: block;
   border: 2px dashed var(--border); border-radius: var(--radius);
   padding: 28px; text-align: center; cursor: pointer;
   transition: all var(--ease); color: var(--subtle);
@@ -454,6 +456,18 @@ tbody td.muted { color: var(--muted); }
 .upload-box:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-lt); }
 .upload-box i { font-size: 2rem; margin-bottom: 8px; display: block; }
 .upload-box span { font-size: 0.8rem; }
+.upload-title { display: block; font-weight: 600; }
+.upload-box.has-preview { border-style: solid; border-color: var(--blue-bd); color: var(--text); }
+.upload-box.has-preview i { display: none; }
+.upload-preview {
+  display: none;
+  width: 100%;
+  max-height: 170px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+.upload-help { display: block; margin-top: 8px; font-size: 0.7rem; color: var(--subtle); }
 
 /* ═══ PROGRESS BAR ═══ */
 .progress-bar { height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; }
@@ -1012,6 +1026,17 @@ tbody td.muted { color: var(--muted); }
       </div>
       <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" id="fishDesc" placeholder="Brief description of the fish…"></textarea></div>
       <div class="form-group">
+        <label class="form-label">Fish Image</label>
+        <input type="hidden" id="fishImageData" />
+        <label class="upload-box" id="fishImageUploadBox" for="fishImageFile">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+          <span class="upload-title" id="fishImageUploadText">Click to upload image</span>
+          <img class="upload-preview" id="fishImagePreview" alt="Fish preview" />
+          <span class="upload-help">JPG, PNG, WEBP up to 2 MB</span>
+        </label>
+        <input class="form-input" id="fishImageFile" type="file" accept="image/*" style="display:none" onchange="onFishImageSelected(event)" />
+      </div>
+      <div class="form-group">
         <label class="form-label">Availability</label>
         <label class="toggle-wrap">
           <label class="toggle"><input type="checkbox" id="fishInStock" checked /><span class="toggle-slider"></span></label>
@@ -1257,10 +1282,13 @@ function renderFishGrid() {
     grid.innerHTML = `<div style="padding:40px;text-align:center;color:var(--subtle);grid-column:1/-1">No fish found</div>`;
     return;
   }
+  const getFishImageSrc = (f) => f.image || f.imageUrl || f.photo || f.thumbnail || '';
   grid.innerHTML = data.map(f => `
     <div class="fish-card">
       <div class="fish-img">
-        ${f.emoji || '🐟'}
+        ${getFishImageSrc(f)
+          ? `<img class="fish-img-photo" src="${getFishImageSrc(f)}" alt="${(f.name || 'Fish').replace(/"/g, '&quot;')}" />`
+          : (f.emoji || '🐟')}
         <span class="fish-stock-badge"><span class="badge ${f.inStock?'badge-green':'badge-red'}">${f.inStock?'In Stock':'Out of Stock'}</span></span>
       </div>
       <div class="fish-body">
@@ -1314,12 +1342,69 @@ function editFish(id) {
   document.getElementById('fishPrice').value = f.pricePerKg || f.price || '';
   document.getElementById('fishQty').value = f.availableQty ?? f.qty ?? '';
   document.getElementById('fishDesc').value = f.description || '';
+  const imageSrc = f.image || f.imageUrl || f.photo || f.thumbnail || '';
+  document.getElementById('fishImageData').value = imageSrc;
+  setFishImagePreview(imageSrc);
+  document.getElementById('fishImageFile').value = '';
   document.getElementById('fishInStock').checked = f.inStock !== false;
   openModal('addFishModal');
 }
 
+function setFishImagePreview(src) {
+  const preview = document.getElementById('fishImagePreview');
+  const uploadText = document.getElementById('fishImageUploadText');
+  const uploadBox = document.getElementById('fishImageUploadBox');
+  if (!preview || !uploadText || !uploadBox) return;
+
+  if (src) {
+    preview.src = src;
+    preview.style.display = 'block';
+    uploadText.textContent = 'Image selected. Click to change';
+    uploadBox.classList.add('has-preview');
+  } else {
+    preview.removeAttribute('src');
+    preview.style.display = 'none';
+    uploadText.textContent = 'Click to upload image';
+    uploadBox.classList.remove('has-preview');
+  }
+}
+
+function readFileAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ''));
+    reader.onerror = () => reject(new Error('Unable to read file'));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function onFishImageSelected(event) {
+  const file = event.target && event.target.files ? event.target.files[0] : null;
+  if (!file) return;
+
+  if (!file.type || !file.type.startsWith('image/')) {
+    showToast('Please select a valid image file', 'warn');
+    event.target.value = '';
+    return;
+  }
+  if (file.size > 2 * 1024 * 1024) {
+    showToast('Image should be 2 MB or smaller', 'warn');
+    event.target.value = '';
+    return;
+  }
+
+  try {
+    const dataUrl = await readFileAsDataUrl(file);
+    document.getElementById('fishImageData').value = dataUrl;
+    setFishImagePreview(dataUrl);
+  } catch (_) {
+    showToast('Could not read selected image', 'error');
+  }
+}
+
 async function submitFishForm() {
   const id = document.getElementById('fishFormId').value;
+  const imageData = document.getElementById('fishImageData').value.trim();
   const body = {
     name:         document.getElementById('fishName').value.trim(),
     category:     document.getElementById('fishCategory').value,
@@ -1327,6 +1412,7 @@ async function submitFishForm() {
     availableQty: Number(document.getElementById('fishQty').value),
     description:  document.getElementById('fishDesc').value.trim(),
     inStock:      document.getElementById('fishInStock').checked,
+    image:        imageData || undefined,
   };
   if (!body.name || !body.pricePerKg) { showToast('Name and price are required', 'warn'); return; }
 
@@ -1351,6 +1437,9 @@ function openAddFishModal() {
   document.getElementById('fishPrice').value = '';
   document.getElementById('fishQty').value = '';
   document.getElementById('fishDesc').value = '';
+  document.getElementById('fishImageData').value = '';
+  document.getElementById('fishImageFile').value = '';
+  setFishImagePreview('');
   document.getElementById('fishInStock').checked = true;
   openModal('addFishModal');
 }

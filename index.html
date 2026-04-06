@@ -634,9 +634,10 @@ function renderFishGrid(){
 function fishCardHTML(fish){
     const qty=fishQuantities[fish.id]??fish.minOrder;
     const safe=String(fish.id).replace(/'/g,"\\'");
+    const htmlId=String(fish.id).replace(/"/g,'&quot;');
     const badgeCls=fish.inStock?fish.category.toLowerCase():'out-of-stock';
     const badgeText=fish.inStock?fish.category:'Out of Stock';
-    return`<div class="fish-card">
+    return`<div class="fish-card" data-fish-id="${htmlId}">
         <div class="fish-img-wrap">
             <img src="${fish.image}" alt="${fish.name}" loading="lazy">
             <div class="fish-badge ${badgeCls}">${badgeText}</div>
@@ -653,7 +654,7 @@ function fishCardHTML(fish){
             ${fish.inStock?`
             <div class="fish-qty-row">
                 <button class="qty-btn" onclick="changeQty('${safe}',-1)" ${(qty-5)<fish.minOrder?'disabled':''}>−</button>
-                <input class="qty-input" type="number" min="${fish.minOrder}" max="${fish.availableQuantity}" value="${qty}" oninput="setQty('${safe}',this.value)">
+                <input class="qty-input" type="number" min="${fish.minOrder}" max="${fish.availableQuantity}" value="${qty}" oninput="setQty('${safe}',this.value)" data-qty-input="true">
                 <button class="qty-btn" onclick="changeQty('${safe}',1)" ${(qty+5)>fish.availableQuantity?'disabled':''}>+</button>
                 <button class="add-btn" onclick="addToCart('${safe}')">Add 🛒</button>
             </div>`:`<button class="add-btn" disabled style="margin-top:12px;width:100%">Out of Stock</button>`}
@@ -661,18 +662,32 @@ function fishCardHTML(fish){
     </div>`;
 }
 
+function syncFishQtyCard(id){
+    const fish=fishData.find(f=>String(f.id)===String(id));
+    if(!fish)return;
+    const qty=fishQuantities[fish.id]??fish.minOrder;
+    const card=[...document.querySelectorAll('.fish-card')].find(el=>el.dataset.fishId===String(fish.id));
+    if(!card)return;
+    const input=card.querySelector('[data-qty-input="true"]');
+    const minusBtn=card.querySelector('.qty-btn');
+    const plusBtn=card.querySelectorAll('.qty-btn')[1];
+    if(input&&document.activeElement!==input) input.value=qty;
+    if(minusBtn) minusBtn.disabled=(qty-5)<fish.minOrder;
+    if(plusBtn) plusBtn.disabled=(qty+5)>fish.availableQuantity;
+}
+
 function changeQty(id,dir){
     const fish=fishData.find(f=>String(f.id)===String(id));if(!fish)return;
     const cur=fishQuantities[fish.id]??fish.minOrder;
     if(dir>0&&cur<fish.availableQuantity)fishQuantities[fish.id]=Math.min(fish.availableQuantity,cur+5);
     if(dir<0&&cur>fish.minOrder)fishQuantities[fish.id]=Math.max(fish.minOrder,cur-5);
-    renderFishGrid();
+    syncFishQtyCard(id);
 }
 function setQty(id,val){
     const fish=fishData.find(f=>String(f.id)===String(id));if(!fish)return;
     const p=Number(val);if(!Number.isFinite(p))return;
     fishQuantities[fish.id]=Math.max(fish.minOrder,Math.min(fish.availableQuantity,Math.round(p)));
-    renderFishGrid();
+    syncFishQtyCard(id);
 }
 
 /* ── CART ── */
