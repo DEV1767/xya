@@ -1190,6 +1190,29 @@ const normalizeStatus = (status) => {
   return s.charAt(0).toUpperCase() + s.slice(1);
 };
 
+const resolveBuyerName = (record) => {
+  const buyer = record && record.buyer ? record.buyer : {};
+  const candidates = [
+    buyer.name,
+    buyer.businessName,
+    buyer.companyName,
+    buyer.restaurantName,
+    buyer.shopName,
+    buyer.fullName,
+    buyer.contactPerson,
+    buyer.username,
+    buyer.email,
+    record && record.buyerName,
+    record && record.businessName,
+    record && record.customerName,
+    record && record.customer,
+    record && record.userName,
+    record && record.username,
+  ];
+  const found = candidates.find(v => typeof v === 'string' && v.trim());
+  return found ? found.trim() : '—';
+};
+
 const countPendingOrders = (orders) => (Array.isArray(orders) ? orders.filter(o => normalizeStatus(o.status) === 'Pending').length : 0);
 const countActiveBuyers = (buyers) => (Array.isArray(buyers) ? buyers.filter(b => b.isActive !== false && String(b.status || '').toLowerCase() !== 'inactive').length : 0);
 
@@ -1579,7 +1602,7 @@ function renderRecentOrders() {
   const slice = orderData.slice(0, 8);
   if (!slice.length) { tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--subtle);padding:32px">No orders yet</td></tr>`; return; }
   tbody.innerHTML = slice.map(o => {
-    const buyer = o.buyer?.name || o.buyerName || '—';
+    const buyer = resolveBuyerName(o);
     const fish  = o.items?.[0]?.fish?.name || o.fish || '—';
     const qty   = o.items?.[0]?.quantity || o.qty || '—';
     const total = o.totalAmount || o.total || 0;
@@ -1600,7 +1623,7 @@ function renderOrdersTable() {
   const tbody = document.getElementById('ordersTableBody');
   if (!orderData.length) { tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:var(--subtle);padding:32px">No orders found</td></tr>`; return; }
   tbody.innerHTML = orderData.map(o => {
-    const buyer = o.buyer?.name || o.buyerName || '—';
+    const buyer = resolveBuyerName(o);
     const fish  = o.items?.[0]?.fish?.name || o.fish || '—';
     const qty   = o.items?.[0]?.quantity || o.qty || '—';
     const total = o.totalAmount || o.total || 0;
@@ -1628,7 +1651,7 @@ function renderOrdersTable() {
 function viewOrder(id) {
   const o = orderData.find(x => (x._id || x.id) === id);
   if (!o) return;
-  const buyer = o.buyer?.name || o.buyerName || '—';
+  const buyer = resolveBuyerName(o);
   const fish  = o.items?.[0]?.fish?.name || o.fish || '—';
   const qty   = o.items?.[0]?.quantity || o.qty || '—';
   const total = o.totalAmount || o.total || 0;
@@ -1774,7 +1797,7 @@ function renderPayments() {
   }
   tbody.innerHTML = paymentsData.map(p => {
     const orderId  = p.order?._id?.slice(-8).toUpperCase() || p.orderId || '—';
-    const buyer    = p.buyer?.name || p.buyerName || '—';
+    const buyer    = resolveBuyerName(p);
     const fish     = p.order?.items?.[0]?.fish?.name || p.fish || '—';
     const amount   = p.amount || 0;
     const isPaid   = p.status === 'Paid';
@@ -2093,7 +2116,7 @@ function filterOrdersTable(search = '', status = null) {
   if (status !== null) _orderStatusFilter = status;
   const tbody = document.getElementById('ordersTableBody');
   let data = orderData.filter(o => {
-    const buyer = (o.buyer?.name || o.buyerName || '').toLowerCase();
+    const buyer = resolveBuyerName(o).toLowerCase();
     const fish  = (o.items?.[0]?.fish?.name || o.fish || '').toLowerCase();
     const id    = (o._id || o.id || '').toLowerCase();
     const matchSearch = !search || buyer.includes(search) || fish.includes(search) || id.includes(search);
@@ -2133,7 +2156,7 @@ function filterBuyersTable(search) {
 function filterPaymentsTable(search) {
   const tbody = document.getElementById('paymentsTableBody');
   const data = paymentsData.filter(p => {
-    const buyer = (p.buyer?.name || p.buyerName || '').toLowerCase();
+    const buyer = resolveBuyerName(p).toLowerCase();
     const id    = (p.order?._id || p.orderId || '').toLowerCase();
     return !search || buyer.includes(search) || id.includes(search);
   });
